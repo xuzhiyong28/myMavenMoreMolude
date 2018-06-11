@@ -21,8 +21,8 @@ public class ArrayBlockingQueueTest {
         executorService.execute(new Customer(queue));
         executorService.execute(new Customer(queue));
         executorService.execute(new Customer(queue));
-        //executorService.execute(new Producer(queue));
-        //executorService.execute(new Producer(queue));
+        executorService.execute(new Producer(queue));
+        executorService.execute(new Producer(queue));
         executorService.execute(new Producer(queue));
     }
 
