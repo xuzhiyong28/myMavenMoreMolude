@@ -9,7 +9,7 @@ package com.dxc.atomic;/**
 public class Person {
     private String name;
     private int age;
-
+    public String classes;
 
 
     public Person(String name, int age) {
@@ -37,4 +37,11 @@ public class Person {
         return "[name: " + this.name + ", age: " + this.age + "]";
     }
 
+    public String getClasses() {
+        return classes;
+    }
+
+    public void setClasses(String classes) {
+        this.classes = classes;
+    }
 }
