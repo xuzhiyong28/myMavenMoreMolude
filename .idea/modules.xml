@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-jms/mvmoremodule-jms.iml" filepath="$PROJECT_DIR$/mvmoremodule-jms/mvmoremodule-jms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-manager/mvmoremodule-manager.iml" filepath="$PROJECT_DIR$/mvmoremodule-manager/mvmoremodule-manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-parent/mvmoremodule-parent.iml" filepath="$PROJECT_DIR$/mvmoremodule-parent/mvmoremodule-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-redis/mvmoremodule-redis.iml" filepath="$PROJECT_DIR$/mvmoremodule-redis/mvmoremodule-redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-shiro/mvmoremodule-shiro.iml" filepath="$PROJECT_DIR$/mvmoremodule-shiro/mvmoremodule-shiro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-util/mvmoremodule-util.iml" filepath="$PROJECT_DIR$/mvmoremodule-util/mvmoremodule-util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/myMavenMoreMolude.iml" filepath="$PROJECT_DIR$/.idea/myMavenMoreMolude.iml" />
+    </modules>
+  </component>
+</project>

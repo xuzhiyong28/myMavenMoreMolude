@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="mvmoremodule-shiro:war">
+    <output-path>$PROJECT_DIR$/mvmoremodule-shiro/target</output-path>
+    <root id="archive" name="mvmoremodule-shiro.war">
+      <element id="artifact" artifact-name="mvmoremodule-shiro:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="mvmoremodule-redis:war">
+    <output-path>$PROJECT_DIR$/mvmoremodule-redis/target</output-path>
+    <root id="archive" name="mvmoremodule-redis.war">
+      <element id="artifact" artifact-name="mvmoremodule-redis:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvmoremodule.shiro.dao.LearnGroupMapper">
+    <resultMap id="learnGroupResultMap" type="com.mvmoremodule.shiro.pojo.LearnResouceGroup">
+        <id column="id" property="id" jdbcType="BIGINT"></id>
+        <result column="group_name" property="groupName"></result>
+        <result column="group_info" property="groupInfo"></result>
+    </resultMap>
+
+    <select id="queryLearnResouceGroupById" resultMap="learnGroupResultMap" parameterType="java.lang.Long">
+        select id , group_name , group_info from learn_resource_group where id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+<!-- 自动扫描 -->
+    <context:component-scan base-package="com.mvmoremodule.shiro">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+    </context:component-scan>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!--<context:annotation-config></context:annotation-config>-->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties"/>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="${initialSize}"></property>
+        <!-- 连接池最大数量 -->
+        <property name="maxActive" value="${maxActive}"></property>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="${maxIdle}"></property>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="${minIdle}"></property>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="${maxWait}"></property>
+    </bean>
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:com/mvmoremodule/shiro/mapper/*.xml"></property>
+        <property name="configLocation" value="classpath:myBatis-cfg.xml"></property>
+    </bean>
+
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.mvmoremodule.shiro.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+    <!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+
+
+
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login"/><!-- 配置登陆页面 -->
+        <property name="successUrl" value="/success"/><!-- 登陆成功后跳转页面 -->
+        <property name="unauthorizedUrl" value="/unauthorized"/><!--没授权跳转页面-->
+        <property name="filterChainDefinitions">
+            <value>
+                /login = anon
+                /error = anon
+                /static/** = anon
+                /logout = logout
+                /** = authc
+            </value>
+        </property>
+</bean>
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"></property>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <!-- 会话ID生成器 -->
+    <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+
+    <!-- 会话Cookie模板 -->
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="sid"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="-1"/>
+    </bean>
+
+
+    <!-- 配置进行授权和认证的 Realm -->
+    <bean id="myRealm" class="com.mvmoremodule.shiro.config.MyRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"></property>
+        <property name="cachingEnabled" value="true"></property> <!--启用缓存-->
+        <property name="authenticationCachingEnabled" value="true"></property> <!--认证缓存可用-->
+        <property name="authenticationCacheName" value="authenticationCache"/> <!--对应ehcache-shiro.xml的authenticationCache-->
+        <property name="authorizationCachingEnabled" value="true"/> <!--授权缓存可用-->
+        <property name="authorizationCacheName" value="authorizationCache"/> <!--对应ehcache-shiro.authorizationCache-->
+    </bean>
+
+    <!-- 配置 Bean 后置处理器: 会自动的调用和 Spring 整合后各个组件的生命周期方法. -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!--缓存管理器-->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache-shiro.xml"/><!-- 指定 ehcache 的配置文件 -->
+    </bean>
+
+    <!--凭证认证器，用于密码的认证-->
+    <bean id="credentialsMatcher" class="com.mvmoremodule.shiro.config.RetryLimitHashedCredentialsMatcher">
+        <constructor-arg ref="cacheManager"></constructor-arg>
+        <property name="hashAlgorithmName" value="md5" /> <!--使用的算法-->
+        <property name="hashIterations" value="3" />   <!--散列次数-->
+        <property name="storedCredentialsHexEncoded" value="true"/>
+    </bean>
+
+</beans>

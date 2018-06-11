@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvmoremodule.shiro.dao.LearnMapper">
+    <resultMap id="baseResultMap" type="com.mvmoremodule.shiro.pojo.LearnResouce">
+        <id column="id" property="id" jdbcType="BIGINT"  />
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--多对一结果映射-->
+    <resultMap id="baseResultMapAndGroup" type="com.mvmoremodule.shiro.pojo.LearnResouce">
+        <id column="id" property="id" jdbcType="BIGINT"  />
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <!--LearnResouceGroup相关属性-->
+        <result property="group.id" column="group_id"></result>
+        <result property="group.groupName" column="group_name"></result>
+        <result property="group.groupInfo" column="group_info"></result>
+    </resultMap>
+
+    <!--采用继承方式集成baseResultMap的配置然后在加入自己额外的配置-->
+    <resultMap id="baseResultMapExtend" type="com.mvmoremodule.shiro.pojo.LearnResouce" extends="baseResultMap">
+        <result property="group.id" column="group_id"></result>
+        <result property="group.groupName" column="group_name"></result>
+        <result property="group.groupInfo" column="group_info"></result>
+    </resultMap>
+
+
+    <!--采用association方式关联-->
+    <resultMap id="baseResultMapAssociation" type="com.mvmoremodule.shiro.pojo.LearnResouce">
+        <id column="id" property="id" jdbcType="BIGINT"  />
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <association property="group" javaType="com.mvmoremodule.shiro.pojo.LearnResouceGroup">
+            <id column="group_id" property="id"></id>
+            <result column="group_name" property="groupName"></result>
+            <result column="group_info" property="groupInfo"></result>
+        </association>
+    </resultMap>
+
+
+    <resultMap id="baseResultMapAssociationSelect" type="com.mvmoremodule.shiro.pojo.LearnResouce">
+        <id column="id" property="id" jdbcType="BIGINT"  />
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <association property="group" column="group_id" select="com.mvmoremodule.shiro.dao.LearnGroupMapper.queryLearnResouceGroupById"></association>
+    </resultMap>
+
+
+
+
+
+    <sql id="baseColumnList">
+        id, author, title, url
+    </sql>
+
+
+    <select id="queryLearnResouceList" resultMap="baseResultMap" parameterType="java.util.HashMap">
+      SELECT
+        <include refid="baseColumnList"/>
+      from learn_resource
+      <where>
+          1 = 1
+          <if test="author != null and author != ''">
+              AND author like CONCAT(CONCAT('%',#{author,jdbcType=VARCHAR}),'%')
+          </if>
+          <if test="title != null and title !=''">
+              AND title like  CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+          </if>
+      </where>
+    </select>
+
+    <select id="queryLearnResouceById" resultMap="baseResultMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="baseColumnList" />
+        FROM learn_resource
+        WHERE  id = #{id}
+    </select>
+
+    <select id="queryLearnResouceListByAll" resultMap="baseResultMapAndGroup" >
+        SELECT
+          lr.id, lr.author, lr.title, lr.url, lrp.id group_id , lrp.group_name , lrp.group_info
+        FROM  learn_resource lr
+        LEFT  JOIN  learn_resource_group lrp on lr.group_id = lrp.id
+    </select>
+
+    <select id="queryLearnResouceListByExtendAll" resultMap="baseResultMapExtend">
+        SELECT
+          lr.id, lr.author, lr.title, lr.url, lrp.id group_id , lrp.group_name , lrp.group_info
+        FROM  learn_resource lr
+        LEFT  JOIN  learn_resource_group lrp on lr.group_id = lrp.id
+    </select>
+
+    <select id="queryLearnResouceListByAssociationAll" resultMap="baseResultMapAssociation">
+        SELECT
+        lr.id, lr.author, lr.title, lr.url, lrp.id group_id , lrp.group_name , lrp.group_info
+        FROM  learn_resource lr
+        LEFT  JOIN  learn_resource_group lrp on lr.group_id = lrp.id
+    </select>
+
+    <select id="queryLearnResouceListByAssociationSelect" resultMap="baseResultMapAssociationSelect">
+        SELECT id , author , title , url , group_id from learn_resource where id = #{id}
+    </select>
+
+
+
+    <insert id="add" parameterType="com.mvmoremodule.shiro.pojo.LearnResouce">
+        INSERT into learn_resource (author, title,url,group_id) VALUES (#{author}, #{title}, #{url},#{group.id})
+    </insert>
+
+    <insert id="addByBatch" parameterType="java.util.List">
+        INSERT  INTO learn_resource (author, title, url,group_id)
+        VALUES
+        <foreach collection="list" item="item" index="index"  separator=",">
+            (#{item.author} , #{item.title} , #{item.url} , #{item.group.id})
+        </foreach>
+    </insert>
+
+
+    <update id="update" parameterType="com.mvmoremodule.shiro.pojo.LearnResouce" >
+        UPDATE learn_resource SET author = #{author},title = #{title},url = #{url} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        DELETE  FROM  learn_resource WHERE id in
+        <foreach item="idItem"  collection="array" open="(" separator="," close=")">
+            #{idItem}
+        </foreach>
+    </delete>
+
+</mapper>

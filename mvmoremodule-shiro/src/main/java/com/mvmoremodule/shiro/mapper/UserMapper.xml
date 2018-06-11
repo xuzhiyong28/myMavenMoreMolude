@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvmoremodule.shiro.dao.UserMapper">
+    <!--使用resultMap能直接映射java和数据库的字段对应-->
+    <resultMap id="userMap" type="com.mvmoremodule.shiro.pojo.SysUser">
+        <id property="id" column="id"></id>
+        <result property="userName" column="user_name"></result>
+        <result property="userPassword" column="user_password"></result>
+        <result property="userEmail" column="user_email"></result>
+        <result property="userInfo" column="user_info"></result>
+        <result property="headImg" column="head_img" jdbcType="BLOB"></result>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+
+    <!--一对多映射 一个user用户有多个role角色-->
+    <resultMap id="userRoleMap" type="com.mvmoremodule.shiro.pojo.SysUser" extends="userMap">
+        <collection property="roleList" ofType="com.mvmoremodule.shiro.pojo.SysRole">
+            <id property="id" column="role_id"></id>
+            <result property="roleName" column="role_name"></result>
+            <result property="enabled" column="enabled"></result>
+            <result property="createBy" column="create_by"></result>
+            <result property="createTime" column="role_create_time"></result>
+        </collection>
+    </resultMap>
+    <sql id="user_allcolumn">
+        id,user_name,user_password,user_email,user_info,head_img,create_time
+    </sql>
+
+
+    <select id="selectByid" resultMap="userMap" parameterType="java.lang.Long">
+        select * from sys_user where id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="userMap">
+        select * from sys_user s
+    </select>
+
+
+    <select id="selectUserAndRoleById" resultMap="userRoleMap" parameterType="java.lang.Long">
+      select
+          s.id , s.user_name , s.user_password , s.user_email , s.user_info , s.head_img , s.create_time, sr.id role_id , sr.role_name , sr.enabled , sr.create_by , sr.create_time role_create_time
+        from sys_user s
+        INNER JOIN  sys_user_role sur ON s.id = sur.user_id
+        INNER JOIN sys_role sr ON  sur.role_id = sr.id
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="selectByUserName" parameterType="java.lang.String" resultMap="userMap">
+        SELECT
+          id,
+          user_name userName,
+          user_password userPassword,
+          user_email userEmail,
+          user_info userInfo,
+          head_img headImg,
+          create_time createTime
+        FROM  sys_user
+        WHERE user_name = #{uerName}
+    </select>
+
+
+    <!--没用resultMap而用resultType需要在语句里面做映射-->
+    <select id="selectByIds" resultType="com.mvmoremodule.shiro.pojo.SysUser">
+        SELECT
+          id,
+          user_name userName,
+          user_password userPassword,
+          user_email userEmail,
+          user_info userInfo,
+          head_img headImg,
+          create_time createTime
+        FROM  sys_user
+        WHERE  ID IN
+        <foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--通过注解useGeneratedKeys,keyProperty来获取自增主键，主键值放在sysUser的ID里面-->
+    <insert id="addSysUser" parameterType="com.mvmoremodule.shiro.pojo.SysUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user(user_name , user_password , user_email , user_info , head_img , create_time)
+        VALUES
+        (#{userName} , #{userPassword} , #{userEmail} , #{userInfo} , #{headImg} , #{createTime} )
+    </insert>
+
+    <!--采用set标签方式-->
+    <update id="updateSysUser" parameterType="com.mvmoremodule.shiro.pojo.SysUser">
+        UPDATE sys_user
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                user_password = #{userPassword},
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                user_email = #{userEmail},
+            </if>
+            <if test="userInfo != null and userInfo != ''">
+                user_info = #{userInfo},
+            </if>
+            <if test="headImg != null">
+                head_img = #{headImg , jdbcType=BLOB},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            id = #{id},
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        DELETE from sys_user where id = #{id}
+    </delete>
+
+    <!--多个入参情况-->
+    <update id="updateSysUserInfoAndName">
+        UPDATE sys_user SET user_info = #{userInfo} , user_name = #{userName} where id = #{id}
+    </update>
+
+
+</mapper>

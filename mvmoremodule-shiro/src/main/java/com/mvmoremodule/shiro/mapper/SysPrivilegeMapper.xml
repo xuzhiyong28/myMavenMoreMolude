@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvmoremodule.shiro.dao.SysPrivilegeMapper">
+    <resultMap id="baseMap" type="com.mvmoremodule.shiro.pojo.SysPrivilege">
+        <result property="id" column="id"></result>
+        <result property="privilegeName" column="privilege_name"></result>
+        <result property="privilegeUrl" column="privilege_url"></result>
+    </resultMap>
+
+    <select id="querySysPrivilegeAll" resultMap="baseMap">
+        SELECT * FROM sys_privilege;
+    </select>
+
+    <select id="querySysPrivilegeByRoleIds" resultMap="baseMap">
+        select sp.id, sp.privilege_name, sp.privilege_url from sys_role_privilege srp
+        INNER JOIN sys_privilege sp ON srp.privilege_id = sp.id
+		where srp.role_id IN
+		<foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>
