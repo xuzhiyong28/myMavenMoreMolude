@@ -2,8 +2,9 @@ package com.dxc.blockingQueue;/**
  * Created by Administrator on 2018-06-11.
  */
 
-import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xuzhiyong
@@ -12,63 +13,67 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ArrayBlockingQueueTest {
 
 
-    public static void main(String args[]){
-        ReentrantLock lock = new ReentrantLock();
-        ArrayBlockingQueue<String> queue = new ArrayBlockingQueue<String>(1); //创建一个1容量的队列
-        ExecutorService executorService = Executors.newFixedThreadPool(10); //创建20个线程来处理
-        executorService.execute(new Customer(queue));
-        executorService.execute(new Customer(queue));
-        executorService.execute(new Customer(queue));
-        executorService.execute(new Customer(queue));
-        executorService.execute(new Customer(queue));
-        executorService.execute(new Producer(queue));
-        executorService.execute(new Producer(queue));
-        executorService.execute(new Producer(queue));
-    }
-
-
-    static  class Customer implements Runnable{
-        private ArrayBlockingQueue<String> queue;
-        private ReentrantLock lock;
-        public Customer(ArrayBlockingQueue<String> queue){
-            this.queue = queue;
-        }
-        @Override
-        public void run() {
-            while(true){
-                try {
-                    System.out.println(Thread.currentThread() + "_消费者消费：" + queue.take());
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }finally {
-                }
-            }
-        }
+    public static void main(String args[]) {
+        BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<String>(1);
+        Thread threadA = new Thread(new Customer(blockingQueue));
+        Thread threadB = new Thread(new Producer(blockingQueue));
+        threadA.start();
+        threadB.start();
     }
 
     /***
-     * 生产者
+     * 消费者
      */
-    static class Producer implements Runnable{
-        private ArrayBlockingQueue<String> queue;
-        public Producer(ArrayBlockingQueue<String> queue){
-            this.queue = queue;
+    static class Customer implements Runnable {
+        private BlockingQueue<String> blockingQueue;
+
+        public Customer(BlockingQueue<String> blockingQueue) {
+            this.blockingQueue = blockingQueue;
         }
+
         @Override
         public void run() {
-            while (true){
-                int num = (int) (Math.random() * 3);
+            while (true) {
+                System.out.println(Thread.currentThread().getName() + "消费者准备消费集合元素");
                 try {
-                    queue.put(String.valueOf(num)); //put 放入队列，阻塞方法
-                    System.out.println("生产产品编号为:" + num);
                     TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
+                    blockingQueue.take(); //取出元素
+                } catch (Exception e) {
                     e.printStackTrace();
-                }finally {
                 }
+                System.out.println(Thread.currentThread().getName() + "消费完成" + blockingQueue);
             }
         }
     }
+
+
+    /***
+     * 消费者
+     */
+    static class Producer implements Runnable {
+        String[] str = new String[]{"solr", "lucene", "nutch"};
+        private BlockingQueue<String> blockingQueue;
+
+        public Producer(BlockingQueue<String> blockingQueue) {
+            this.blockingQueue = blockingQueue;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 99999999; i++) {
+                System.out.println(Thread.currentThread().getName() + "生产者准备生产集合元素了!");
+                try {
+                    Thread.sleep(2000);
+                    //尝试放入元素，如果对列已满，则线程被阻塞
+                    blockingQueue.put(str[i % 3]);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + "生产完成:" + blockingQueue);
+            }
+        }
+    }
+
 
 }
