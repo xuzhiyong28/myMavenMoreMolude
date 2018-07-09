@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/mvmoremodule-jms" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mvmoremodule-manager" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mvmoremodule-mybatisplus" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mvmoremodule-parent" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mvmoremodule-redis" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mvmoremodule-shiro" charset="UTF-8" />

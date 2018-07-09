@@ -56,6 +56,6 @@ public class MybatisTest {
         System.out.println(list.size());*/
         List<Long> ids = new ArrayList<Long>();
         ids.add(1l);
-        System.out.println(sysPrivilegeMapper.querySysPrivilegeByRoleIds(ids));
+        System.out.println(sysPrivilegeMapper.querySysPrivilegeByRoleIds(ids).size() + "...");
     }
 }

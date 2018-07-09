@@ -15,6 +15,7 @@
     <bytecodeTargetLevel>
       <module name="mvmoremodule-jms" target="1.7" />
       <module name="mvmoremodule-manager" target="1.7" />
+      <module name="mvmoremodule-mybatisplus" target="1.7" />
       <module name="mvmoremodule-parent" target="1.7" />
       <module name="mvmoremodule-redis" target="1.7" />
       <module name="mvmoremodule-shiro" target="1.7" />

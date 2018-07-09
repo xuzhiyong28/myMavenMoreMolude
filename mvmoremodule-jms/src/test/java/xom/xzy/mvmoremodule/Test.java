@@ -19,4 +19,11 @@ public class Test {
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(factory);
         xmlBeanDefinitionReader.loadBeanDefinitions(classPathResource);
     }
+
+    @org.junit.Test
+    public void test2(){
+        float k1 = (float) 0.1;
+        float k2 = (float) 0.2;
+        System.out.println(k1 + k2);
+    }
 }
