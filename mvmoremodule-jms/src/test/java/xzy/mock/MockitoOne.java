@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import javax.xml.ws.RequestWrapper;
 import java.util.Arrays;
@@ -112,8 +114,32 @@ public class MockitoOne {
          //设置第一次执行抛异常 第二次执行返回true
          when(mockedList.add("one")).thenThrow(new RuntimeException()).thenReturn(true);
          mockedList.add("one");
-         mockedList.add("one");
+         System.out.println("result =" + mockedList.add("one"));
      }
+
+     @Test
+     public void test10(){
+        LinkedList mockedList = mock(LinkedList.class);
+        //有时我们需要自定义方法执行的返回结果则可以调用thenAnswer
+        //这里我们对返回结果进行自定义，如果add里面的参数是one 则 返回 false
+        when(mockedList.add(anyString())).thenAnswer(new Answer<Boolean>() {
+            @Override
+            public Boolean answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object[] args = invocationOnMock.getArguments();
+                if(args == null || args.length == 0){
+                    throw new RuntimeException();
+                }
+                if(args[0].equals("one")){
+                    return false;
+                }
+                System.out.println(Arrays.toString(args));
+                return false;
+            }
+        });
+        System.out.println(mockedList.add("one"));
+     }
+
+
 
 
 }
