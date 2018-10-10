@@ -3,6 +3,7 @@ package xzy.mock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 
 import javax.xml.ws.RequestWrapper;
 import java.util.Arrays;
@@ -53,5 +54,66 @@ public class MockitoOne {
         }))).thenReturn(true);
         Assert.assertEquals(true, mockList.addAll(Arrays.asList("1", "2")));
     }
+
+    @Test
+    public void test5(){
+        LinkedList mockedList = mock(LinkedList.class);
+        mockedList.add("once");
+
+        mockedList.add("twice");
+        mockedList.add("twice");
+
+        mockedList.add("three");
+        mockedList.add("three");
+        mockedList.add("three");
+
+        //调用add("once")的次数为1次
+        verify(mockedList,times(1)).add("once");
+        verify(mockedList,times(2)).add("twice");
+        verify(mockedList,times(3)).add("three");
+
+        verify(mockedList, atLeastOnce()).add("three"); //至少执行一次
+        verify(mockedList, atLeast(2)).add("three"); //最少执行两次
+        verify(mockedList, atMost(5)).add("three"); //最多执行5次
+
+        verify(mockedList,never()).add("xuzhiyong"); //从没有执行过add("xuzhiyong")
+    }
+
+    @Test
+    public void test6(){
+        LinkedList mockedList = mock(LinkedList.class);
+        //设置当执行clear时抛出RuntimeException错误
+        doThrow(new RuntimeException("错误")).when(mockedList).clear();
+        mockedList.clear();
+    }
+
+    @Test
+     public void test7(){
+        List singleMock = mock(List.class);
+        singleMock.add("was added first");
+        singleMock.add("was added second");
+        InOrder inorder = inOrder(singleMock); //判断是否按顺序执行过方法
+        inorder.verify(singleMock).add("was added first");
+        inorder.verify(singleMock).add("was added second");
+     }
+
+     @Test
+     public void test8(){
+         LinkedList mockedList = mock(LinkedList.class);
+         mockedList.add("one");
+         //mockedList.add("two"); 开发这个后，add("two")下面没有校验 所以会报错
+         verify(mockedList).add("one");;
+         verifyNoMoreInteractions(mockedList); //用来验证传入的这些mock对象是否存在没有验证过的调用方法
+     }
+
+     @Test
+     public void test9(){
+         LinkedList mockedList = mock(LinkedList.class);
+         //设置第一次执行抛异常 第二次执行返回true
+         when(mockedList.add("one")).thenThrow(new RuntimeException()).thenReturn(true);
+         mockedList.add("one");
+         mockedList.add("one");
+     }
+
 
 }

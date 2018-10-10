@@ -11,7 +11,9 @@ public class PersonServiceTest {
 
     @Before
     public void setUp(){
+        //将personDao交给mock模拟
         personDao = Mockito.mock(PersonDao.class);
+        //设置存根，当调用getPerson(1)时应该返回new Person(1,"Person1")
         Mockito.when(personDao.getPerson(1)).thenReturn(new Person(1,"Person1"));
         Mockito.when(personDao.update(Mockito.isA(Person.class))).thenReturn(true);
         personService = new PersonService(personDao);
