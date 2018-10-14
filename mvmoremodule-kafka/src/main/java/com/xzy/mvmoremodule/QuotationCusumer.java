@@ -28,8 +28,8 @@ public class QuotationCusumer {
     private static Properties initConfig() {
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKER_LIST); //kafka集群地址
-        properties.put("group.id", "test-reset2");
-        properties.put("client.id", "test-reset2");
+        properties.put("group.id", "kafka-log4j-1");
+        properties.put("client.id", "kafka-log4j-1");
         properties.put("enable.auto.commit", true); //显示偏移量自动提交
         properties.put("auto.commit.interval.ms", 1000); //设置偏移量提交时间间隔
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

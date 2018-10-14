@@ -90,6 +90,16 @@ public class MockitoOne {
     }
 
     @Test
+    public void test6_2(){
+        //第一次调用没什么事，第二次执行抛出异常
+        LinkedList mockedList = mock(LinkedList.class);
+        doNothing().doThrow(new RuntimeException("错误")).when(mockedList).clear();
+        mockedList.clear();
+        mockedList.clear();
+        verify(mockedList,times(2)).clear();
+    }
+
+    @Test
      public void test7(){
         List singleMock = mock(List.class);
         singleMock.add("was added first");
