@@ -106,7 +106,7 @@ public class MapsTest {
 
     @Test
     public void test6(){
-        Map<Integer,String> WEEK  = Maps.newHashMap();
+        /*Map<Integer,String> WEEK  = Maps.newHashMap();
         WEEK.put(1, "Monday");
         WEEK.put(2, "Tuesday");
         WEEK.put(3, "Wednesday");
@@ -120,7 +120,7 @@ public class MapsTest {
                 return integer > 3;
             }
         });
-        printList(WEEK);
+        printList(WEEK);*/
 
     }
 
