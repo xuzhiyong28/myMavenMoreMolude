@@ -190,14 +190,13 @@ public class MapsTest {
             }
         };
         //Map<Integer,Person> 转成 Map<Integer ,String>
-        Map<Integer ,String> tempMap = Maps.transformValues(perMap, new Function<Person , String>() {
+        Map<Integer ,String> tempMap = Maps.transformValues( perMap , new Function<Person , String>() {
             @Override
             public String apply(Person person) {
                 return person != null ? person.getName() : "无";
             }
         });
         printList(tempMap);
-
     }
 
 
