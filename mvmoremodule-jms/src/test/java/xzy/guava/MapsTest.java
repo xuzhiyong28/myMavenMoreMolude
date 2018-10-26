@@ -14,6 +14,7 @@ import com.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +107,8 @@ public class MapsTest {
 
     @Test
     public void test6(){
-        /*Map<Integer,String> WEEK  = Maps.newHashMap();
+        //根据Key的值来过滤
+        Map<Integer,String> WEEK  = Maps.newHashMap();
         WEEK.put(1, "Monday");
         WEEK.put(2, "Tuesday");
         WEEK.put(3, "Wednesday");
@@ -120,8 +122,29 @@ public class MapsTest {
                 return integer > 3;
             }
         });
-        printList(WEEK);*/
+        printList(WEEK);
+    }
 
+    @Test
+    public void test7(){
+        Map<Integer,String> WEEK  = Maps.newHashMap(new HashMap<Integer,String>(){
+            {
+                put(1, "Monday");
+                put(2, "Tuesday");
+                put(3, "Wednesday");
+                put(4, "Thursday");
+                put(5, "Friday");
+                put(6, "Saturday");
+                put(7, "Sunday");
+            }
+        });
+        WEEK = Maps.filterValues(WEEK, new Predicate<String>() {
+            @Override
+            public boolean apply(String s) {
+                return s.equals("Monday");
+            }
+        });
+        printList(WEEK);
     }
 
 
