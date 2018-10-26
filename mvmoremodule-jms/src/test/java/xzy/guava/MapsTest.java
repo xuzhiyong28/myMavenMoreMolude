@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
@@ -14,10 +15,7 @@ import com.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -127,6 +125,7 @@ public class MapsTest {
 
     @Test
     public void test7(){
+        //根据Value的值来过滤
         Map<Integer,String> WEEK  = Maps.newHashMap(new HashMap<Integer,String>(){
             {
                 put(1, "Monday");
@@ -145,6 +144,40 @@ public class MapsTest {
             }
         });
         printList(WEEK);
+    }
+
+    @Test
+    public void test8(){
+        //通过key - value 过滤
+        Map<Integer,String> WEEK  = Maps.newHashMap(new HashMap<Integer,String>(){
+            {
+                put(1, "Monday");
+                put(2, "Tuesday");
+                put(3, "Wednesday");
+                put(4, "Thursday");
+                put(5, "Friday");
+                put(6, "Saturday");
+                put(7, "Sunday");
+            }
+        });
+        WEEK = Maps.filterEntries(WEEK, new Predicate<Map.Entry<Integer, String>>() {
+            @Override
+            public boolean apply(Map.Entry<Integer, String> integerStringEntry) {
+                Integer key = integerStringEntry.getKey();
+                String value = integerStringEntry.getValue();
+                return key == 2 && value.equals("Tuesday");
+            }
+        });
+        printList(WEEK);
+    }
+
+    @Test
+    public void test9(){
+        Properties properties = new Properties();
+        properties.put("jdbc.url" , "xxx");
+        properties.put("jdbc.class" , "zzz");
+        ImmutableMap propMap = Maps.fromProperties(properties);
+        System.out.println(propMap);
     }
 
 
