@@ -1,5 +1,6 @@
 package xzy.guava;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -22,5 +23,16 @@ public class Collections2Test {
         System.out.println(filterList);
     }
 
+    @Test
+    public void test2(){
+        List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        Collection<Integer> nameLength = Collections2.transform(names, new Function<String, Integer>() {
+            @Override
+            public Integer apply(String s) {
+                return s.length();
+            }
+        });
+        System.out.println(nameLength);
+    }
 
 }

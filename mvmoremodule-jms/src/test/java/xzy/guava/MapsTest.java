@@ -180,6 +180,25 @@ public class MapsTest {
         System.out.println(propMap);
     }
 
+    @Test
+    public void test10(){
+        HashMap<Integer,Person> perMap = new HashMap<Integer, Person>() {
+            {
+                put(1,new Person(1,"xuzy"));
+                put(2,new Person(2,"gaoys"));
+                put(3,new Person(2,"chenyx"));
+            }
+        };
+        //Map<Integer,Person> 转成 Map<Integer ,String>
+        Map<Integer ,String> tempMap = Maps.transformValues(perMap, new Function<Person , String>() {
+            @Override
+            public String apply(Person person) {
+                return person != null ? person.getName() : "无";
+            }
+        });
+        printList(tempMap);
+
+    }
 
 
     public List<JSONObject> initData(){

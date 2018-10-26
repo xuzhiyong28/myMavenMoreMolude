@@ -72,7 +72,7 @@ public class ListsTest {
         List<Map<String,String>> list = Lists.newArrayList();
         list.add(map);
         list.add(map2);
-        //有点像javasrcipt中的map方法，把对象list中的某个属性取出来  返回一个新的list
+        //List<Map<String,String>> 转换成 List<String>
         List<String> list2 = Lists.transform(list, new Function<Map<String, String>, String>() {
             @Override
             public String apply(Map<String, String> stringStringMap) {
