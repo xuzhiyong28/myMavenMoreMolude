@@ -114,4 +114,33 @@ public class FilesTest {
         }
     }
 
+    @Test
+    public void test10() throws IOException {
+        List<String> lines = Files.readLines(new File("D://1.txt"), Charset.defaultCharset());
+        String sql = "INSERT INTO wsportal.myview_ratio_config(CUSTOMER_EN_NAME,START_DATE,END_DATE,RATIO,CONFIG_TYPE,ADD_DATE,LOGIN_NAME,EDGE_RATIO,STATIC_RATIO,DYNAMIC_RATIO,LIMIT_RATIO) VALUES " +
+                "('{}','2018-07-11 00:00:00','2018-11-19 00:00:00','1','1',SYSDATE(),'System','1','0','0','0');";
+        for(String line : lines){
+            System.out.println(sql.replace("{}",line));
+        }
+    }
+
+    @Test
+    public void test11() throws IOException {
+        List<String> lines = Files.readLines(new File("D://2.txt"), Charset.defaultCharset());
+        String sql = "update wsportal.myview_ratio_config set END_DATE = '2018-11-14 00:00:00' WHERE CUSTOMER_EN_NAME = '{}' AND END_DATE IS NULL AND CONFIG_TYPE = '1';";
+        for(String line : lines){
+            System.out.println(sql.replace("{}",line));
+        }
+    }
+
+    @Test
+    public void test12() throws IOException {
+        List<String> lines = Files.readLines(new File("D://2.txt"), Charset.defaultCharset());
+        String sql = "update wsportal.myview_ratio_config set END_DATE = null WHERE CUSTOMER_EN_NAME = '%s' id = '%2';";
+        for(String line : lines){
+            System.out.println();
+        }
+    }
+
+
 }

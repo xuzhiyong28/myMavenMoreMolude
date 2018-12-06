@@ -25,16 +25,19 @@ public class CacheTest {
         //expireAfterAccess指定对象多久没有被访问后过期
         Cache<String, String> cache = CacheBuilder.newBuilder()
                 .maximumSize(2) //最多两条缓存
-                .expireAfterAccess(5, TimeUnit.SECONDS) //10秒后自动删除
+                .expireAfterAccess(10, TimeUnit.SECONDS) //10秒后自动删除
                 .build();
         cache.put("word", "Hello Guava Cache");
         System.out.println(cache.getIfPresent("word"));
         try {
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(5);
+            cache.put("work2" , "xxxxxx");
+            TimeUnit.SECONDS.sleep(6);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println(cache.getIfPresent("word"));
+        System.out.println(cache.getIfPresent("work2"));
     }
 
     @Test
