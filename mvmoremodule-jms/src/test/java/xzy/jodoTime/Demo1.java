@@ -1,6 +1,6 @@
 package xzy.jodoTime;
 
-import org.joda.time.DateTime;
+import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -53,6 +53,10 @@ public class Demo1 {
 
         DateTime dateTime3 = dateTime.minusDays(20); //今天再减去20天
         System.out.println(dateTime3);
+
+        DateTime dateTime4 = DateTime.parse("2012-12-03");
+        DateTime dateTime4Temp = dateTime4.plusDays(1).plusYears(1).plusMonths(1).plusWeeks(1).plusMillis(1).plusHours(1).plusSeconds(1);
+        System.out.println(dateTime4Temp.toString("yyyy-MM-dd hh:mm:ss"));
     }
 
     @Test
@@ -94,6 +98,17 @@ public class Demo1 {
 
     @Test
     public void test7(){
+        //获取两个时间的天数
+        LocalDate localDate = new LocalDate(new Date());
+        LocalDate localDate1 = new LocalDate(2017,10,01);
 
+        int days = Days.daysBetween(localDate1,localDate).getDays();
+        System.out.println("days =" + days);
+
+        int months = Months.monthsBetween(localDate1,localDate).getMonths();
+        System.out.println("months =" + months);
+
+        int years = Years.yearsBetween(localDate1,localDate).getYears();
+        System.out.println("years = " + years);
     }
 }
