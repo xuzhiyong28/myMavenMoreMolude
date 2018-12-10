@@ -2,11 +2,11 @@ package xzy.jodoTime;
 
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class Demo1 {
     @Test
@@ -110,5 +110,11 @@ public class Demo1 {
 
         int years = Years.yearsBetween(localDate1,localDate).getYears();
         System.out.println("years = " + years);
+    }
+
+    @Test
+    public void test8(){
+        Map map = DateTimeUtils.getDefaultTimeZoneNames();
+        System.out.println(map);
     }
 }
