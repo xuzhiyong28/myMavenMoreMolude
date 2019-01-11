@@ -7,6 +7,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * @author xuzhiyong
@@ -16,10 +17,8 @@ public class Test {
 
     @org.junit.Test
     public void test1(){
-        //ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        String kk = "1345627";
-        System.out.println(kk.indexOf("2") + ".." + kk.lastIndexOf("2"));
-
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        RedisTemplate redisTemplate = (RedisTemplate)applicationContext.getBean("redisTemplate");
     }
 
     @org.junit.Test

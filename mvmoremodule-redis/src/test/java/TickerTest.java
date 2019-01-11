@@ -58,6 +58,7 @@ public class TickerTest {
                     }
                 }
             }
+            System.out.println(Thread.currentThread().getName() + "结束售票");
         }
     }
 

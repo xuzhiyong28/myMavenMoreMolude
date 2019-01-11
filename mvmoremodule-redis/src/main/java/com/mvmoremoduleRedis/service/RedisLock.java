@@ -3,9 +3,14 @@ package com.mvmoremoduleRedis.service;/**
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCommands;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -23,6 +28,10 @@ public class RedisLock implements Lock {
 
     @Autowired
     private JedisConnectionFactory factory;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     private static final String LOCK = "LOCK";
     private static final String SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
     private ThreadLocal<String> local = new ThreadLocal<String>();
@@ -32,7 +41,7 @@ public class RedisLock implements Lock {
      */
     @Override
     public void lock() {
-        if(!tryLock()){
+        if (!tryLock()) {
             try {
                 Thread.sleep(new Random().nextInt(10) + 1);
             } catch (InterruptedException e) {
@@ -53,11 +62,18 @@ public class RedisLock implements Lock {
      */
     @Override
     public boolean tryLock() {
-        Jedis jedis = (Jedis) factory.getConnection().getNativeConnection();
-        String value = UUID.randomUUID().toString();
+        final String value = UUID.randomUUID().toString();
         local.set(value);
-        String ret = jedis.set(LOCK,value,"NX","PX",3000); //此操作为原子性操作
-        if(ret != null && "OK".equals(ret))
+        Jedis jedis = factory.getConnection().getNativeConnection();
+        String ret = jedis.set(LOCK, value, "NX", "PX", 3000); //此操作为原子性操作
+       /* String ret = (String) redisTemplate.execute(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                JedisCommands commands = (JedisCommands) redisConnection.getNativeConnection();
+                return commands.set(LOCK, value, "NX", "PX", 3000);
+            }
+        });*/
+        if (ret != null && "OK".equals(ret))
             return true;
         return false;
     }
@@ -70,7 +86,7 @@ public class RedisLock implements Lock {
     @Override
     public void unlock() {
         Jedis jedis = (Jedis) factory.getConnection().getNativeConnection();
-        jedis.eval(SCRIPT, Arrays.asList(LOCK),Arrays.asList(local.get()));
+        jedis.eval(SCRIPT, Arrays.asList(LOCK), Arrays.asList(local.get()));
     }
 
     @Override
