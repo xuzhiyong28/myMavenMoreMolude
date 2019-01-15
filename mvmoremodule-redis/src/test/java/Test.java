@@ -2,6 +2,8 @@
  * Created by Administrator on 2018-04-28.
  */
 
+import com.mvmoremoduleRedis.service.RedisHyperLogLog;
+import org.junit.Before;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
@@ -15,10 +17,16 @@ import org.springframework.data.redis.core.RedisTemplate;
  */
 public class Test {
 
+    public ApplicationContext applicationContext;
+    @Before
+    public void initApp(){
+        applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+    }
+
     @org.junit.Test
     public void test1(){
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        RedisTemplate redisTemplate = (RedisTemplate)applicationContext.getBean("redisTemplate");
+        RedisHyperLogLog redisHyperLogLog = applicationContext.getBean(RedisHyperLogLog.class);
+        redisHyperLogLog.init();
     }
 
     @org.junit.Test
