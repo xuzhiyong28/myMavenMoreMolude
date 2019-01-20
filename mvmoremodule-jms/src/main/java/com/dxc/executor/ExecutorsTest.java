@@ -15,7 +15,7 @@ public class ExecutorsTest {
     public static void main(String[] agrs){
         //ExecutorsTest.newFixedThreadPoolTest();
         //ExecutorsTest.newSingleThreadExecutorTest();
-        ExecutorsTest.newCachedThreadPoolTest();
+        //ExecutorsTest.newCachedThreadPoolTest();
     }
 
 
