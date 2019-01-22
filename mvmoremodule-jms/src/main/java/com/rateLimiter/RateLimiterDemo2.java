@@ -62,7 +62,8 @@ public class RateLimiterDemo2 {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        RateLimiterDemo2.test1();
+        //RateLimiterDemo2.test1();
+        RateLimiterDemo2.test2();
     }
 
 
@@ -75,6 +76,21 @@ public class RateLimiterDemo2 {
             int  result = RateLimiterDemo2.enter("methodA","hanchao");
             if (result == 99) {
                 i = 0;
+                Thread.sleep(1000);
+            }
+        }
+    }
+
+    public static void test2() throws InterruptedException {
+        RateLimiterDemo2.updateResourceQps("methodB",5.0);
+        int y = 0;
+        while(true){
+            y++;
+            long t3 = System.currentTimeMillis();
+            System.out.println(" begin:" + t3 + " , tom:" + y);
+            int result2 = RateLimiterDemo2.enter("methodB","tom");
+            if (result2 == 99) {
+                y = 0;
                 Thread.sleep(1000);
             }
         }
