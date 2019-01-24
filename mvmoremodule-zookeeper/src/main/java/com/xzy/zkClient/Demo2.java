@@ -20,7 +20,7 @@ public class Demo2 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Demo2 demo2 = new Demo2();
-        demo2.connect(ZK_URL);
+        demo2.connect();
     }
 
     /***
@@ -28,7 +28,7 @@ public class Demo2 {
      * @param host
      * @return
      */
-    public ZooKeeper connect(String host) throws IOException, InterruptedException {
+    public ZooKeeper connect() throws IOException, InterruptedException {
         zooKeeper = new ZooKeeper(ZK_URL, SESSION_TIMEOUT, new Watcher() {
             @Override
             public void process(WatchedEvent watchedEvent) {
