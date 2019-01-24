@@ -25,7 +25,7 @@ public class Demo {
 
 
     public void connection(){
-        zkClient = new ZkClient("localhost:2181",5000,5000, new SerializableSerializer());
+        zkClient = new ZkClient("192.168.135.131:2181",5000,5000, new SerializableSerializer());
     }
 
     public void createNode(){

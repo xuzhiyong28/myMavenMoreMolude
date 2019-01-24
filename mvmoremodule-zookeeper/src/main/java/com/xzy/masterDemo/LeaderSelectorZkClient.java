@@ -21,10 +21,27 @@ public class LeaderSelectorZkClient {
     //启动的服务个数
     private static final int  CLIENT_QTY = 10;
     //zookeeper服务器的地址
-    private static final String  ZOOKEEPER_SERVER = "192.168.199.128:2182";
+    private static final String  ZOOKEEPER_SERVER = "192.168.135.131:2181";
 
 
     public static void main(String[] args) throws Exception{
+        LeaderSelectorZkClient leaderSelectorZkClient = new LeaderSelectorZkClient();
+        //leaderSelectorZkClient.test1();
+        leaderSelectorZkClient.test2();
+    }
+
+    public void test2() throws Exception {
+        ZkClient client = new ZkClient(ZOOKEEPER_SERVER,10000,10000,new SerializableSerializer());
+        RunningData runningData = new RunningData();
+        runningData.setCid(1);
+        runningData.setName("Client #1");
+        WorkServer workServer = new WorkServer(runningData);
+        workServer.setZkClient(client);
+        workServer.start();
+    }
+
+
+    public void test1() throws Exception {
         //保存所有zkClient的列表
         List<ZkClient> clients = new ArrayList<ZkClient>();
         //保存所有服务的列表

@@ -72,7 +72,7 @@ public class WorkServer {
 
     //模拟抢主节点
     public void takeMaster() throws InterruptedException {
-        if (!running) return;
+        if (running == false) return;
         try {
             zkClient.create(MASTER_PATH, serverData, CreateMode.EPHEMERAL);
             masterData = serverData;
@@ -85,7 +85,7 @@ public class WorkServer {
                         releaseMaster();
                     }
                 }
-            }, 5, TimeUnit.SECONDS);
+            }, 10, TimeUnit.SECONDS);
         } catch (ZkNodeExistsException e) { //节点已经存在
             RunningData runningData = zkClient.readData(MASTER_PATH, true);
             if (runningData == null) {
