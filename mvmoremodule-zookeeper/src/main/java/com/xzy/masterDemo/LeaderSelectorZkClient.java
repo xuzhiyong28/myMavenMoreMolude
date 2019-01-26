@@ -31,7 +31,7 @@ public class LeaderSelectorZkClient {
     }
 
     public void test2() throws Exception {
-        ZkClient client = new ZkClient(ZOOKEEPER_SERVER,10000,10000,new SerializableSerializer());
+        ZkClient client = new ZkClient(ZOOKEEPER_SERVER,20000,20000,new SerializableSerializer());
         RunningData runningData = new RunningData();
         runningData.setCid(1);
         runningData.setName("Client #1");
