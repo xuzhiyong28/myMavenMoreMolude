@@ -2,6 +2,7 @@ package com;/**
  * Created by Administrator on 2019-01-28.
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,20 @@ public class ShardingTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    public void test(){
+    public void testCreateTable(){
         System.out.println(jdbcTemplate);
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS flow (time VARCHAR(50) NOT NULL, value INT NOT NULL, PRIMARY KEY (time))");
+    }
+
+    @Test
+    public void testInsert(){
+        String sql = "INSERT INTO flow(time,value) VALUES ('20180101', 123)";
+        jdbcTemplate.update(sql);
+    }
+
+    @Test
+    public void other(){
+        System.out.println(StringUtils.substring("20180101",4,6));
     }
 
 }

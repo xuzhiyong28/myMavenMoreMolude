@@ -13,15 +13,23 @@
                         http://shardingsphere.io/schema/shardingsphere/sharding
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
 
+    <!--规则定义:一年一库,一月一表-->
+
     <!--分片算法(根据月份分片)-->
     <bean id="databaseShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm"></bean>
-    <!--是否展示sql-->
+    <bean id="tableShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloTableShardingAlgorithm"></bean>
+
     <!--数据库分片-标准-按照time字段分片-->
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="time" precise-algorithm-ref="databaseShardingAlgorithm"/>
+    <!--表分片-标准-按照time字段分片-->
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="time" precise-algorithm-ref="tableShardingAlgorithm"/>
+
+
+
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dataSource_1,dataSource_2,dataSource_3,dataSource_4">
+        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="flow" actual-data-nodes="dataSource_${1..4}.flow_${201801..201812}"/>
+                <sharding:table-rule logic-table="flow" actual-data-nodes="dataSource_${2017..2020}.flow_0${1..9},dataSource_${2017..2020}.flow_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy"/>
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

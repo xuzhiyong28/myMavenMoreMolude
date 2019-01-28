@@ -10,14 +10,13 @@ import java.util.Collection;
 
 /**
  * @author xuzhiyong
- * @createDate 2019-01-28-20:26
- * 按库
+ * @createDate 2019-01-28-22:30
+ * 按表
  */
-public class PreciseModuloDatabaseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
-
+public class PreciseModuloTableShardingAlgorithm implements PreciseShardingAlgorithm<String> {
     @Override
     public String doSharding(Collection<String> collection, PreciseShardingValue<String> preciseShardingValue) {
-        //对于库的分片collection存放的是所有的库的列表，这里代表dataSource_2017~dataSource_2020
+        //对于库的分片collection存放的是所有的库的列表，这里代表flow_01~flow_12
         //配置的分片的sharding-column对应的值
         String timeValue = preciseShardingValue.getValue();
         //分库时配置的sharding-column
@@ -27,13 +26,13 @@ public class PreciseModuloDatabaseShardingAlgorithm implements PreciseShardingAl
         if(StringUtils.isBlank(timeValue)){
             throw new UnsupportedOperationException("preciseShardingValue is null");
         }
-        //按年路由
+        //按月路由
         for (String each : collection) {
-            String value = StringUtils.substring(timeValue,0,4); //获取到年份
+            String value = StringUtils.substring(timeValue,4,6); //获取到月份
             if(each.endsWith(value)){
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
 }
