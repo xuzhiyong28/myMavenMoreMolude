@@ -1,0 +1,49 @@
+dataSources:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password: 123456
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password: 123456
+  ds: !!org.apache.commons.dbcp.BasicDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/demo_ds
+      username: root
+      password: 123456
+
+#数据分片
+shardingRule:
+  tables:
+    #t_order:
+    #  actualDataNodes: ds_${0..1}.t_order
+    #  keyGeneratorColumnName: order_id #自增列名称，省缺表示不使用自增主键生成器
+    t_order:
+      #actualDataNodes: ds_${0..1}.t_order_${1..12}
+      #按月建表,建立两年之内的表
+      actualDataNodes: ds_${0..1}.t_order_${201801..201812},ds_${0..1}.t_order_${201901..201912}
+      tableStrategy:
+        standard:
+          shardingColumn: createdate
+          preciseAlgorithmClassName: com.shardingAlgorithm.XzyCustomShardingTablesAlgorithm
+  #默认数据库分片
+  defaultDatabaseStrategy:
+    #inline 用于行表达式分片策略
+    #inline:
+    #  shardingColumn: user_id
+    #  algorithmExpression: ds_${user_id % 2}
+    #用于单片键的标准分片
+    standard:
+      shardingColumn: order_id
+      preciseAlgorithmClassName: com.shardingAlgorithm.XzyCustomShardingDatabaseAlgorithm
+    #默认的表分片
+  #没有配置分片策略的表都走这个数据源
+  defaultDataSourceName: ds
+  defaultTableStrategy:
+    none:
+  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  props:
+      sql.show: true
