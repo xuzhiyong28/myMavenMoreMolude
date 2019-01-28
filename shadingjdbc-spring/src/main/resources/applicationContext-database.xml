@@ -4,9 +4,9 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="dataSource_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/spring?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_0?useUnicode=true&amp;characterEncoding=utf-8"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
         <!-- 初始化连接大小 -->
@@ -20,4 +20,22 @@
         <!-- 获取连接最大等待时间 -->
         <property name="maxWait" value="60000"></property>
     </bean>
+
+    <bean id="dataSource_2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_1?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="0"></property>
+        <!-- 连接池最大数量 -->
+        <property name="maxActive" value="200"></property>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="20"></property>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="1"></property>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="60000"></property>
+    </bean>
+
 </beans>
