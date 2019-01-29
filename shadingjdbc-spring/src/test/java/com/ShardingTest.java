@@ -46,10 +46,6 @@ public class ShardingTest {
         }
     }
 
-    @Test
-    public void testInsertMuti(){
-
-    }
 
     @Test
     public void query(){
