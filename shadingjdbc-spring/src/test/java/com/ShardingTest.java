@@ -40,16 +40,30 @@ public class ShardingTest {
     public void testInsert() {
         List<String> times = getRandomTime(1000);
         for (String time : times) {
-            System.out.println("time = " + time);
             String value = RandomUtils.nextInt(0, 10000) + "";
             jdbcTemplate.update("INSERT IGNORE INTO flow(flowtime,value) VALUES ('" + time + "', " + value + ")");
-            jdbcTemplate.update("INSERT IGNORE INTO websocket(flowtime,value) VALUES ('" + time + "', " + value + ")");
+            //jdbcTemplate.update("INSERT IGNORE INTO websocket(flowtime,value) VALUES ('" + time + "', " + value + ")");
         }
+    }
+
+    @Test
+    public void testInsertMuti(){
+
     }
 
     @Test
     public void query(){
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from flow where flowtime = '20170818'");
+    }
+
+
+    @Test
+    public void drop(){
+        jdbcTemplate.update("drop table flow");
+    }
+
+    public void delete(){
+        jdbcTemplate.update("delete from flow");
     }
 
 

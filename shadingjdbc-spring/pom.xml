@@ -13,7 +13,7 @@
     <artifactId>shadingjdbc-spring</artifactId>
     <packaging>war</packaging>
 
-    <name>shadingjdbc-spring Maven Webapp</name>
+    <name>shadingjdbc-spring</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
