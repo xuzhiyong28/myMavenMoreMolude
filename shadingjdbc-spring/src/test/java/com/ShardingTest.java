@@ -32,8 +32,15 @@ public class ShardingTest {
     public void testCreateTable() {
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS flow (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL, PRIMARY KEY (flowtime))");
 
+        jdbcTemplate.update("CREATE TABLE IF NOT EXISTS ips (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL)");
         //不做分片的表
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS websocket (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL, PRIMARY KEY (flowtime))");
+    }
+
+    @Test
+    public void testInsertOne(){
+        //测试一条记录多条插入
+        jdbcTemplate.update("INSERT IGNORE INTO flow(flowtime,value) VALUES ('20190525',1),('20190526',2),('20190527',2)");
     }
 
     @Test
