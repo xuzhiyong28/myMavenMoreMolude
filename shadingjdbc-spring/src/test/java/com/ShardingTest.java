@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +26,7 @@ import java.util.Map;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext.xml", "classpath:applicationContext-database.xml", "classpath:applicationContext-sharding.xml"})
 public class ShardingTest {
-    @Autowired
+    @Resource(name = "jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
     @Test
@@ -65,8 +66,10 @@ public class ShardingTest {
         jdbcTemplate.update("drop table flow");
     }
 
+    @Test
     public void delete(){
         jdbcTemplate.update("delete from flow");
+        jdbcTemplate.update("delete from ips");
     }
 
 

@@ -44,4 +44,8 @@
         <property name="dataSource" ref="shardingDataSource"></property>
     </bean>
 
+    <!--普通的数据库连接，不走sharding-->
+    <bean id="jdbcTemplate_default" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource_default"></property>
+    </bean>
 </beans>

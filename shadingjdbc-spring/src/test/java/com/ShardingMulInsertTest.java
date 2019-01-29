@@ -25,7 +25,8 @@ public class ShardingMulInsertTest {
     public static void main(String[] args) throws InterruptedException {
         ShardingMulInsertTest test = new ShardingMulInsertTest();
         //test.insertMul();
-        test.insertSingle();
+        //test.insertSingle();
+        test.insertSingleDefault();
     }
 
     /****
@@ -45,7 +46,7 @@ public class ShardingMulInsertTest {
         }
         executorService.shutdown();
         countDownLatch.await();
-        System.out.println("插入耗时:" + watch.getTime());
+        System.out.println("多线程 sharding 插入数据耗时:" + watch.getTime());
     }
 
     /***
@@ -68,8 +69,32 @@ public class ShardingMulInsertTest {
             String sql = StringUtils.chop(sb.toString());
             jdbcTemplate.update(sql);
         }
-        System.out.println("插入耗时:" + watch.getTime());
+        System.out.println("单线程sharding写入数据耗时:" + watch.getTime());
     }
+
+    /***
+     * 普通jdbc插入耗时
+     */
+    public void insertSingleDefault(){
+        JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringUtils.getBean("jdbcTemplate_default");
+        jdbcTemplate.update("delete from websocket");
+        StopWatch watch = new StopWatch();
+        List<String> times = getRandomTime(INSERT_SIZE);
+        int length = INSERT_SIZE / BATCH; //每个批次执行的个数
+        watch.start();
+        for (int i = 1; i <= BATCH; i++) {
+            List<String> timeTmpList = times.subList((i - 1) * length, (i * length) - 1);
+            StringBuilder sb = new StringBuilder();
+            sb.append("INSERT IGNORE INTO websocket(flowtime,value) VALUES ");
+            for (String time : timeTmpList) {
+                sb.append("('" + time + "'," + RandomUtils.nextInt(0, 2000) + "),");
+            }
+            String sql = StringUtils.chop(sb.toString());
+            jdbcTemplate.update(sql);
+        }
+        System.out.println("普通jdbc插入耗时:" + watch.getTime());
+    }
+
 
 
     //删除表数据
