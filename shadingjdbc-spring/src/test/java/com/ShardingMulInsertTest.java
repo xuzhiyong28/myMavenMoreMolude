@@ -29,7 +29,7 @@ public class ShardingMulInsertTest {
     }
 
     /****
-     * 多线程插入数据
+     * 多线程 sharding 插入数据
      */
     public void insertMul() throws InterruptedException {
         deleteTable("ips");
@@ -49,21 +49,25 @@ public class ShardingMulInsertTest {
     }
 
     /***
-     * 单线程写入
+     * 单线程 sharding 写入 数据
      */
     public void insertSingle() {
         deleteTable("ips");
         StopWatch watch = new StopWatch();
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringUtils.getBean("jdbcTemplate");
         List<String> times = getRandomTime(INSERT_SIZE);
+        int length = INSERT_SIZE / BATCH; //每个批次执行的个数
         watch.start();
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT IGNORE INTO ips(flowtime,value) VALUES ");
-        for (String time : times) {
-            sb.append("('" + time + "'," + RandomUtils.nextInt(0, 2000) + "),");
+        for (int i = 1; i <= BATCH; i++) {
+            List<String> timeTmpList = times.subList((i - 1) * length, (i * length) - 1);
+            StringBuilder sb = new StringBuilder();
+            sb.append("INSERT IGNORE INTO ips(flowtime,value) VALUES ");
+            for (String time : timeTmpList) {
+                sb.append("('" + time + "'," + RandomUtils.nextInt(0, 2000) + "),");
+            }
+            String sql = StringUtils.chop(sb.toString());
+            jdbcTemplate.update(sql);
         }
-        String sql = StringUtils.chop(sb.toString());
-        jdbcTemplate.update(sql);
         System.out.println("插入耗时:" + watch.getTime());
     }
 
