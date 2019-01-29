@@ -41,7 +41,7 @@ shardingRule:
       preciseAlgorithmClassName: com.shardingAlgorithm.XzyCustomShardingDatabaseAlgorithm
     #默认的表分片
   #没有配置分片策略的表都走这个数据源
-  defaultDataSourceName: ds
+  #defaultDataSourceName: ds,ds_1,ds_2
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator

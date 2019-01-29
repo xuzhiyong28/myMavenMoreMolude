@@ -22,7 +22,7 @@ public class XzyCustomShardingDatabaseAlgorithm implements PreciseShardingAlgori
         }
         //根据order_id的奇偶来路由不同的数据库
         for (String each : collection) {
-            if(each.endsWith(isOdd(preciseShardingValue.getValue()))){
+            if(each.endsWith(isOdd(Long.valueOf(preciseShardingValue.getValue())))){
                 return each;
             }
         }

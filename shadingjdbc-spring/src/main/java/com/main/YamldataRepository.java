@@ -23,18 +23,18 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 public class YamldataRepository {
-    
+
     private final DataSource dataSource;
-    
+
     public YamldataRepository(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
-    
+
     public void demo() throws SQLException {
-        createTable();
+        //createTable();
         //insertData();
         //System.out.println("1.Query with EQUAL--------------");
-        //queryWithEqual();
+        queryWithEqual();
         //System.out.println("2.Query with IN--------------");
         //queryWithIn();
         //System.out.println("3.Query with Hint--------------");
@@ -43,21 +43,15 @@ public class YamldataRepository {
         //dropTable();
         //System.out.println("5.All done-----------");
     }
-    
+
     private void createTable() throws SQLException {
-        execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        execute("CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_item_id))");
+        execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, createdate VARCHAR(50))");
     }
-    
+
     private void insertData() throws SQLException {
-        for (int i = 1; i < 10; i++) {
-            long orderId = insertAndGetGeneratedKey("INSERT INTO t_order (user_id, status) VALUES (10, 'INIT')");
-            execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 10)", orderId));
-            orderId = insertAndGetGeneratedKey("INSERT INTO t_order (user_id, status) VALUES (11, 'INIT')");
-            execute(String.format("INSERT INTO t_order_item (order_id, user_id) VALUES (%d, 11)", orderId));
-        }
+        execute("INSERT INTO t_order (order_id, createdate) VALUES (10, '20181212')");
     }
-    
+
     private long insertAndGetGeneratedKey(final String sql) throws SQLException {
         long result = -1;
         try (
@@ -72,17 +66,16 @@ public class YamldataRepository {
         }
         return result;
     }
-    
+
     private void queryWithEqual() throws SQLException {
-        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=?";
+        String sql = "select * from t_order where createdate = '20181212' and order_id = 10";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, 10);
-            printQuery(preparedStatement);
+            //printQuery(preparedStatement);
         }
     }
-    
+
     private void queryWithIn() throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id IN (?, ?)";
         try (
@@ -93,7 +86,7 @@ public class YamldataRepository {
             printQuery(preparedStatement);
         }
     }
-    
+
     private void queryWithHint() throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id";
         try (
@@ -101,7 +94,7 @@ public class YamldataRepository {
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             hintManager.addDatabaseShardingValue("t_order", "user_id", 11);
-            printQuery(preparedStatement);
+            //printQuery(preparedStatement);
         }
     }
 
@@ -115,12 +108,12 @@ public class YamldataRepository {
             }
         }
     }
-    
+
     private void dropTable() throws SQLException {
         execute("DROP TABLE t_order_item");
         execute("DROP TABLE t_order");
     }
-    
+
     private void execute(final String sql) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
