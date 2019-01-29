@@ -50,7 +50,8 @@ public class ShardingTest {
         for (String time : times) {
             String value = RandomUtils.nextInt(0, 10000) + "";
             jdbcTemplate.update("INSERT IGNORE INTO flow(flowtime,value) VALUES ('" + time + "', " + value + ")");
-            //jdbcTemplate.update("INSERT IGNORE INTO websocket(flowtime,value) VALUES ('" + time + "', " + value + ")");
+            //不进行分片的插入
+            jdbcTemplate.update("INSERT IGNORE INTO websocket(flowtime,value) VALUES ('" + time + "', " + value + ")");
         }
     }
 
