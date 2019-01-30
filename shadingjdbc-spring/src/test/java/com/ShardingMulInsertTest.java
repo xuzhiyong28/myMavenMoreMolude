@@ -25,8 +25,8 @@ public class ShardingMulInsertTest {
     public static void main(String[] args) throws InterruptedException {
         ShardingMulInsertTest test = new ShardingMulInsertTest();
         //test.insertMul();
-        //test.insertSingle();
-        test.insertSingleDefault();
+        test.insertSingle();
+        //test.insertSingleDefault();
     }
 
     /****
@@ -62,7 +62,7 @@ public class ShardingMulInsertTest {
         for (int i = 1; i <= BATCH; i++) {
             List<String> timeTmpList = times.subList((i - 1) * length, (i * length) - 1);
             StringBuilder sb = new StringBuilder();
-            sb.append("INSERT IGNORE INTO ips(flowtime,value) VALUES ");
+            sb.append("INSERT  INTO ips(flowtime,value) VALUES ");
             for (String time : timeTmpList) {
                 sb.append("('" + time + "'," + RandomUtils.nextInt(0, 2000) + "),");
             }
