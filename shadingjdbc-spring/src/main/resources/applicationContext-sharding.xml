@@ -14,10 +14,14 @@
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
 
     <!--规则定义:一年一库,一月一表-->
-
-    <!--分片算法(根据月份分片)-->
+    <!--分片算法(根据flowtime一年一库，一月一表)-->
     <bean id="databaseShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm"></bean>
     <bean id="tableShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloTableShardingAlgorithm"></bean>
+
+
+    <bean id="complexModuloDatabaseShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloDatabaseShardingAlgorithm"></bean>
+
+
 
     <!--数据库分片-标准-按照time字段分片【坑:不能使用mysql关键词作为分片，不然会不能路由,time就是一个 所以换成了flowtime】-->
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="databaseShardingAlgorithm"/>

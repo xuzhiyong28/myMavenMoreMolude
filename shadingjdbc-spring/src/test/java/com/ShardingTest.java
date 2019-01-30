@@ -61,6 +61,11 @@ public class ShardingTest {
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from flow where flowtime = '20170818'");
     }
 
+    @Test
+    public void query2(){
+        jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
+    }
+
 
     @Test
     public void drop(){
