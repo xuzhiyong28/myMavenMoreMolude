@@ -20,13 +20,18 @@
 
 
     <bean id="complexModuloDatabaseShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloDatabaseShardingAlgorithm"></bean>
-
+    <bean id="complexModuloTableShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloTableShardingAlgorithm"></bean>
 
 
     <!--数据库分片-标准-按照time字段分片【坑:不能使用mysql关键词作为分片，不然会不能路由,time就是一个 所以换成了flowtime】-->
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="databaseShardingAlgorithm"/>
     <!--表分片-标准-按照time字段分片-->
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="tableShardingAlgorithm"/>
+
+    <!--复合分片-->
+    <sharding:complex-strategy id="complexdatabaseShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloDatabaseShardingAlgorithm"/>
+    <sharding:complex-strategy id="complextableShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloTableShardingAlgorithm"/>
+
 
     <sharding:none-strategy id="noShardingStrategy"/>
 
@@ -36,6 +41,7 @@
                 <!--flow表的分片规则-->
                 <sharding:table-rule logic-table="flow" actual-data-nodes="dataSource_${2017..2020}.flow_0${1..9},dataSource_${2017..2020}.flow_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
                 <sharding:table-rule logic-table="ips" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
+                <sharding:table-rule logic-table="acca" actual-data-nodes="dataSource_${2017..2020}.acca_0${1..9},dataSource_${2017..2020}.acca_1${0..2}" database-strategy-ref="complexdatabaseShardingStrategy" table-strategy-ref="complextableShardingStrategy" />
                 <sharding:table-rule logic-table="websocket" actual-data-nodes="dataSource_default.websocket"/>
             </sharding:table-rules>
         </sharding:sharding-rule>
