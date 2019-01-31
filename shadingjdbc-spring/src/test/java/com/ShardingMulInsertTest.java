@@ -2,7 +2,6 @@ package com;
 
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.util.SpringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -10,16 +9,18 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /***
  * 测试并发写入和单线程写入的性能
  */
 public class ShardingMulInsertTest {
 
-    private static final int INSERT_SIZE = 12000;
-    private static final int BATCH = 10; //线程的执行批次
+    private static final int INSERT_SIZE = 1200000;
+    private static final int BATCH = 50; //线程的执行批次
 
 
     public static void main(String[] args) throws InterruptedException {
@@ -53,7 +54,7 @@ public class ShardingMulInsertTest {
      * 单线程 sharding 写入 数据
      */
     public void insertSingle() {
-        deleteTable("ips");
+        //deleteTable("ips");
         StopWatch watch = new StopWatch();
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringUtils.getBean("jdbcTemplate");
         List<String> times = getRandomTime(INSERT_SIZE);
@@ -64,7 +65,7 @@ public class ShardingMulInsertTest {
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT  INTO ips(flowtime,value) VALUES ");
             for (String time : timeTmpList) {
-                sb.append("('" + time + "'," + RandomUtils.nextInt(0, 2000) + "),");
+                sb.append("('" + time + "'," + RandomUtils.nextInt(0, 60000) + "),");
             }
             String sql = StringUtils.chop(sb.toString());
             jdbcTemplate.update(sql);
