@@ -36,13 +36,16 @@
     <sharding:none-strategy id="noShardingStrategy"/>
 
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_default">
+        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_default" default-data-source-name="dataSource_default">
             <sharding:table-rules>
                 <!--flow表的分片规则-->
                 <sharding:table-rule logic-table="flow" actual-data-nodes="dataSource_${2017..2020}.flow_0${1..9},dataSource_${2017..2020}.flow_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
                 <sharding:table-rule logic-table="ips" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
                 <sharding:table-rule logic-table="acca" actual-data-nodes="dataSource_${2017..2020}.acca_0${1..9},dataSource_${2017..2020}.acca_1${0..2}" database-strategy-ref="complexdatabaseShardingStrategy" table-strategy-ref="complextableShardingStrategy" />
-                <sharding:table-rule logic-table="websocket" actual-data-nodes="dataSource_default.websocket"/>
+                <!--
+                    不路由的数据可以不配置，因为上面指定了默认的dataSource_default
+                    <sharding:table-rule logic-table="websocket" actual-data-nodes="dataSource_default.websocket"/>
+                -->
             </sharding:table-rules>
         </sharding:sharding-rule>
         <sharding:props>

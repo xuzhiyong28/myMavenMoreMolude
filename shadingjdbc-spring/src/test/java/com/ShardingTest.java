@@ -66,6 +66,16 @@ public class ShardingTest {
         jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
     }
 
+    @Test
+    public void query3(){
+        jdbcTemplate.queryForList("select * from flow where flowtime = '20170818' limit 0 ,10 ");
+    }
+
+    @Test
+    public void queryNoSharding(){
+        jdbcTemplate.queryForList("select * from websocket limit 0 , 10");
+    }
+
 
     @Test
     public void drop(){
