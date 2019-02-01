@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
+
+    <!--规则定义:一年一库,一月一表-->
+    <!--分片算法(根据flowtime一年一库，一月一表)-->
+    <bean id="databaseShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm"></bean>
+    <bean id="tableShardingAlgorithm" class="com.shardingAlgorithm.PreciseModuloTableShardingAlgorithm"></bean>
+
+
+    <bean id="complexModuloDatabaseShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloDatabaseShardingAlgorithm"></bean>
+    <bean id="complexModuloTableShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloTableShardingAlgorithm"></bean>
+
+
+    <!--数据库分片-标准-按照time字段分片【坑:不能使用mysql关键词作为分片，不然会不能路由,time就是一个 所以换成了flowtime】-->
+    <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="databaseShardingAlgorithm"/>
+    <!--表分片-标准-按照time字段分片-->
+    <sharding:standard-strategy id="tableShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="tableShardingAlgorithm"/>
+
+    <!--复合分片-->
+    <sharding:complex-strategy id="complexdatabaseShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloDatabaseShardingAlgorithm"/>
+    <sharding:complex-strategy id="complextableShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloTableShardingAlgorithm"/>
+
+
+    <sharding:none-strategy id="noShardingStrategy"/>
+
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_default" default-data-source-name="dataSource_default">
+            <sharding:table-rules>
+                <!--flow表的分片规则-->
+                <sharding:table-rule logic-table="ips" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
+    </sharding:data-source>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="shardingDataSource"></property>
+    </bean>
+
+    <!--普通的数据库连接，不走sharding-->
+    <bean id="jdbcTemplate_default" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource_default"></property>
+    </bean>
+</beans>
