@@ -21,25 +21,31 @@
 
     <bean id="complexModuloDatabaseShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloDatabaseShardingAlgorithm"></bean>
     <bean id="complexModuloTableShardingAlgorithm" class="com.shardingAlgorithm.ComplexModuloTableShardingAlgorithm"></bean>
+    <!--读写分离分片-->
+    <bean id="randomStrategy" class="com.shardingAlgorithm.RandomMasterSlaveLoadBalanceAlgorithm" />
 
 
-    <!--数据库分片-标准-按照time字段分片【坑:不能使用mysql关键词作为分片，不然会不能路由,time就是一个 所以换成了flowtime】-->
+
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="databaseShardingAlgorithm"/>
-    <!--表分片-标准-按照time字段分片-->
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="flowtime" precise-algorithm-ref="tableShardingAlgorithm"/>
-
     <!--复合分片-->
     <sharding:complex-strategy id="complexdatabaseShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloDatabaseShardingAlgorithm"/>
     <sharding:complex-strategy id="complextableShardingStrategy" sharding-columns="flowtime,dataType" algorithm-ref="complexModuloTableShardingAlgorithm"/>
 
-
     <sharding:none-strategy id="noShardingStrategy"/>
 
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_default" default-data-source-name="dataSource_default">
+        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_2017_slave,dataSource_2018_slave,dataSource_2019_slave,dataSource_2020_slave" default-data-source-name="dataSource_default">
+            <!--读写分离-->
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="dataSource_2017" master-data-source-name="dataSource_2017" slave-data-source-names="dataSource_2017_slave"/>
+                <sharding:master-slave-rule id="dataSource_2018" master-data-source-name="dataSource_2018" slave-data-source-names="dataSource_2018_slave"/>
+                <sharding:master-slave-rule id="dataSource_2019" master-data-source-name="dataSource_2019" slave-data-source-names="dataSource_2019_slave"/>
+                <sharding:master-slave-rule id="dataSource_2020" master-data-source-name="dataSource_2020" slave-data-source-names="dataSource_2020_slave"/>
+            </sharding:master-slave-rules>
+            <!--库表分片-->
             <sharding:table-rules>
-                <!--flow表的分片规则-->
-                <sharding:table-rule logic-table="ips" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
+                <sharding:table-rule logic-table="edge" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
         <sharding:props>
