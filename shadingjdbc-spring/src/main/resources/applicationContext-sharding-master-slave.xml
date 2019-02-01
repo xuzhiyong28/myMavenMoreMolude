@@ -35,17 +35,17 @@
     <sharding:none-strategy id="noShardingStrategy"/>
 
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_2017_slave,dataSource_2018_slave,dataSource_2019_slave,dataSource_2020_slave" default-data-source-name="dataSource_default">
+        <sharding:sharding-rule data-source-names="dataSource_2017,dataSource_2018,dataSource_2019,dataSource_2020,dataSource_2017_slave,dataSource_2018_slave,dataSource_2019_slave,dataSource_2020_slave">
             <!--读写分离-->
             <sharding:master-slave-rules>
-                <sharding:master-slave-rule id="dataSource_2017" master-data-source-name="sharding_2017" slave-data-source-names="sharding_2017_slave" strategy-ref="randomStrategy"/>
-                <sharding:master-slave-rule id="dataSource_2018" master-data-source-name="sharding_2018" slave-data-source-names="sharding_2018_slave" strategy-ref="randomStrategy"/>
-                <sharding:master-slave-rule id="dataSource_2019" master-data-source-name="sharding_2019" slave-data-source-names="sharding_2019_slave" strategy-ref="randomStrategy"/>
-                <sharding:master-slave-rule id="dataSource_2020" master-data-source-name="sharding_2020" slave-data-source-names="sharding_2020_slave" strategy-ref="randomStrategy"/>
+                <sharding:master-slave-rule id="dataSource_2017" master-data-source-name="dataSource_2017" slave-data-source-names="dataSource_2017_slave" strategy-ref="randomStrategy"/>
+                <sharding:master-slave-rule id="dataSource_2018" master-data-source-name="dataSource_2018" slave-data-source-names="dataSource_2018_slave" strategy-ref="randomStrategy"/>
+                <sharding:master-slave-rule id="dataSource_2019" master-data-source-name="dataSource_2019" slave-data-source-names="dataSource_2019_slave" strategy-ref="randomStrategy"/>
+                <sharding:master-slave-rule id="dataSource_2020" master-data-source-name="dataSource_2020" slave-data-source-names="dataSource_2020_slave" strategy-ref="randomStrategy"/>
             </sharding:master-slave-rules>
             <!--库表分片-->
             <sharding:table-rules>
-                <sharding:table-rule logic-table="edge" actual-data-nodes="dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
+                <sharding:table-rule logic-table="edge" actual-data-nodes="dataSource_${2017..2020}.edge_0${1..9},dataSource_${2017..2020}.edge_1${0..2}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
         <sharding:props>
@@ -57,8 +57,4 @@
         <property name="dataSource" ref="shardingDataSource"></property>
     </bean>
 
-    <!--普通的数据库连接，不走sharding-->
-    <bean id="jdbcTemplate_default" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="dataSource_default"></property>
-    </bean>
 </beans>
