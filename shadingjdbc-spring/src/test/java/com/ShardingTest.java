@@ -6,16 +6,11 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +64,24 @@ public class ShardingTest {
     @Test
     public void query3(){
         jdbcTemplate.queryForList("select * from flow where flowtime = '20170818' limit 0 ,10 ");
+    }
+
+    @Test
+    public void query4(){
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select count(1) from ips");
+        System.out.println(list);
+    }
+
+    @Test
+    public void queryPage(){
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from ips where flowtime = '20170818' limit 100 , 200");
+        System.out.println(list);
+    }
+
+    @Test
+    public void query5(){
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from ips where flowtime in ('20170818','20180202') order by value");
+        System.out.println(list);
     }
 
     @Test
