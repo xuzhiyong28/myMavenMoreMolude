@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/***
+ * 获取分片的值
+ */
 public class AlgorithmUtil {
     public static List<String> getShardingValue(Collection<ShardingValue> shardingValues, final String key){
         List<String> valueSet = new ArrayList<>();
