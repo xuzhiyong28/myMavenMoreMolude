@@ -6,6 +6,6 @@ package com.mvmoremodulePattern.proxy.staticproxy;
 public class SaleMan2ThingCompany implements ManCompany{
     @Override
     public void saleManThing() {
-        System.out.println("===卖男性需要的东西===");
+        System.out.println("===卖男性需要的东西2===");
     }
 }
