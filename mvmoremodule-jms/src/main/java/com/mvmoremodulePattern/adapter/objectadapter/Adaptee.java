@@ -8,5 +8,7 @@ package com.mvmoremodulePattern.adapter.objectadapter;/**
  * 源（Adaptee）角色：现有需要适配的接口。
  */
 public class Adaptee {
-    public void simpleOperation1(){};
+    public void simpleOperation1(){
+        System.out.println("simpleOperation1");
+    };
 }
