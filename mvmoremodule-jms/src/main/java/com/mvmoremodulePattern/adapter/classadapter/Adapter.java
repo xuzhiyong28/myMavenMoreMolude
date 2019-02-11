@@ -5,6 +5,7 @@ package com.mvmoremodulePattern.adapter.classadapter;/**
 /**
  * @author xuzhiyong
  * @createDate 2018-04-26-15:52
+ * 适配器
  */
 public class Adapter extends Adaptee implements Target {
     /**
@@ -13,6 +14,6 @@ public class Adapter extends Adaptee implements Target {
      */
     @Override
     public void simpleOperation2() {
-
+        System.out.println("simpleOperation2");
     }
 }
