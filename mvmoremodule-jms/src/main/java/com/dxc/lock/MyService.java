@@ -11,11 +11,16 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MyService {
     private Lock lock = new ReentrantLock();
-    public void testMethod1(){
-        lock.lock();
-        for(int i = 0 ; i < 5 ; i++){
-            System.out.println(Thread.currentThread().getId() + "-" + i);
+    public void testMethod1() {
+        try {
+            lock.lock();
+            for (int i = 0; i < 5; i++) {
+                System.out.println(Thread.currentThread().getId() + "-" + i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 }

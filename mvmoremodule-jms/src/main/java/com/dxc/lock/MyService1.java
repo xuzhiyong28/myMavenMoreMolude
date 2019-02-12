@@ -24,6 +24,8 @@ public class MyService1{
            hasValue = true;
            condition.signal(); // 通知
        }catch (Exception e){
+
+       }finally {
            lock.unlock();
        }
     }
@@ -38,6 +40,8 @@ public class MyService1{
             hasValue = false;
             condition.signal();
         }catch (Exception e){
+
+        }finally {
             lock.unlock();
         }
     }
