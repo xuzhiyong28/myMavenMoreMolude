@@ -2,17 +2,24 @@ package com;/**
  * Created by Administrator on 2019-02-17.
  */
 
-import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.io.IOUtils;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import org.apache.hadoop.io.IOUtils;
+
 /**
  * @author xuzhiyong
  * @createDate 2019-02-17-10:22
  */
 public class HDFSTest {
+
+    private static final String HDFS_URL = "hdfs://192.168.199.128:9000";
+
     @Test
     public void test1() throws Exception {
         //设置可以使用hdfs协议
@@ -20,6 +27,49 @@ public class HDFSTest {
         URL url = new URL("hdfs://192.168.199.128:9000/hello.txt");
         InputStream inputStream = url.openStream();
         IOUtils.copyBytes(inputStream,System.out,4096,true);
+    }
+
+    @Test
+    public void test2() throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS",HDFS_URL);
+        FileSystem fileSystem = FileSystem.get(conf);
+        //创建一个hdfs存储目录
+        boolean success = fileSystem.mkdirs(new Path("/msb"));
+        System.out.println(success);
+
+        success = fileSystem.exists(new Path("/hello.txt"));
+        System.out.println(success);
+
+        //true 表示是否真正的删除
+        success = fileSystem.delete(new Path("/msb"),true);
+        System.out.println(success);
+    }
+
+    /***
+     * 将文件传送给hadoop
+     * @throws IOException
+     */
+    @Test
+    public void test3() throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS",HDFS_URL);
+        FileSystem fileSystem = FileSystem.get(conf);
+        //true好像表示有就追加的意思,将文件放到test目录
+        FSDataOutputStream out = fileSystem.create(new Path("/nginx.conf"),true);
+        FileInputStream fis = new FileInputStream("D:/nginx.conf");
+        IOUtils.copyBytes(fis,out,4096,true);
+    }
+
+    @Test
+    public void test4() throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS",HDFS_URL);
+        FileSystem fileSystem = FileSystem.get(conf);
+        FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/"));
+        for(FileStatus fs : fileStatuses){
+            System.out.println(fs.getPath() + "  " + fs.getPermission() + "  " + fs.getReplication());
+        }
     }
 
 }
