@@ -6,10 +6,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,12 +23,17 @@ public class WordCountTest {
 
 
     @Test
-    public void test() throws IOException {
+    public void test() throws IOException, ClassNotFoundException, InterruptedException {
         Job job = Job.getInstance(new Configuration());
         job.setJarByClass(WordCountTest.class);
         job.setMapperClass(WcMapper.class);
         job.setReducerClass(WcReducer.class);
-        FileInputFormat.setInputPaths(null,new Path("hdfs://192.168.199.128:9000/wcinput/input.txt"));
+        FileInputFormat.setInputPaths(job,new Path("hdfs://192.168.199.128:9000/wcinput/input.txt"));
+        FileOutputFormat.setOutputPath(job,new Path("hdfs://192.168.199.128:9000/wcoutput"));
+        //设置相关属性
+        job.setOutputKeyClass(Test.class);
+        job.setOutputValueClass(LongWritable.class);
+        job.waitForCompletion(true); //重要必写
     }
 
     class WcMapper extends Mapper<LongWritable,Text,Text,LongWritable>{
