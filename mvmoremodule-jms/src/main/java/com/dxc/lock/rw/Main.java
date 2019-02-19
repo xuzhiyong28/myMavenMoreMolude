@@ -23,7 +23,7 @@ public class Main {
         }
         @Override
         public void run() {
-            rwService.read();
+            rwService.write();
         }
     }
 
