@@ -32,11 +32,9 @@ public class MyPartitioner implements Partitioner {
 
     @Override
     public void close() {
-
     }
 
     @Override
     public void configure(Map<String, ?> map) {
-
     }
 }
