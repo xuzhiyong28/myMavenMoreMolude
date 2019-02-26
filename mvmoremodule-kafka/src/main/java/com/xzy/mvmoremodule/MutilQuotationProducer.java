@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,18 +59,20 @@ public class MutilQuotationProducer {
     }
 
 
-    public static void main(String[] agrs) {
+    public static void main(String[] agrs) throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(6);
         ProducerRecord<String, String> record;
+        CountDownLatch countDownLatch = new CountDownLatch(100);
         try {
             for (int i = 0; i < 100; i++) {
                 StockQuotationInfo stockQuotationInfo = createQuotationInfo();
                 record = new ProducerRecord<String, String>(TOPIC, null, stockQuotationInfo.getTradeTime(), stockQuotationInfo.getStockCode(), stockQuotationInfo.toString());
-                executorService.submit(new ProducerThead(kafkaProducer, record));
+                executorService.submit(new ProducerThead(kafkaProducer, record,countDownLatch));
             }
         } catch (Exception e) {
 
         } finally {
+            countDownLatch.await();
             kafkaProducer.close();
             executorService.shutdown();
             System.out.println("close");
@@ -79,10 +82,11 @@ public class MutilQuotationProducer {
     static class ProducerThead implements Runnable {
         private KafkaProducer<String, String> kafkaProducer;
         private ProducerRecord<String, String> producerRecord;
-
-        public ProducerThead(KafkaProducer<String, String> kafkaProducer, ProducerRecord<String, String> producerRecord) {
+        private CountDownLatch countDownLatch;
+        public ProducerThead(KafkaProducer<String, String> kafkaProducer, ProducerRecord<String, String> producerRecord,CountDownLatch countDownLatch) {
             this.kafkaProducer = kafkaProducer;
             this.producerRecord = producerRecord;
+            this.countDownLatch = countDownLatch;
         }
 
         @Override
@@ -98,6 +102,7 @@ public class MutilQuotationProducer {
                     }
                 }
             });
+            countDownLatch.countDown();
         }
     }
 
