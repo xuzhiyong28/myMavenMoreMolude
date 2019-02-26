@@ -6,7 +6,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -39,6 +38,23 @@ public class QuotationCusumer {
     }
 
     public static void main(String[] agrs) {
+        final Thread mainThread = Thread.currentThread();
+        //addShutdownHook钩子函数 会在JVM结束时候调用
+        //wakeup 安全退出消费者
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                System.out.println("Starting exit");
+                kafkaConsumer.wakeup();
+                try {
+                    // 主线程继续执行，以便可以关闭consumer，提交偏移量
+                    mainThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         kafkaConsumer.subscribe(Arrays.asList(TOPIC));
         try {
             while (true) {
