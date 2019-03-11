@@ -17,15 +17,14 @@ public class RateLimiterCountDemo {
     public static boolean grant(){
         long now = System.currentTimeMillis();
         if(now < timeStamp + limitCount){
-            if(reqCount.get() < limitCount){
-                reqCount.incrementAndGet();
+            if(reqCount.getAndIncrement() < limitCount){
                 return true;
             }else{
                 return false;
             }
         }else{
             timeStamp = System.currentTimeMillis();
-            reqCount = new AtomicLong(0);
+            reqCount.set(0);
             return false;
         }
     }
