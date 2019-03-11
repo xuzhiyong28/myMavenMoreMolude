@@ -1,5 +1,7 @@
 package com.rateLimiter;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /***
  * 单机 -- 计数器方式限流量
  * https://www.jianshu.com/p/d9504fc0af4d
@@ -10,20 +12,20 @@ public class RateLimiterCountDemo {
     private static long limitCount = 100;
     private static long interval = 1000;
     //请求数
-    private static long reqCount = 0;
+    private static AtomicLong reqCount = new AtomicLong(0);
 
     public static boolean grant(){
         long now = System.currentTimeMillis();
         if(now < timeStamp + limitCount){
-            if(reqCount < limitCount){
-                ++reqCount;
+            if(reqCount.get() < limitCount){
+                reqCount.incrementAndGet();
                 return true;
             }else{
                 return false;
             }
         }else{
             timeStamp = System.currentTimeMillis();
-            reqCount = 0;
+            reqCount = new AtomicLong(0);
             return false;
         }
     }
