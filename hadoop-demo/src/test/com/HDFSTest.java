@@ -7,9 +7,7 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.IOUtils;
 import org.junit.Test;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 
 /**
@@ -70,6 +68,38 @@ public class HDFSTest {
         for(FileStatus fs : fileStatuses){
             System.out.println(fs.getPath() + "  " + fs.getPermission() + "  " + fs.getReplication());
         }
+    }
+
+    @Test
+    public void putFileToHDFS() throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS",HDFS_URL);
+        FileSystem fileSystem = FileSystem.get(conf);
+        //创建输入流
+        FileInputStream fis = new FileInputStream(new File("d:/1.docx"));
+        //获取输出流
+        FSDataOutputStream fos = fileSystem.create(new Path("/1.doc"));
+        //流对拷
+        IOUtils.copyBytes(fis,fos,conf);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
+        fileSystem.close();
+    }
+
+    @Test
+    public void getFileFromHDFS() throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS",HDFS_URL);
+        FileSystem fileSystem = FileSystem.get(conf);
+        //获取输入流
+        FSDataInputStream fis = fileSystem.open(new Path("/1.doc"));
+        //获取输出流
+        FileOutputStream fos = new FileOutputStream("d:/1.docx");
+        //流对拷
+        IOUtils.copyBytes(fis,fos,conf);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
+        fileSystem.close();
     }
 
 }
