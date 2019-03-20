@@ -3,6 +3,7 @@ package com.mvmoremodulePattern.decorator;/**
  */
 
 /**
+ * 装饰器2
  * @author xuzhiyong
  * @createDate 2018-05-14-9:21
  */
