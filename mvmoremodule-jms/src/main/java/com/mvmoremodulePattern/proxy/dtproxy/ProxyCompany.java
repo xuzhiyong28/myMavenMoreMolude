@@ -11,7 +11,7 @@ import java.lang.reflect.Proxy;
  * @createDate 2018-05-13-13:42
  * InvocationHandler 和 Proxy类配合使用
  */
-public class ListenCompany implements InvocationHandler {
+public class ProxyCompany implements InvocationHandler {
 
 
 
@@ -22,7 +22,7 @@ public class ListenCompany implements InvocationHandler {
         this.object = object;
     }
 
-    public ListenCompany(){
+    public ProxyCompany(){
     }
 
 
