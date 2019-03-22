@@ -12,18 +12,18 @@ import com.mvmoremodulePattern.proxy.staticproxy.*;
 public class Main {
     public static void main(String agrs[]){
         ManCompany manCompany = new SaleManThingCompany();
-        ProxyCompany listenCompany = new ProxyCompany();
-        listenCompany.setObject(manCompany);
-        ManCompany subject = (ManCompany) listenCompany.newProxyInstance();
+        ProxyCompany proxy = new ProxyCompany();
+        proxy.setObject(manCompany);
+        ManCompany subject = (ManCompany) proxy.newProxyInstance();
         subject.saleManThing();
 
-        listenCompany.setObject(new SaleMan2ThingCompany());
-        ManCompany subject2 = (ManCompany) listenCompany.newProxyInstance();
+        proxy.setObject(new SaleMan2ThingCompany());
+        ManCompany subject2 = (ManCompany) proxy.newProxyInstance();
         subject2.saleManThing();
 
         WeManCompany weManCompany = new SaleWeManThingCompany();
-        listenCompany.setObject(weManCompany);
-        WeManCompany weManCompany1 = (WeManCompany)listenCompany.newProxyInstance();
+        proxy.setObject(weManCompany);
+        WeManCompany weManCompany1 = (WeManCompany)proxy.newProxyInstance();
         weManCompany1.saleWeManThing();
 
     }
