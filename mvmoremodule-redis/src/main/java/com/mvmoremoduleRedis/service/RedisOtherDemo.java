@@ -28,4 +28,26 @@ public class RedisOtherDemo {
         }
     }
 
+    /***
+     * synchronized + 双重检查机制
+     * @param key
+     * @return
+     */
+    public List<String> getCacheSave(String key){
+        List<String> resultList = (List<String>)redisTemplate.opsForValue().get(key);
+        if(resultList == null || CollectionUtils.isEmpty(resultList)){
+            synchronized (this){
+                resultList = (List<String>)redisTemplate.opsForValue().get(key);
+                if(CollectionUtils.isEmpty(resultList)){
+                    return resultList;
+                }
+                resultList = getValueBySql(key);
+                redisTemplate.opsForValue().set(key, resultList, 1000, TimeUnit.SECONDS);
+                return resultList;
+            }
+        }else{
+            return resultList;
+        }
+    }
+
 }
