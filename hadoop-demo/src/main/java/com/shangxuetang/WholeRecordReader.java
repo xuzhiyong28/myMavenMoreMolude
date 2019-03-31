@@ -4,7 +4,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.ByteWritable;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.Text;
@@ -19,13 +18,13 @@ import java.io.IOException;
  * @author xuzhiyong
  * @createDate 2019-03-30-18:23
  */
-public class WholeRecordReader extends RecordReader<Text, ByteWritable> {
+public class WholeRecordReader extends RecordReader<Text, BytesWritable> {
 
     FileSplit split;
     Configuration conf;
 
     private boolean isProgress = true;
-    private BytesWritable value = new BytesWritable();
+    private BytesWritable  value = new BytesWritable();
     private Text k = new Text();
 
     @Override
@@ -71,14 +70,14 @@ public class WholeRecordReader extends RecordReader<Text, ByteWritable> {
 
     @Override
     public Text getCurrentKey() throws IOException, InterruptedException {
-        Text k = new Text();
-        return null;
+        return k;
     }
 
     @Override
-    public ByteWritable getCurrentValue() throws IOException, InterruptedException {
-        return null;
+    public BytesWritable getCurrentValue() throws IOException, InterruptedException {
+        return value;
     }
+
 
     @Override
     public float getProgress() throws IOException, InterruptedException {
