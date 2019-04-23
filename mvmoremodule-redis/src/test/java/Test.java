@@ -118,7 +118,7 @@ public class Test {
         ClassPathResource classPathResource = new ClassPathResource("buy.lua");
         String luaString = FileUtils.readFileToString(classPathResource.getFile());
         System.out.println(luaString);
-        Object object = jedis.eval(luaString,Lists.<String>newArrayList("shop001"),Lists.<String>newArrayList("800"));
+        Object object = jedis.eval(luaString,Lists.newArrayList("shop001"),Lists.newArrayList("87"));
         System.out.println(object);
     }
 
