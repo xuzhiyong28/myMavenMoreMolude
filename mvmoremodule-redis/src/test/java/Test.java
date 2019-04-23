@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.mvmoremoduleRedis.service.RedisHyperLogLog;
 import com.mvmoremoduleRedis.service.RedisOtherDemo;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -32,25 +33,26 @@ public class Test {
     public ApplicationContext applicationContext;
 
     public RedisTemplate redisTemplate;
+
     @Before
-    public void initApp(){
+    public void initApp() {
         applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
     }
 
 
     @org.junit.Test
-    public void test0(){
-        JedisConnectionFactory factory = (JedisConnectionFactory)applicationContext.getBean("jedisConnectionFactory");
+    public void test0() {
+        JedisConnectionFactory factory = (JedisConnectionFactory) applicationContext.getBean("jedisConnectionFactory");
         Jedis jedis = factory.getConnection().getNativeConnection();
-        for(int i = 0 ; i < 100000 ; i++){
+        for (int i = 0; i < 100000; i++) {
             jedis.get("key_" + i);
         }
         jedis.close();
     }
 
     @org.junit.Test
-    public void test00(){
-        JedisConnectionFactory factory = (JedisConnectionFactory)applicationContext.getBean("jedisConnectionFactory");
+    public void test00() {
+        JedisConnectionFactory factory = (JedisConnectionFactory) applicationContext.getBean("jedisConnectionFactory");
         Jedis jedis = factory.getConnection().getNativeConnection();
         Pipeline pipeline = jedis.pipelined();
         for (int i = 0; i < 10; i++) {
@@ -64,13 +66,13 @@ public class Test {
 
 
     @org.junit.Test
-    public void test1(){
+    public void test1() {
         RedisHyperLogLog redisHyperLogLog = applicationContext.getBean(RedisHyperLogLog.class);
         redisHyperLogLog.init();
     }
 
     @org.junit.Test
-    public void test2(){
+    public void test2() {
         ClassPathResource classPathResource = new ClassPathResource("applicationContext.xml");
         DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(factory);
@@ -78,23 +80,23 @@ public class Test {
     }
 
     @org.junit.Test
-    public void testRedis1(){
-        redisTemplate = (RedisTemplate)applicationContext.getBean("redisTemplate");
+    public void testRedis1() {
+        redisTemplate = (RedisTemplate) applicationContext.getBean("redisTemplate");
         JSONObject object = new JSONObject();
-        object.put("name","xuzhiyong");
-        object.put("age","28");
-        redisTemplate.opsForValue().set("xuzy",object,1000, TimeUnit.SECONDS);
+        object.put("name", "xuzhiyong");
+        object.put("age", "28");
+        redisTemplate.opsForValue().set("xuzy", object, 1000, TimeUnit.SECONDS);
         JSONObject redisObj = (JSONObject) redisTemplate.opsForValue().get("xuzy");
         System.out.println(redisObj);
     }
 
 
     @org.junit.Test
-    public void redisOther1(){
-        RedisOtherDemo redisOtherDemo = (RedisOtherDemo)applicationContext.getBean("redisOtherDemo");
+    public void redisOther1() {
+        RedisOtherDemo redisOtherDemo = (RedisOtherDemo) applicationContext.getBean("redisOtherDemo");
         String key = "testKey";
         try {
-            List<String> list = redisOtherDemo.getCacheSave2(key,10);
+            List<String> list = redisOtherDemo.getCacheSave2(key, 10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -102,7 +104,7 @@ public class Test {
 
     @org.junit.Test
     public void testByLua() throws IOException {
-        JedisConnectionFactory factory = (JedisConnectionFactory)applicationContext.getBean("jedisConnectionFactory");
+        JedisConnectionFactory factory = (JedisConnectionFactory) applicationContext.getBean("jedisConnectionFactory");
         Jedis jedis = factory.getConnection().getNativeConnection();
         ClassPathResource classPathResource = new ClassPathResource("demo.lua");
         String luaString = FileUtils.readFileToString(classPathResource.getFile());
@@ -113,13 +115,19 @@ public class Test {
 
     @org.junit.Test
     public void testByLua2() throws IOException {
-        JedisConnectionFactory factory = (JedisConnectionFactory)applicationContext.getBean("jedisConnectionFactory");
+        JedisConnectionFactory factory = (JedisConnectionFactory) applicationContext.getBean("jedisConnectionFactory");
         Jedis jedis = factory.getConnection().getNativeConnection();
+        jedis.set("shop001","100");
         ClassPathResource classPathResource = new ClassPathResource("buy.lua");
         String luaString = FileUtils.readFileToString(classPathResource.getFile());
         System.out.println(luaString);
-        Object object = jedis.eval(luaString,Lists.newArrayList("shop001"),Lists.newArrayList("87"));
-        System.out.println(object);
+        for (int i = 0; i < 10; i++) {
+            String count = (String) jedis.eval(luaString, Lists.newArrayList("shop001"), Lists.newArrayList(String.valueOf(RandomUtils.nextInt(1, 30))));
+            if(count.equals("0")){
+                System.out.println("库存不够");
+                break;
+            }
+        }
     }
 
 
