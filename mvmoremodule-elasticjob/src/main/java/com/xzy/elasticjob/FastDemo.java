@@ -14,7 +14,7 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
  */
 public class FastDemo {
     private static CoordinatorRegistryCenter createRegistryCenter(){
-        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("zk_host:2181","elastic-job-demo"));
+        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("localhost:2181","elastic-job-demo"));
         registryCenter.init();
         return registryCenter;
     }

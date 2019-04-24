@@ -21,7 +21,7 @@ public class MyElasticJob implements SimpleJob {
                 System.out.println("2");
                 break;
             default:
-                System.out.println("default");
+                System.out.println(shardingContext.getShardingItem());
         }
     }
 }
