@@ -14,13 +14,13 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
  */
 public class FastDemo {
     private static CoordinatorRegistryCenter createRegistryCenter(){
-        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("localhost:2181","elastic-job-demo"));
+        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("127.0.0.1:2181","elastic-job-demo"));
         registryCenter.init();
         return registryCenter;
     }
 
     private static LiteJobConfiguration createJobConfiguration() {
-        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration.newBuilder("demoSimpleJob", "0/15 * * * * ?", 10).build();
+        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration.newBuilder("demoSimpleJob", "0/15 * * * * ?", 3).shardingItemParameters("0=A,1=B,2=C").jobParameter("xuzy").build();
         // 定义SIMPLE类型配置
         SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(simpleCoreConfig, MyElasticJob.class.getCanonicalName());
         // 定义Lite作业根配置
@@ -30,7 +30,7 @@ public class FastDemo {
 
 
     public static void main(String[] args){
-        new JobScheduler(createRegistryCenter(), createJobConfiguration()).init();
+        new JobScheduler(createRegistryCenter(), createJobConfiguration(),new MyElasticJobListener()).init();
     }
 }
 
