@@ -20,12 +20,16 @@ public class FastDemo {
     }
 
     private static LiteJobConfiguration createJobConfiguration() {
-        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration.newBuilder("demoSimpleJob", "0/15 * * * * ?", 3).shardingItemParameters("0=A,1=B,2=C").jobParameter("xuzy").build();
+        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration.newBuilder("demoSimpleJob", "0/15 * * * * ?", 4).shardingItemParameters("0=A,1=B,2=C,3=D").jobParameter("xuzy").build();
         // 定义SIMPLE类型配置
         SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(simpleCoreConfig, MyElasticJob.class.getCanonicalName());
         // 定义Lite作业根配置
         LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).build();
         return simpleJobRootConfig;
+    }
+
+    public static void initJob(){
+        new JobScheduler(createRegistryCenter(), createJobConfiguration(),new MyElasticJobListener()).init();
     }
 
 
