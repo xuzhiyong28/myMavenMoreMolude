@@ -14,7 +14,7 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
  */
 public class FastDemo {
     private static CoordinatorRegistryCenter createRegistryCenter(){
-        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("10.8.144.223:2181","elastic-job-demo"));
+        CoordinatorRegistryCenter registryCenter = new ZookeeperRegistryCenter(new ZookeeperConfiguration("192.168.0.103:2181","elastic-job-demo"));
         registryCenter.init();
         return registryCenter;
     }
@@ -24,17 +24,18 @@ public class FastDemo {
         // 定义SIMPLE类型配置
         SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(simpleCoreConfig, MyElasticJob.class.getCanonicalName());
         // 定义Lite作业根配置
-        LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).jobShardingStrategyClass(MyJobShardingStrategy.class.getName()).build();
+        LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).build();
         return simpleJobRootConfig;
     }
 
     public static void initJob(){
-        new JobScheduler(createRegistryCenter(), createJobConfiguration(),new MyElasticJobListener()).init();
+        new JobScheduler(createRegistryCenter(), createJobConfiguration()).init();
     }
 
 
     public static void main(String[] args){
-        new JobScheduler(createRegistryCenter(), createJobConfiguration(),new MyElasticJobListener()).init();
+        //new JobScheduler(createRegistryCenter(), createJobConfiguration(),new MyElasticJobListener()).init();
+        new JobScheduler(createRegistryCenter(), createJobConfiguration()).init();
     }
 }
 
