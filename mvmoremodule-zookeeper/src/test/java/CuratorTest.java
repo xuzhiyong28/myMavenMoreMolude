@@ -4,6 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -79,7 +80,7 @@ public class CuratorTest {
     @Test
     public void setData() throws Exception {
         //设置节点
-        cf.setData().forPath("/testPath/xuzy","data".getBytes());
+        cf.setData().forPath("/testPath/xuzy", "data".getBytes());
     }
 
     @Test
@@ -96,9 +97,9 @@ public class CuratorTest {
         //CuratorFramework的实例包含inTransaction( )接口方法，调用此方法开启一个ZooKeeper事务. 可以复合create, setData, check, and/or delete 等操作然后调用commit()作为一个原子操作提交
         cf.inTransaction().check().forPath("/xuzyPath")
                 .and()
-                .create().withMode(CreateMode.PERSISTENT).forPath("/xuzyPath","data".getBytes())
+                .create().withMode(CreateMode.PERSISTENT).forPath("/xuzyPath", "data".getBytes())
                 .and()
-                .setData().forPath("/xuzyPath","data2".getBytes())
+                .setData().forPath("/xuzyPath", "data2".getBytes())
                 .and()
                 .commit();
     }
@@ -111,15 +112,93 @@ public class CuratorTest {
         cf.create()
                 .creatingParentsIfNeeded()
                 .withMode(CreateMode.PERSISTENT)
-                .inBackground(new BackgroundCallback(){
+                .inBackground(new BackgroundCallback() {
                     @Override
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
-                        System.out.println(String.format("eventType:%s,resultCode:%s",curatorEvent.getType(),curatorEvent.getResultCode()));
+                        System.out.println(String.format("eventType:%s,resultCode:%s", curatorEvent.getType(), curatorEvent.getResultCode()));
                     }
-                },executor)
+                }, executor)
                 .forPath("/path");
         //因为是异步，这里需要延迟一下，不然没法看到回调
         TimeUnit.SECONDS.sleep(10);
+    }
+
+
+    /***
+     * 监控路径的变化
+     * @throws Exception
+     */
+    @Test
+    public void PathCache() throws Exception {
+        final String PATH = "/example/pathCache";
+        PathChildrenCache cache = new PathChildrenCache(cf, PATH, true);
+        cache.start();
+        PathChildrenCacheListener childrenCacheListener = new PathChildrenCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework curatorFramework, PathChildrenCacheEvent event) throws Exception {
+                System.out.println("事件类型：" + event.getType());
+                if (null != event.getData()) {
+                    System.out.println("节点数据：" + event.getData().getPath() + " = " + new String(event.getData().getData()));
+                }
+            }
+        };
+        cache.getListenable().addListener(childrenCacheListener);
+        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test01","01".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test02","02".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.setData().forPath("/example/pathCache/test01","01_V2".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        for(ChildData data : cache.getCurrentData()){
+            System.out.println("getCurrentData:" + data.getPath() + " = " + new String(data.getData()));
+        }
+        cf.delete().forPath("/example/pathCache/test01");
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.delete().forPath("/example/pathCache/test02");
+        TimeUnit.MICROSECONDS.sleep(1000 * 5);
+        cache.close();
+        cf.close();
+        System.out.println("OK!");
+    }
+
+
+    /***
+     * 监控节点数据的变化
+     * @throws Exception
+     */
+    @Test
+    public void PathCache2() throws Exception {
+        final String PATH = "/example/cache";
+        cf.create().creatingParentsIfNeeded().forPath(PATH);
+        final NodeCache cache = new NodeCache(cf, PATH);
+        NodeCacheListener nodeCacheListener = new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                ChildData data = cache.getCurrentData();
+                if (null != data) {
+                    System.out.println("节点数据：" + new String(cache.getCurrentData().getData()));
+                } else {
+                    System.out.println("节点被删除!");
+                }
+            }
+        };
+        cache.getListenable().addListener(nodeCacheListener);
+        cache.start();
+        cf.setData().forPath(PATH, "01".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.setData().forPath(PATH, "02".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.delete().deletingChildrenIfNeeded().forPath(PATH);
+        TimeUnit.MICROSECONDS.sleep(1000 * 2);
+        cache.close();
+        cf.close();
+        System.out.println("OK!");
+    }
+
+    @Test
+    public void PathCache3() throws Exception {
+        final String PATH = "/example/cache";
+        cf.create().creatingParentsIfNeeded().forPath(PATH);
     }
 
 }
