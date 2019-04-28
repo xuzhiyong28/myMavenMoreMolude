@@ -1,8 +1,9 @@
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.BackgroundCallback;
+import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -10,7 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Random;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class CuratorTest {
@@ -92,14 +94,32 @@ public class CuratorTest {
     @Test
     public void inTransaction() throws Exception {
         //CuratorFramework的实例包含inTransaction( )接口方法，调用此方法开启一个ZooKeeper事务. 可以复合create, setData, check, and/or delete 等操作然后调用commit()作为一个原子操作提交
-        cf.inTransaction().check().forPath("/path")
+        cf.inTransaction().check().forPath("/xuzyPath")
                 .and()
-                .create().withMode(CreateMode.EPHEMERAL).forPath("path","data".getBytes())
+                .create().withMode(CreateMode.PERSISTENT).forPath("/xuzyPath","data".getBytes())
                 .and()
-                .setData().withVersion(10086).forPath("path","data2".getBytes())
+                .setData().forPath("/xuzyPath","data2".getBytes())
                 .and()
                 .commit();
-
-
     }
+
+    @Test
+    public void asyncZk() throws Exception {
+        //上面提到的创建、删除、更新、读取等方法都是同步的，Curator提供异步接口，引入了BackgroundCallback接口用于处理异步接口调用之后服务端返回的结果信息。
+        // BackgroundCallback接口中一个重要的回调值为CuratorEvent，里面包含事件类型、响应吗和节点的详细信息
+        Executor executor = Executors.newFixedThreadPool(2);
+        cf.create()
+                .creatingParentsIfNeeded()
+                .withMode(CreateMode.PERSISTENT)
+                .inBackground(new BackgroundCallback(){
+                    @Override
+                    public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
+                        System.out.println(String.format("eventType:%s,resultCode:%s",curatorEvent.getType(),curatorEvent.getResultCode()));
+                    }
+                },executor)
+                .forPath("/path");
+        //因为是异步，这里需要延迟一下，不然没法看到回调
+        TimeUnit.SECONDS.sleep(10);
+    }
+
 }
