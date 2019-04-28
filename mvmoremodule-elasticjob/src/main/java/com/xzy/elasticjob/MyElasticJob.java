@@ -41,7 +41,7 @@ public class MyElasticJob implements SimpleJob {
     public void doLongJob(String msg){
         logger.info("========长时间任务=======" + msg);
         try {
-            TimeUnit.SECONDS.sleep(60);
+            TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
