@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CuratorBase {
 
-    public static String CONNECT_ADDR = "192.168.135.131:2181";
+    public static String CONNECT_ADDR = "localhost:2181";
 
     public static final int SESSION_OUTTIME = 10000;//ms
 
@@ -61,7 +61,7 @@ public class CuratorBase {
         }*/
 
         //获取节点状态
-        Stat stat = cf.checkExists().forPath("/super/c1");
+        Stat stat = cf.checkExists().forPath("/elastic-job-demo");
         System.out.println(stat);
 
 
