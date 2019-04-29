@@ -6,6 +6,7 @@ import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.junit.Test;
+import otherclass.LeaderSelectorAdapter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
