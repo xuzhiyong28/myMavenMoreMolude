@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
  */
 public class CuratorLock {
 
-    private  static CuratorFramework client = CuratorFrameworkFactory.builder().connectString("192.168.135.133:2181").retryPolicy(new ExponentialBackoffRetry(3000, 3)).build();
+    private  static CuratorFramework client = CuratorFrameworkFactory.builder().connectString("localhost:2181").retryPolicy(new ExponentialBackoffRetry(3000, 3)).build();
     public static void main(String[] args){
         client.start();
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);

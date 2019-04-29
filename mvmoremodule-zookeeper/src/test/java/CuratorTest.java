@@ -5,6 +5,8 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.framework.recipes.cache.*;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -12,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Time;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +34,21 @@ public class CuratorTest {
                 .connectionTimeoutMs(5000)
                 .retryPolicy(retryPolicy)
                 .build();
+        //监控客户端的状态
+        cf.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+            @Override
+            public void stateChanged(CuratorFramework curatorFramework, ConnectionState connectionState) {
+                if(connectionState == ConnectionState.LOST){
+                    System.out.println("连接丢失");//连接丢失
+                }
+                else if(connectionState == ConnectionState.CONNECTED){
+                    System.out.println("成功连接");
+                }
+                else if(connectionState == ConnectionState.RECONNECTED){
+                    System.out.println("重连成功");
+                }
+            }
+        });
         cf.start();
     }
 
@@ -38,6 +56,8 @@ public class CuratorTest {
     public void getStat() throws Exception {
         Stat stat = cf.checkExists().forPath("/elastic-job-demo");
         System.out.println(JSON.toJSON(stat));
+        cf.close();
+        TimeUnit.MICROSECONDS.sleep(1000);
     }
 
     @Test
@@ -126,6 +146,8 @@ public class CuratorTest {
 
     /***
      * 监控路径的变化
+     * Path Cache用来监控一个ZNode的子节点. 当一个子节点增加， 更新，删除时， Path Cache会改变它的状态， 会包含最新的子节点，
+     * 子节点的数据和状态，而状态的更变将通过PathChildrenCacheListener通知。
      * @throws Exception
      */
     @Test
@@ -164,6 +186,7 @@ public class CuratorTest {
 
     /***
      * 监控节点数据的变化
+     * Node Cache与Path Cache类似，Node Cache只是监听某一个特定的节点
      * @throws Exception
      */
     @Test
@@ -195,10 +218,34 @@ public class CuratorTest {
         System.out.println("OK!");
     }
 
+    /***
+     * Tree Cache可以监控整个树上的所有节点，类似于PathCache和NodeCache的组合
+     * @throws Exception
+     */
     @Test
     public void PathCache3() throws Exception {
         final String PATH = "/example/cache";
+        //先创建节点
         cf.create().creatingParentsIfNeeded().forPath(PATH);
+        TreeCache cache = new TreeCache(cf,PATH);
+        //设置监听
+        TreeCacheListener treeCacheListener = new TreeCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework curatorFramework, TreeCacheEvent event) throws Exception {
+                System.out.println("事件类型：" + event.getType() +
+                        " | 路径：" + (null != event.getData() ? event.getData().getPath() : null));
+            }
+        };
+        cache.getListenable().addListener(treeCacheListener);
+        cache.start();
+        cf.setData().forPath(PATH,"01".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.setData().forPath(PATH, "02".getBytes());
+        TimeUnit.MICROSECONDS.sleep(100);
+        cf.delete().deletingChildrenIfNeeded().forPath(PATH);
+        TimeUnit.MICROSECONDS.sleep(100);
+        cache.close();
+        cf.close();
+        System.out.println("OK!");
     }
-
 }
