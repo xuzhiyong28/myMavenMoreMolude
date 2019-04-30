@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /***
+ * cuartor分布式计数器
  get(): 获取当前值
  increment()： 加一
  decrement(): 减一
@@ -52,6 +53,7 @@ public class CuratorAtomicLong {
         }
         service.shutdown();
         service.awaitTermination(10, TimeUnit.MINUTES);
+        TimeUnit.SECONDS.sleep(60);
         System.out.println("job end!!!");
     }
 }
