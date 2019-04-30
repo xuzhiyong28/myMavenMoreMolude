@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * 　　例如网吧里有100台机器,那么最多只能提供100个人同时上网,当来了第101个客人的时候,就需要等着,一旦有一个人人下机,就可以立马得到了个空机位补上去.这个就是信号量的概念.
  */
 public class SemaphoreDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final Semaphore semaphore = new Semaphore(3);
         for (int i = 0; i < 10; i++) {
@@ -39,5 +39,7 @@ public class SemaphoreDemo {
             };
             executorService.submit(runnable);
         }
+        executorService.shutdown();
+        executorService.awaitTermination(10,TimeUnit.MINUTES);
     }
 }
