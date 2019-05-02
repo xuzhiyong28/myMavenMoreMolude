@@ -6,6 +6,7 @@ import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /***
@@ -23,13 +24,19 @@ public class LeaderSelectorAdapter extends LeaderSelectorListenerAdapter impleme
         leaderSelector.autoRequeue();
     }
 
+    /***
+     * 获取领导权
+     * @param clent
+     * @throws Exception
+     * takeLeadership()回调方法中编写获得Leader权利后的业务处理逻辑
+     */
     @Override
     public void takeLeadership(CuratorFramework clent) throws Exception {
         final int waitSeconds = (int) (5 * Math.random()) + 1;
         System.out.println(name + " is now the leader. Waiting " + waitSeconds + " seconds...");
         System.out.println(name + " has been leader " + leaderCount.getAndIncrement() + " time(s) before.");
         try{
-
+            Thread.sleep(TimeUnit.SECONDS.toMillis(waitSeconds));
         }catch (Exception e){
             System.err.println(name + " was interrupted.");
             Thread.currentThread().interrupt();

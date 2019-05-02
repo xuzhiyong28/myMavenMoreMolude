@@ -21,6 +21,7 @@ public class CuratorLeader {
 
     /***
      * LeaderLatch 方式的选举回选择一个后就一直是这个客户端是主，直到他挂了才会再次选举
+     * 这种方式适合主备
      */
     @Test
     public void leaderLatchDemo() {
@@ -46,6 +47,7 @@ public class CuratorLeader {
                 examples.add(latch);
                 cf.start(); //启动客户端
                 latch.start();
+                Thread.sleep(1000); //这里加一个延迟可以保证第一个client被选举
             }
             Thread.sleep(10000);
             LeaderLatch currentLeader = null;
@@ -90,10 +92,10 @@ public class CuratorLeader {
         List<CuratorFramework> clients = Lists.newArrayList();
         List<LeaderSelectorAdapter> examples = Lists.newArrayList();
         try {
-            for(int i = 0 ; i < CLIENT_QTY ; i++){
-                CuratorFramework cf = CuratorFrameworkFactory.newClient("localhost:2181",new ExponentialBackoffRetry(20000,3));
+            for (int i = 0; i < CLIENT_QTY; i++) {
+                CuratorFramework cf = CuratorFrameworkFactory.newClient("localhost:2181", new ExponentialBackoffRetry(20000, 3));
                 clients.add(cf);
-                LeaderSelectorAdapter selectorAdapter = new LeaderSelectorAdapter(cf,PATH,"Client #" + i);
+                LeaderSelectorAdapter selectorAdapter = new LeaderSelectorAdapter(cf, PATH, "Client #" + i);
                 examples.add(selectorAdapter);
                 cf.start();
                 selectorAdapter.start();
