@@ -15,7 +15,7 @@ import java.util.List;
 /****
  * Curator 提供的两种选举机制
  */
-public class CuratorTest2 {
+public class CuratorLeader {
     public static final String PATH = "/francis/leader";
     private static final int CLIENT_QTY = 10;
 
