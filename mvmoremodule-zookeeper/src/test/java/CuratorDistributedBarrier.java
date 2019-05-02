@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /***
  * 分布式屏障 类似java的CyclicBarrier
+ * 通过setBarrier对该路径设置栅栏，其他线程启用该路径时通过waitOnBarrier阻塞，当对该路径执行removeBarrier移除栅栏时，其他线程得以放行
  *
  * */
 public class CuratorDistributedBarrier {
