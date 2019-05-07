@@ -6,7 +6,9 @@ import org.quartz.JobExecutionException;
 
 public class JobOne implements Job {
     @Override
-    public void execute(JobExecutionContext jobCtx) throws JobExecutionException {
+    public void execute(JobExecutionContext jobCtx) {
+        Integer paramMap = (Integer)jobCtx.getMergedJobDataMap().get("paramMap");
+        System.out.println("paramMap = " + paramMap);
         System.out.println("!!!");
         System.out.println(jobCtx.getJobDetail());
     }
