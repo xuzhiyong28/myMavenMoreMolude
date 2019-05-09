@@ -45,6 +45,8 @@ public class CuratorAtomicLong {
                     System.out.println("succeed:" + value.succeeded() + "..............." + index);
                     if(value.succeeded()){
                         System.out.println("Increment: from " + value.preValue() + " to " + value.postValue());
+                    }else{
+                        System.out.println(index + "...更新值失败...");
                     }
                     return null;
                 }

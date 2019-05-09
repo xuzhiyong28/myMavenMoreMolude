@@ -38,13 +38,11 @@ public class CuratorTest {
         cf.getConnectionStateListenable().addListener(new ConnectionStateListener() {
             @Override
             public void stateChanged(CuratorFramework curatorFramework, ConnectionState connectionState) {
-                if(connectionState == ConnectionState.LOST){
+                if (connectionState == ConnectionState.LOST) {
                     System.out.println("连接丢失");//连接丢失
-                }
-                else if(connectionState == ConnectionState.CONNECTED){
+                } else if (connectionState == ConnectionState.CONNECTED) {
                     System.out.println("成功连接");
-                }
-                else if(connectionState == ConnectionState.RECONNECTED){
+                } else if (connectionState == ConnectionState.RECONNECTED) {
                     System.out.println("重连成功");
                 }
             }
@@ -71,10 +69,21 @@ public class CuratorTest {
         cf.create()
                 .creatingParentsIfNeeded() //自动创建父节点
                 .withMode(CreateMode.PERSISTENT)
+                //.withMode(CreateMode.EPHEMERAL_SEQUENTIAL)
                 .forPath("/testPath/xuzy", "init".getBytes());
         //创建的是临时节点的话 30秒后客户端断开后会消失
         TimeUnit.SECONDS.sleep(30);
     }
+
+    @Test
+    public void createESPath() throws Exception {
+        cf.create()
+                .creatingParentsIfNeeded() //自动创建父节点
+                .withMode(CreateMode.EPHEMERAL_SEQUENTIAL)
+                .forPath("/testPath/xuzy", "init".getBytes());
+        TimeUnit.SECONDS.sleep(30);
+    }
+
 
     @Test
     public void deletePath() throws Exception {
@@ -165,13 +174,13 @@ public class CuratorTest {
             }
         };
         cache.getListenable().addListener(childrenCacheListener);
-        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test01","01".getBytes());
+        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test01", "01".getBytes());
         TimeUnit.MICROSECONDS.sleep(100);
-        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test02","02".getBytes());
+        cf.create().creatingParentsIfNeeded().forPath("/example/pathCache/test02", "02".getBytes());
         TimeUnit.MICROSECONDS.sleep(100);
-        cf.setData().forPath("/example/pathCache/test01","01_V2".getBytes());
+        cf.setData().forPath("/example/pathCache/test01", "01_V2".getBytes());
         TimeUnit.MICROSECONDS.sleep(100);
-        for(ChildData data : cache.getCurrentData()){
+        for (ChildData data : cache.getCurrentData()) {
             System.out.println("getCurrentData:" + data.getPath() + " = " + new String(data.getData()));
         }
         cf.delete().forPath("/example/pathCache/test01");
@@ -227,7 +236,7 @@ public class CuratorTest {
         final String PATH = "/example/cache";
         //先创建节点
         cf.create().creatingParentsIfNeeded().forPath(PATH);
-        TreeCache cache = new TreeCache(cf,PATH);
+        TreeCache cache = new TreeCache(cf, PATH);
         //设置监听
         TreeCacheListener treeCacheListener = new TreeCacheListener() {
             @Override
@@ -238,7 +247,7 @@ public class CuratorTest {
         };
         cache.getListenable().addListener(treeCacheListener);
         cache.start();
-        cf.setData().forPath(PATH,"01".getBytes());
+        cf.setData().forPath(PATH, "01".getBytes());
         TimeUnit.MICROSECONDS.sleep(100);
         cf.setData().forPath(PATH, "02".getBytes());
         TimeUnit.MICROSECONDS.sleep(100);
