@@ -1,6 +1,7 @@
 package com.xzy;
 
 import com.xzy.service.BookService;
+import com.xzy.service.StudentService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class MybatisTest {
     @Autowired
     private BookService bookService;
+    @Autowired
+    private StudentService studentService;
 
     @Test
     public void test(){
-        bookService.add4();
+        bookService.test1();
     }
+
 }
