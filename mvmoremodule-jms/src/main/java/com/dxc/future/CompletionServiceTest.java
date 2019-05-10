@@ -11,7 +11,7 @@ import java.util.concurrent.*;
  */
 public class CompletionServiceTest {
 
-    public static void main(String agrs[]) throws Exception {
+    public static void main(String agrs[]) throws InterruptedException,ExecutionException {
         int numThread = 100;
         ExecutorService threadPoolExecutor = Executors.newCachedThreadPool();
         CompletionService<Integer> completionService = new ExecutorCompletionService<Integer>(threadPoolExecutor);
@@ -20,6 +20,11 @@ public class CompletionServiceTest {
         }
 
         for(int i = 0 ; i < numThread; i++){
+            /*try {
+                System.out.println(completionService.take().get(10,TimeUnit.SECONDS));
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }*/
             System.out.println(completionService.take().get());
         }
     }

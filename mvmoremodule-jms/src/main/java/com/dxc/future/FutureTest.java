@@ -23,7 +23,12 @@ public class FutureTest {
 
         int result = 0;
         for(Future<Integer> f  : futureList){
-            result  += f.get();
+            try {
+                //result += f.get();
+                result  += f.get(10,TimeUnit.SECONDS); //这是一个超时时间方式任务执行时间过长
+            } catch (TimeoutException e) {
+                result += 0;
+            }
         }
         System.out.println(result);
 
