@@ -25,4 +25,18 @@ public class MybatisTest {
         bookService.test1();
     }
 
+    @Test
+    public void test2(){
+        bookService.test2();
+    }
+
+    @Test
+    public void test3(){
+        bookService.test3();
+    }
+
+    @Test
+    public void test4(){
+        bookService.test4();
+    }
 }
