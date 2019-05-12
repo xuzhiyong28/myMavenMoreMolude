@@ -9,13 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 public class BookService {
-
-    //TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); 手动回滚事务
 
     @Autowired
     private BookDAO bookDAO;
@@ -32,11 +29,30 @@ public class BookService {
     }
 
 
+    public Book getBookById1(){
+        Book book = new Book();
+        book.setId(1);
+        book.setTitle("Java编程思想_" + System.currentTimeMillis());
+        book.setPrice(199.9);
+        book.setPublishDate(new Date());
+        return book;
+    }
+
+    public void add(){
+        bookDAO.add(initBook());
+    }
+
+
+    public void update(){
+        bookDAO.update(getBookById1());
+    }
+
+
     public void test1(){
         // 1 / 0 发生异常 这里不做处理 aop会自动回滚
         studentService.update();
         bookDAO.add(initBook());
-        int i = 1 / 0 ;
+        int i = 1 / 0 ; // 1/0会发生报错
     }
 
 

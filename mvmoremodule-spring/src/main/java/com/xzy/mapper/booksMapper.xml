@@ -27,7 +27,7 @@
         delete from books where id=#{id}
     </delete>
     <!-- 更新 -->
-    <update id="update">
+    <update id="update" parameterType="com.xzy.model.Book">
         update books set title=#{title},price=#{price},publishDate=#{publishDate}
         where id=#{id}
     </update>
