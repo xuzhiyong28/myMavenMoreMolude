@@ -39,4 +39,9 @@ public class MybatisTest {
     public void test4(){
         bookService.test4();
     }
+
+    @Test
+    public void test5(){
+        bookService.test5();
+    }
 }

@@ -24,7 +24,7 @@ public class StudentService {
     public void update(){
         Student student = new Student();
         student.setId(1);
-        student.setName("xuzy_" + System.currentTimeMillis());
+        student.setName("test_" + System.currentTimeMillis());
         studentDao.update(student);
     }
 }

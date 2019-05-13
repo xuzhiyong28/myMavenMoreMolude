@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.security.auth.callback.Callback;
 import java.util.Date;
 
 @Service
@@ -38,9 +39,6 @@ public class BookService {
         return book;
     }
 
-    public void add(){
-        bookDAO.add(initBook());
-    }
 
 
     public void update(){
@@ -92,6 +90,22 @@ public class BookService {
         }
     }
 
+
+    public void test5(){
+        bookDAO.add(initBook());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                studentService.update();
+                try{
+                    int i = 1 / 0;
+                }catch (Exception e){
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                }
+            }
+        };
+        new Thread(runnable).start();
+    }
 
 
 }
