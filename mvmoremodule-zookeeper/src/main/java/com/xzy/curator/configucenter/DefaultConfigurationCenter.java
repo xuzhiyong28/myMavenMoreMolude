@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 //https://www.jianshu.com/p/7d324ac9cc64
-public class DefaultConfigurationCenter implements ConfigurationCenter {
+public class DefaultConfigurationCenter {
 
     private static final String CONFIGURATION_ROOT_PATH = "/configuration";
     private CuratorFramework client;
@@ -73,39 +73,4 @@ public class DefaultConfigurationCenter implements ConfigurationCenter {
         }
     }
 
-
-    @Override
-    public void addConfiguration(String key, String value) throws Exception {
-
-    }
-
-    @Override
-    public void deleteConfiguration(String key) throws Exception {
-
-    }
-
-    @Override
-    public void updateConfiguration(String key, String value) throws Exception {
-
-    }
-
-    @Override
-    public String getConfiguration(String key) throws Exception {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> getAllConfiguration() throws Exception {
-        if(!configMap.isEmpty()){
-            return configMap;
-        }
-        List<String> childPaths = client.getChildren().forPath(CONFIGURATION_ROOT_PATH);
-        Map<String, String> configs = Maps.newHashMap();
-        if(null != childPaths && childPaths.isEmpty()){
-            for(String childPath : childPaths){
-
-            }
-        }
-        return null;
-    }
 }
