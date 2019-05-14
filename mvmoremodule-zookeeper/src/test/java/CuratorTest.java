@@ -262,8 +262,10 @@ public class CuratorTest {
     }
 
     @Test
-    public void otherTest(){
-        String path = "/example/pathCache/test01";
-        System.out.println(path.substring(path.lastIndexOf("/") + 1));
+    public void initConfig() throws Exception {
+        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_driver", "com.mysql.jdbc.Driver".getBytes());
+        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_url", "jdbc:mysql://localhost:3306/spring?useUnicode=true&characterEncoding=utf-8".getBytes());
+        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_username", "root".getBytes());
+        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_password", "123456".getBytes());
     }
 }
