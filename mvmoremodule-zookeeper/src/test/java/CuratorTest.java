@@ -235,7 +235,10 @@ public class CuratorTest {
     public void PathCache3() throws Exception {
         final String PATH = "/example/cache";
         //先创建节点
-        cf.create().creatingParentsIfNeeded().forPath(PATH);
+        Stat stat = cf.checkExists().forPath(PATH);
+        if(stat == null){
+            cf.create().creatingParentsIfNeeded().forPath(PATH);
+        }
         TreeCache cache = new TreeCache(cf, PATH);
         //设置监听
         TreeCacheListener treeCacheListener = new TreeCacheListener() {
@@ -248,13 +251,19 @@ public class CuratorTest {
         cache.getListenable().addListener(treeCacheListener);
         cache.start();
         cf.setData().forPath(PATH, "01".getBytes());
-        TimeUnit.MICROSECONDS.sleep(100);
+        TimeUnit.SECONDS.sleep(5);
         cf.setData().forPath(PATH, "02".getBytes());
-        TimeUnit.MICROSECONDS.sleep(100);
+        TimeUnit.SECONDS.sleep(5);
         cf.delete().deletingChildrenIfNeeded().forPath(PATH);
-        TimeUnit.MICROSECONDS.sleep(100);
+        TimeUnit.SECONDS.sleep(5);
         cache.close();
         cf.close();
         System.out.println("OK!");
+    }
+
+    @Test
+    public void otherTest(){
+        String path = "/example/pathCache/test01";
+        System.out.println(path.substring(path.lastIndexOf("/") + 1));
     }
 }
