@@ -22,15 +22,14 @@ import java.util.concurrent.Executors;
 public class DefaultConfigurationCenter {
 
     private static final String CONFIGURATION_ROOT_PATH = "/configuration";
-    private CuratorFramework client;
-    private PathChildrenCache pathChildrenCache;
+    private static final String connectionString = "";
+    private static final CuratorFramework client;
     private ExecutorService executor;
     private static final ConcurrentMap<String,String> configMap = new ConcurrentHashMap<>();
 
-    public DefaultConfigurationCenter(String connectionString) {
-        executor = Executors.newFixedThreadPool(2);
+    static {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        this.client = CuratorFrameworkFactory.builder()
+        client = CuratorFrameworkFactory.builder()
                 .connectString(connectionString)
                 .sessionTimeoutMs(50000)
                 .connectionTimeoutMs(50000)
@@ -39,15 +38,14 @@ public class DefaultConfigurationCenter {
         initCuratorClient();
     }
 
-
-    private void initCuratorClient() {
+    private static void initCuratorClient() {
         try {
             client.start();
             Stat stat = client.checkExists().forPath(CONFIGURATION_ROOT_PATH);
             if (null == stat) {
                 client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT);
             }
-            pathChildrenCache = new PathChildrenCache(client, CONFIGURATION_ROOT_PATH, true);
+            PathChildrenCache pathChildrenCache = new PathChildrenCache(client, CONFIGURATION_ROOT_PATH, true);
             pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
                 @Override
                 public void childEvent(CuratorFramework curatorFramework, PathChildrenCacheEvent event) throws Exception {
@@ -66,7 +64,7 @@ public class DefaultConfigurationCenter {
                             break;
                     }
                 }
-            }, executor);
+            }, Executors.newFixedThreadPool(2));
             pathChildrenCache.start();
         } catch (Exception e) {
             e.printStackTrace();
