@@ -263,9 +263,9 @@ public class CuratorTest {
 
     @Test
     public void initConfig() throws Exception {
-        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_driver", "com.mysql.jdbc.Driver".getBytes());
-        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_url", "jdbc:mysql://localhost:3306/spring?useUnicode=true&characterEncoding=utf-8".getBytes());
-        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_username", "root".getBytes());
-        cf.create().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_password", "123456".getBytes());
+        cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_driver", "com.mysql.jdbc.Driver".getBytes());
+        cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_url", "jdbc:mysql://localhost:3306/spring?useUnicode=true&characterEncoding=utf-8".getBytes());
+        cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_username", "root".getBytes());
+        cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/configuration/jdbc_password", "123456".getBytes());
     }
 }

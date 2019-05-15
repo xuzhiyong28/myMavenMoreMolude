@@ -63,9 +63,13 @@ public class DefaultConfigurationCenter {
                             reloadConfigMap(key,data);
                             break;
                         case CHILD_REMOVED:
-                            //todo
+                            //todo 删除子节点
                             removeConfigMap(key,data);
                             break;
+                        case CHILD_UPDATED:
+                            //todo 修改子节点
+                            reloadConfigMap(key,data);
+
                     }
                 }
             }, executors);
@@ -142,7 +146,11 @@ public class DefaultConfigurationCenter {
     }
 
 
-    private static void initConfiguration() throws Exception {
+    /***
+     * 初始化配置 - 将zk的配置加载到configMap中
+     * @throws Exception
+     */
+    public static void initConfiguration() throws Exception {
         List<String> childPaths = client.getChildren().forPath(CONFIGURATION_ROOT_PATH);
         if(null != childPaths && !childPaths.isEmpty()){
             for(String childPath : childPaths){
