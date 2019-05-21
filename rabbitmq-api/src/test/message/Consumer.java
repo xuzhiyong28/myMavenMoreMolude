@@ -33,7 +33,9 @@ public class Consumer {
 
         //4 声明（创建）一个队列
         String queueName = "test001";
-        channel.queueDeclare(queueName, true, false, false, null);
+        Map<String,Object> args = Maps.newHashMap();
+        //args.put("x-message-ttl",12000); //通过此参数可以控制整个队列消息的过期时间
+        channel.queueDeclare(queueName, true, false, false, args);
 
         //5 创建消费者
         QueueingConsumer queueingConsumer = new QueueingConsumer(channel);
