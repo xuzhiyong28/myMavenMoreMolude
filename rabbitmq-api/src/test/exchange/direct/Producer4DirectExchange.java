@@ -1,8 +1,6 @@
 package exchange.direct;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,7 +27,14 @@ public class Producer4DirectExchange {
 
         //发送
         String msg = "Hello World RabbitMQ 4  Direct Exchange Message 111 ... ";
-        channel.basicPublish(exchangeName, routingKey, null, msg.getBytes());
+        //第三个参数mandatory为true表示当交换机无法找到队列的时候，会通过下面的handleReturn返回给生产者
+        channel.basicPublish(exchangeName, routingKey, true, MessageProperties.PERSISTENT_TEXT_PLAIN, msg.getBytes());
+        channel.addReturnListener(new ReturnListener() {
+            public void handleReturn(int replyCode, String replyText, String exchange, String routingKey, AMQP.BasicProperties basicProperties, byte[] body) throws IOException {
+                String message = new String(body);
+                System.out.println("Basic.Return返回的结果是=" + message);
+            }
+        });
 
     }
 }
