@@ -7,6 +7,9 @@ public class SpringCycleBean implements BeanFactoryAware,BeanNameAware,Initializ
     private BeanFactory factory;
     private String beanName;
 
+    private String phone;
+    private String address;
+
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -40,5 +43,21 @@ public class SpringCycleBean implements BeanFactoryAware,BeanNameAware,Initializ
 
     public String getBeanName() {
         return beanName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

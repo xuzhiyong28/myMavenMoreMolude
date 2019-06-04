@@ -63,7 +63,15 @@
             <tx:method name="*" read-only="false" propagation="REQUIRED" timeout="-1"/> &lt;!&ndash;是否只读,事务传播机制,事务超时间，还可以配置其他选项自己百度&ndash;&gt;
         </tx:attributes>
     </tx:advice>-->
-
-
     <tx:annotation-driven transaction-manager="txManager"/>
+
+
+    <!--spring生命周期-->
+    <bean id="beanPostProcessor" class="com.xzy.spring.MyBeanPostProcessor"></bean>
+    <bean id="instantiationAwareBeanPostProcessor" class="com.xzy.spring.MyInstantiationAwareBeanPostProcessor"></bean>
+    <bean id="beanFactoryPostProcessor" class="com.xzy.spring.MyBeanFactoryPostProcessor"></bean>
+    <bean id="springCycleBean" class="com.xzy.spring.SpringCycleBean">
+        <property name="phone" value="18054809167"/>
+        <property name="address" value="siyu"></property>
+    </bean>
 </beans>
