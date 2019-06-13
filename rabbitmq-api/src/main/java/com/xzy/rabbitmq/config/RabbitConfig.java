@@ -1,36 +1,40 @@
 package com.xzy.rabbitmq.config;
 
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * https://gitee.com/jinhongliang/Spring-rabbitMQ/tree/master/src/main/java/config
  * @author xuzhiyong
  * @createDate 2019-06-02-21:24
  */
-@Configurable
+@Configuration
 @EnableRabbit
 public class RabbitConfig {
 
     @Bean
     public ConnectionFactory connectionFactory(){
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("127.0.0.1");
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setAddresses("127.0.0.1:5672");
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
-        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
         return connectionFactory;
     }
 
     @Bean
-    public AmqpAdmin amqpAdmin(){
-        return new RabbitAdmin(connectionFactory());
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
+        //必须设置成true spring才会去加载RabbitAdmin类
+        rabbitAdmin.setAutoStartup(true);
+        return rabbitAdmin;
     }
 
 
@@ -49,7 +53,5 @@ public class RabbitConfig {
         factory.setMaxConcurrentConsumers(10);
         return factory;
     }
-
-
 
 }
