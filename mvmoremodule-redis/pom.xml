@@ -129,8 +129,11 @@
             <artifactId>guava</artifactId>
             <version>20.0</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>5.1.6.RELEASE</version>
+        </dependency>
 
     </dependencies>
 
@@ -144,6 +147,14 @@
                     <path>/</path>
                     <username>tomcat</username>
                     <password>tomcat</password>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

@@ -29,7 +29,7 @@
 
 
     <!--哨兵模式-->
-    <bean id="redisSentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+    <!--<bean id="redisSentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
         <property name="master">
             <bean class="org.springframework.data.redis.connection.RedisNode">
                 <property name="name" value="mymaster"/>
@@ -43,7 +43,7 @@
                 </bean>
             </set>
         </property>
-    </bean>
+    </bean>-->
 
 
 
