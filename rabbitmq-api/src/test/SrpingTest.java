@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xzy.entity.Order;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.AmqpException;
@@ -43,8 +46,6 @@ public class SrpingTest {
         rabbitAdmin.declareQueue(new Queue("test.fanout.queue", false));
         rabbitAdmin.declareBinding(new Binding("test.fanout.queue",
                 Binding.DestinationType.QUEUE, "test.fanout", "", new HashMap<String, Object>()));
-
-
     }
 
 
@@ -67,14 +68,38 @@ public class SrpingTest {
     }
 
     @Test
-    public void testSendMessage2(){
+    public void testSendMessage2() {
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("text/plan");
-        Message message = new Message("mg 消息1234".getBytes() , messageProperties);
-        rabbitTemplate.send("test.direct","directKey",message);
-        rabbitTemplate.convertAndSend("test.direct","directKey","message other");
+        Message message = new Message("mg 消息1234".getBytes(), messageProperties);
+        rabbitTemplate.send("test.direct", "directKey", message);
+        rabbitTemplate.convertAndSend("test.direct", "directKey", "message other");
     }
 
 
-    
+    @Test
+    public void testSendMessage3() {
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setContentType("text/plan");
+        Message message = new Message("mg 消息1234".getBytes(), messageProperties);
+        rabbitTemplate.send("test.direct", "directKey", message);
+    }
+
+
+    @Test
+    public void testSendJsonMessage() throws JsonProcessingException {
+        Order order = new Order();
+        order.setId("001");
+        order.setName("消息订单");
+        order.setContent("描述信息");
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(order);
+        System.err.println("order 4 json: " + json);
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setContentType("application/json");
+        Message message = new Message(json.getBytes(), messageProperties);
+        rabbitTemplate.send("test.direct", "directKey", message);
+    }
+
+
 }
