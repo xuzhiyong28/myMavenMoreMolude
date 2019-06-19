@@ -1,5 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
+import com.xzy.conf.RabbitSender;
 import com.xzy.entity.Order;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringJUnit4ClassRunner.class)     //表示继承了SpringJUnit4ClassRunner类
 @ContextConfiguration(locations = {"classpath:applicationContext.xml"})
@@ -22,6 +28,9 @@ public class SrpingTest {
 
     @Autowired
     private RabbitAdmin rabbitAdmin;
+
+    @Autowired
+    private RabbitSender rabbitSender;
 
 
     @Test
@@ -35,7 +44,7 @@ public class SrpingTest {
 
 
         //声明topic类型交换机和队列
-        rabbitAdmin.declareExchange(new DirectExchange("test.topic", false, false));
+        rabbitAdmin.declareExchange(new TopicExchange("test.topic", false, false));
         rabbitAdmin.declareQueue(new Queue("test.topic.queue", false));
         rabbitAdmin.declareBinding(new Binding("test.topic.queue",
                 Binding.DestinationType.QUEUE, "test.topic", "topicKey.*", new HashMap<String, Object>()));
@@ -101,5 +110,20 @@ public class SrpingTest {
         rabbitTemplate.send("test.direct", "directKey", message);
     }
 
+    @Test
+    public void testRabbitSender() throws InterruptedException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Map<String, Object> properties = Maps.newHashMap();
+        properties.put("number", "12345");
+        properties.put("send_time", simpleDateFormat.format(new Date()));
+        rabbitSender.send("xuzhiyong.....",properties);
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+    @Test
+    public void testRabbitSenderOrder(){
+        Order order = new Order("001", "第一个订单","content");
+        rabbitSender.sendOrder(order);
+    }
 
 }

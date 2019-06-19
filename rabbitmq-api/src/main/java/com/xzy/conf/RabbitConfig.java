@@ -1,11 +1,14 @@
 package com.xzy.conf;
 
 import com.google.common.collect.Maps;
+import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -32,6 +35,8 @@ public class RabbitConfig {
         connectionFactory.setPassword("guest");
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
+        connectionFactory.setPublisherConfirms(true);
+        connectionFactory.setPublisherReturns(true);
         return connectionFactory;
     }
 
@@ -61,8 +66,6 @@ public class RabbitConfig {
     @Bean
     public SimpleMessageListenerContainer simpleMessageListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
-        //设置需要监听的队列
-        container.setQueueNames("test.direct.queue", "test.topic.queue", "test.fanout.queue");
         //当前的消费者数量
         container.setConcurrentConsumers(1);
         //最大的消费者数量
@@ -83,12 +86,14 @@ public class RabbitConfig {
             }
         });
 
+        //设置需要监听的队列
+        //container.setQueueNames("test.direct.queue", "test.topic.queue", "test.fanout.queue");
         //设置消息监听
         /*container.setMessageListener(new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                String msg = new String(message.getBody());
-                System.out.println("-----消费者:" + msg);
+                String msg = new String(message.getBody(),"UTF-8");
+                System.err.println("-----消费者:" + msg);
             }
         });*/
 
@@ -122,11 +127,11 @@ public class RabbitConfig {
         container.setMessageListener(adaper);*/
 
         //支持json转换器
-        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
+        /*MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
         adapter.setDefaultListenerMethod("consumeMessage");
         Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
         adapter.setMessageConverter(jackson2JsonMessageConverter);
-        container.setMessageListener(adapter);
+        container.setMessageListener(adapter);*/
         return container;
     }
 
