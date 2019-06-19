@@ -98,7 +98,7 @@ public class RabbitConfig {
         });*/
 
         //消息监听的适配器
-        /*MessageListenerAdapter adaper = new MessageListenerAdapter(new MessageDelegate());
+       /* MessageListenerAdapter adaper = new MessageListenerAdapter(new MessageDelegate());
         container.setMessageListener(adaper);*/
 
 

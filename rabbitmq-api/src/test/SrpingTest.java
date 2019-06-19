@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.xzy.conf.RabbitReceiver;
 import com.xzy.conf.RabbitSender;
 import com.xzy.entity.Order;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringJUnit4ClassRunner.class)     //表示继承了SpringJUnit4ClassRunner类
@@ -31,6 +33,19 @@ public class SrpingTest {
 
     @Autowired
     private RabbitSender rabbitSender;
+
+    @Autowired
+    private RabbitReceiver rabbitReceiver;
+
+    @Test
+    public void contextLoad(){
+        System.out.println(rabbitReceiver);
+        try {
+            TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Test
@@ -80,9 +95,9 @@ public class SrpingTest {
     public void testSendMessage2() {
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("text/plan");
-        Message message = new Message("mg 消息1234".getBytes(), messageProperties);
+        Message message = new Message(("message_" + UUID.randomUUID().toString()).getBytes(), messageProperties);
         rabbitTemplate.send("test.direct", "directKey", message);
-        rabbitTemplate.convertAndSend("test.direct", "directKey", "message other");
+        rabbitTemplate.convertAndSend("test.direct", "directKey", "message_" + UUID.randomUUID().toString());
     }
 
 
@@ -116,13 +131,13 @@ public class SrpingTest {
         Map<String, Object> properties = Maps.newHashMap();
         properties.put("number", "12345");
         properties.put("send_time", simpleDateFormat.format(new Date()));
-        rabbitSender.send("xuzhiyong.....",properties);
+        rabbitSender.send("xuzhiyong.....", properties);
         TimeUnit.SECONDS.sleep(10);
     }
 
     @Test
-    public void testRabbitSenderOrder(){
-        Order order = new Order("001", "第一个订单","content");
+    public void testRabbitSenderOrder() {
+        Order order = new Order("001", "第一个订单", "content");
         rabbitSender.sendOrder(order);
     }
 

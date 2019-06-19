@@ -10,6 +10,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.UUID;
 
 /***
  * 生产者
@@ -25,7 +26,9 @@ public class RabbitSender {
         @Override
         public void confirm(CorrelationData correlationData, boolean ack, String cause) {
             System.err.println("correlationData: " + correlationData);
+            System.err.println("messageID = " + correlationData.getId());
             System.err.println("ack: " + ack);
+            System.err.println("cause :" + cause);
             if (!ack) {
                 System.err.println("异常处理....");
             }
@@ -49,7 +52,7 @@ public class RabbitSender {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
         //id + 时间戳 全局唯一
-        CorrelationData correlationData = new CorrelationData("1234567890");
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
         rabbitTemplate.convertAndSend("test.topic", "topicKey.abc", msg, correlationData);
     }
 
@@ -57,7 +60,7 @@ public class RabbitSender {
     public void sendOrder(Order order){
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
-        CorrelationData correlationData = new CorrelationData("0987654321");
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
         rabbitTemplate.convertAndSend("test.direct", "directKey",order,correlationData);
 
     }
