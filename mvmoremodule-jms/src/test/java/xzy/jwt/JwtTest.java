@@ -26,6 +26,9 @@ public class JwtTest {
     }
 
 
+    /***
+     * 解密校验
+     */
     @Test
     public void verify(){
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjE1NDEyNDIsInVzZXJuYW1lIjoieHV6eSJ9.dvKxDGwQwhS2t9GQomxjDpwmSLEPexh5vYiwl-rkZek";
