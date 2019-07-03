@@ -85,7 +85,8 @@ public class LettuceRedisTest {
         for (int i = 0; i < 10; i++) {
             futures.add(asyncCommands.set("key-" + i, "value-" + i));
         }
-        LettuceFutures.awaitAll(1, TimeUnit.MINUTES, futures.toArray(new RedisFuture[futures.size()]));
+        boolean isSuccess = LettuceFutures.awaitAll(1, TimeUnit.MINUTES, futures.toArray(new RedisFuture[futures.size()]));
+        Assert.assertEquals(isSuccess,true);
     }
 
 
