@@ -6,6 +6,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author xuzhiyong
@@ -43,6 +44,11 @@ public class Test {
         Converter<String,Integer> converter = from -> Integer.valueOf(from);
         Integer number = converter.convert("123");
         System.out.println("number :" + number);
+    }
+
+    @org.junit.Test
+    public void test4(){
+        Function<String,Integer> toInteger = Integer::valueOf;
     }
 
 
