@@ -92,5 +92,12 @@ public class StreamTest {
         System.out.println("list的偶数的积为:" + product);
     }
 
+    @Test
+    public void test6(){
+        List<String> strList = Lists.newArrayList("a","b","c","d");
+        String str  =  strList.stream().reduce("",(s, s2) -> s + s2 + ",");
+        System.out.println(str);
+    }
+
 
 }
