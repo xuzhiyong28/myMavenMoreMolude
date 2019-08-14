@@ -14,8 +14,8 @@ public class Increment {
         return i;
     }
 
-    public static void test(int threadNum, int loopTimes) {
-        Increment increment = new Increment();
+    public static void test(int threadNum, final int loopTimes) {
+        final Increment increment = new Increment();
         Thread[] threads = new Thread[threadNum];
         for (int i = 0; i < threads.length; i++) {
             Thread t = new Thread(new Runnable() {
@@ -43,7 +43,7 @@ public class Increment {
 
     public static void main(String[] args){
         //test(20, 1);
-        PlainLock plainLock = new PlainLock();
+        final PlainLock plainLock = new PlainLock();
         plainLock.lock();
         Thread thread = new Thread(new Runnable() {
             @Override
