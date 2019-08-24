@@ -13,7 +13,7 @@ public class LongEventMain {
 
     public static void main(String agrs[]) {
         //创建缓冲池
-        ExecutorService  executor = Executors.newCachedThreadPool();
+        ExecutorService executor = Executors.newCachedThreadPool();
         //创建工厂
         LongEventFactory factory = new LongEventFactory();
         //创建bufferSize ,也就是RingBuffer大小，必须是2的N次方
@@ -44,7 +44,7 @@ public class LongEventMain {
         LongEventProducer producer = new LongEventProducer(ringBuffer);
         //LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(ringBuffer);
         ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-        for(long l = 0; l<100; l++){
+        for (long l = 0; l < 100; l++) {
             byteBuffer.putLong(0, l);
             producer.onData(byteBuffer);
             //Thread.sleep(1000);
