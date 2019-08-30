@@ -96,6 +96,12 @@ public class StreamTest {
     public void test6(){
         List<String> strList = Lists.newArrayList("a","b","c","d");
         String str  =  strList.stream().reduce("",(s, s2) -> s + s2 + ",");
+        String str2 = strList.stream().reduce("",new BinaryOperator<String>(){
+            @Override
+            public String apply(String s, String s2) {
+                return s + "'"  + s2 + "'" + ",";
+            }
+        });
         System.out.println(str);
     }
 
