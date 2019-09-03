@@ -27,9 +27,27 @@ public class PredicateTest {
         return resultList;
     }
 
-    public List<Apple> getAppleListByPredicateAndStream(Predicate predicate) {
+    /***
+     * stream + predicate结合
+     * @param predicate
+     * @return
+     */
+    public static List<Apple> getAppleListByPredicateAndStream(Predicate predicate) {
         return (List<Apple>) appleList.stream().filter(predicate).collect(Collectors.toList());
     }
+
+
+    /***
+     * stream + predicate + 泛型
+     * @param list
+     * @param predicate
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> getAppleListByPredicateAndStreamT(List<T> list,Predicate<T> predicate){
+        return list.stream().filter(predicate).collect(Collectors.toList());
+    }
+
 
 
     @Test
