@@ -3,7 +3,9 @@ package xzy.java8.stream;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,6 +30,15 @@ public class Java8StreamTest {
                 .filter(dish -> dish.getCalories() > 300)
                 .collect(Collectors.toList());
         System.out.println(list);
+
+        List<Dish> list1 = menu.stream().filter(new Predicate<Dish>() {
+            @Override
+            public boolean test(Dish dish) {
+                return dish.getCalories() > 300;
+            }
+        }).collect(Collectors.toList());
+        System.out.println(list1);
+
     }
 
     @Test
@@ -43,6 +54,13 @@ public class Java8StreamTest {
                 .collect(Collectors.toList());
         System.out.println(list);
 
+        List<String> list1 = menu
+                .stream()
+                .map(dish -> dish.getName())
+                .collect(Collectors.toList());
+        System.out.println(list1);
+
+
         List<String> list2 = menu
                 .stream()
                 .map(Dish::getName)
@@ -57,4 +75,58 @@ public class Java8StreamTest {
         List<Dish> list = menu.stream().limit(3).collect(Collectors.toList());
         System.out.println(list);
     }
+
+    @Test
+    public void test4(){
+        //可以链式调用
+        menu.stream().forEach(new Consumer<Dish>(){
+            @Override
+            public void accept(Dish o) {
+                System.out.println(o.getName());
+            }
+        }.andThen(new Consumer<Dish>() {
+            @Override
+            public void accept(Dish dish) {
+                System.out.println("!!!");
+            }
+        }));
+
+        menu.stream().forEach(o -> System.out.println(o.getName()));
+
+    }
+
+
+    @Test
+    public void testDistinct(){
+        // distinct 的方法，它会返回一个元素各异（根据流所生成元素的hashCode 和 equals 方法实现）的流
+        List<Integer> numbers = Lists.newArrayList(1,2,1,3,3,2,4);
+        numbers
+                .stream()
+                .filter(integer -> integer % 2 == 0)
+                .distinct()
+                .forEach(System.out::println);
+    }
+
+    @Test
+    public void testSkip(){
+        //跳过前两个元素 跟 limit互补
+        List<Dish> dishes = menu.stream().skip(2).collect(Collectors.toList());
+        System.out.println(dishes);
+    }
+
+
+    @Test
+    public void testDemo1(){
+        //计算返回一串句子里面所有的单词，单词不重复
+        // flatmap 方法让你把一个流中的每个值都换成另一个流，然后把所有的流连接起来成为一个流
+        List<String> wordList = Lists.newArrayList("Hello", "World", "xuzy");
+        List<String> uniqueCharacters = wordList.stream()
+                .map(s -> s.split(""))
+                .flatMap(Arrays::stream) //这个有点难理解。下次再看
+                .distinct()
+                .collect(Collectors.toList());
+        System.out.println(uniqueCharacters);
+    }
+
+
 }
