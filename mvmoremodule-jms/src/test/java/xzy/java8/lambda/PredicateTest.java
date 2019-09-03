@@ -1,0 +1,92 @@
+package xzy.java8.lambda;
+
+import com.google.common.collect.Lists;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+public class PredicateTest {
+    private static List<Apple> appleList = Lists.newArrayList();
+
+    static {
+        appleList.add(new Apple("red", 100, 100));
+        appleList.add(new Apple("red", 200, 250));
+        appleList.add(new Apple("green", 100, 150));
+        appleList.add(new Apple("green", 150, 300));
+    }
+
+    public static List<Apple> getAppleListByPredicate(Predicate predicate) {
+        List<Apple> resultList = Lists.newArrayList();
+        for (Apple apple : appleList) {
+            if (predicate.test(apple)) {
+                resultList.add(apple);
+            }
+        }
+        return resultList;
+    }
+
+    public List<Apple> getAppleListByPredicateAndStream(Predicate predicate) {
+        return (List<Apple>) appleList.stream().filter(predicate).collect(Collectors.toList());
+    }
+
+
+    @Test
+    public void test1() {
+        List<Apple> list0 = getAppleListByPredicate(new Predicate<Apple>() {
+            @Override
+            public boolean test(Apple o) {
+                return o.getColor().equals("green");
+            }
+        });
+        //过滤出红色苹果的数据
+        List<Apple> list1 = getAppleListByPredicate((Predicate<Apple>) o -> o.getColor().equals("red"));
+        System.out.println(list1);
+        List<Apple> list2 = getAppleListByPredicate((Predicate<Apple>) o -> o.getWeight() > 100);
+        System.out.println(list2);
+    }
+
+
+    @Test
+    public void test2() {
+        List<Apple> list0 = getAppleListByPredicate(new Predicate<Apple>() {
+            @Override
+            public boolean test(Apple o) {
+                return o.getColor().equals("red");
+            }
+        }.and(new Predicate<Apple>() {
+            @Override
+            public boolean test(Apple o) {
+                return o.getPrice() > 100;
+            }
+        }));
+        System.out.println(list0);
+
+        List<Apple> list1 = getAppleListByPredicate(((Predicate<Apple>) o -> o.getColor().equals("red")).and(o -> o.getPrice() > 100));
+        System.out.println(list1);
+
+    }
+
+    @Test
+    public void test3() {
+        List<Apple> list0 = getAppleListByPredicate(new Predicate<Apple>() {
+            @Override
+            public boolean test(Apple o) {
+                return o.getColor().equals("red");
+            }
+        }.or(new Predicate<Apple>() {
+            @Override
+            public boolean test(Apple o) {
+                return o.getPrice() >= 250;
+            }
+        }));
+        System.out.println(list0);
+
+        List<Apple> list1 = getAppleListByPredicate(((Predicate<Apple>) o -> o.getColor().equals("red")).or(o -> o.getPrice() >= 250));
+        System.out.println(list1);
+    }
+
+
+}
