@@ -12,6 +12,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Java8StreamTest {
     private List<Dish> menu = Lists.newArrayList(
@@ -199,8 +201,30 @@ public class Java8StreamTest {
                 .map(Dish::getCalories)
                 .reduce((integer, integer2) -> Math.max(integer,integer2));
         System.out.println("calories = " + maxCalories2.get());
+    }
+
+    @Test
+    public void test6(){
+        //// IntStream 、 DoubleStream 和LongStream ，分别将流中的元素特化为 int 、 long 和 double ，从而避免了暗含的装箱成本
+        int calories = menu.stream()
+                .mapToInt(Dish::getCalories)
+                .sum();
+        System.out.println(calories);
+    }
+
+    @Test
+    public void test7(){
+        //显示的创建一个流
+        Stream<String> stringStream = Stream.of("Java 8 ", "Lambdas ", "In ", "Action");
+        stringStream.map(String::toUpperCase).forEach(System.out::println);
+
+        //创建空流
+        Stream<String> stringStream1 = Stream.empty();
 
 
+        //数组创建流
+        List<Integer> list = Arrays.stream(new Integer[]{2,3,4,5,6,7,8}).filter(integer -> integer > 5).collect(Collectors.toList());
+        System.out.println(list);
     }
 
 }
