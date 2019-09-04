@@ -4,7 +4,7 @@ public class Dish {
     public enum Type { MEAT, FISH, OTHER }
     private final String name;
     private final boolean vegetarian;
-    private final int calories;
+    private final int calories; //卡路里
     private final Type type;
     public Dish(String name, boolean vegetarian, int calories, Type type) {
         this.name = name;

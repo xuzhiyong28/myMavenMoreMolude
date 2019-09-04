@@ -3,8 +3,11 @@ package xzy.java8.stream;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -128,5 +131,76 @@ public class Java8StreamTest {
         System.out.println(uniqueCharacters);
     }
 
+
+    @Test
+    public void testAnyMatch(){
+        //流中是否有一个元素能匹配给定的谓词 -- 菜单中是否有包含至少一个素食
+        if(menu.stream().anyMatch(dish -> dish.isVegetarian())){
+            System.out.println("包含素食");
+        }
+
+        boolean isHealthy = menu.stream().noneMatch(dish -> dish.getCalories() >= 1000);
+        System.out.println(isHealthy);
+
+        Optional<Dish> dish = menu.stream()
+                .filter(Dish::isVegetarian)
+                .findAny();
+        System.out.println(dish.isPresent());
+    }
+
+    @Test
+    public void testFindFirst(){
+        List<Integer> someNumbers = Lists.newArrayList(1,2,3,4,5);
+        Optional<Integer> firstSquareDivisibleByThree = someNumbers.stream()
+                .map(x -> x * x)
+                .filter(x -> x % 3 == 0)
+                .findFirst();
+        System.out.println(firstSquareDivisibleByThree.get());
+    }
+
+    @Test
+    public void testReduce(){
+        //求总卡路里
+        Optional<Integer> calories = menu.stream().map(new Function<Dish, Integer>() {
+            @Override
+            public Integer apply(Dish dish) {
+                return dish.getCalories();
+            }
+        }).reduce(new BinaryOperator<Integer>() {
+            @Override
+            public Integer apply(Integer integer, Integer integer2) {
+                return integer + integer2;
+            }
+        });
+        System.out.println("calories = " + calories.get());
+
+
+        Optional<Integer> calories2 = menu.stream()
+                .map(Dish::getCalories)
+                .reduce((integer, integer2) -> integer + integer2);
+        System.out.println("calories = " + calories2.get());
+
+
+        //求最大卡路里
+        Optional<Integer> maxCalories = menu.stream().map(new Function<Dish, Integer>() {
+            @Override
+            public Integer apply(Dish dish) {
+                return dish.getCalories();
+            }
+        }).reduce(new BinaryOperator<Integer>() {
+            @Override
+            public Integer apply(Integer integer, Integer integer2) {
+                return integer >= integer2 ? integer : integer2;
+            }
+        });
+        System.out.println("calories = " + maxCalories.get());
+
+        Optional<Integer> maxCalories2 = menu.stream()
+                .map(Dish::getCalories)
+                .reduce((integer, integer2) -> Math.max(integer,integer2));
+        System.out.println("calories = " + maxCalories2.get());
+
+
+    }
 
 }
