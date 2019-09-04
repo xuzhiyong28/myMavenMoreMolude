@@ -5,12 +5,11 @@ import org.junit.Test;
 
 import javax.swing.text.html.Option;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -226,5 +225,25 @@ public class Java8StreamTest {
         List<Integer> list = Arrays.stream(new Integer[]{2,3,4,5,6,7,8}).filter(integer -> integer > 5).collect(Collectors.toList());
         System.out.println(list);
     }
+
+    @Test
+    public void test8(){
+        //获取最大最小卡路里的食物
+        Optional<Dish> mostCalorieDish = menu.stream()
+                .collect(Collectors.maxBy(Comparator.comparing(Dish::getCalories)));
+        Optional<Dish> minCalorieDish = menu.stream()
+                .collect(Collectors.minBy(Comparator.comparing(Dish::getCalories)));
+        System.out.println(minCalorieDish.get().getName());
+
+
+        //汇总
+        int totalCalories = menu.stream().collect(Collectors.summingInt(Dish::getCalories));
+        System.out.println(totalCalories);
+
+        //连接字符串
+        String menuName = menu.stream().map(Dish::getName).collect(Collectors.joining(";"));
+        System.out.println(menuName);
+    }
+
 
 }
