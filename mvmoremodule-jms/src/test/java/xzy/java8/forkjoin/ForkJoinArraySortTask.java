@@ -3,11 +3,7 @@ package xzy.java8.forkjoin;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.RecursiveTask;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author xuzhiyong

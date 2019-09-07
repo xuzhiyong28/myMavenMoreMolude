@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * @author xuzhiyong
@@ -39,13 +40,17 @@ public class Shop {
     }
 
 
+    /***
+     * 普通模式创建一个CompletableFuture
+     * @param product
+     * @return
+     */
     public Future<Double> getPriceAsync(String product) {
         CompletableFuture<Double> futurePrice = new CompletableFuture<>();
         new Thread(() -> {
             try{
                 //如果价格计算正常结束，完成 Future 操作并设置商品价格
                 double price = calculatePrice(product);
-                Thread.sleep(10000);
                 futurePrice.complete(price);
             }catch (Exception e){
                 //否则就抛出导致失败的异常，完成这次 Future 操作
@@ -55,10 +60,28 @@ public class Shop {
         return futurePrice;
     }
 
+
+    /***
+     * 直接通过api去创建
+     * @param product
+     * @return
+     */
+    public Future<Double> getPriceAsync2(String product){
+        return CompletableFuture.supplyAsync(new Supplier<Double>() {
+            @Override
+            public Double get() {
+                return calculatePrice(product);
+            }
+        });
+    }
+
+
+
+
     public static void main(String[] args) throws InterruptedException {
         Shop shop = new Shop();
         long start = System.nanoTime();
-        Future<Double> futurePrice = shop.getPriceAsync("my favorite product");
+        Future<Double> futurePrice = shop.getPriceAsync2("my favorite product");
         long invocationTime = ((System.nanoTime() - start) / 1_000_000);
         System.out.println("Invocation returned after " + invocationTime
                 + " msecs");
