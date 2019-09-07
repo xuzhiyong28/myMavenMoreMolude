@@ -149,6 +149,7 @@ public class Java8StreamIterateTtest {
     @Test
     public void test5(){
         //下面代码采用并行流来计算累加，本质上是多线程的，所以会有并发问题
+        //并行流的任何操作都必须是符合缩减操作的三个约束条件，无状态，不干预，关联性
         Function<Long,Long> applyFn = new Function<Long, Long>() {
             @Override
             public Long apply(Long aLong) {

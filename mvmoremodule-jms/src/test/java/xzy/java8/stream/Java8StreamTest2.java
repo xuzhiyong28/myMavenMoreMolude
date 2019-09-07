@@ -6,8 +6,10 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author xuzhiyong
@@ -88,5 +90,13 @@ public class Java8StreamTest2 {
                     }
                 })));
         System.out.println(dishesByTypeCaloricLevel); //好复杂
+    }
+
+
+    @Test
+    public void testGenerate(){
+        //无限流生成5个随机数然后打印出来
+        Stream.generate(Math::random).limit(5).forEach(System.out::println);
+
     }
 }

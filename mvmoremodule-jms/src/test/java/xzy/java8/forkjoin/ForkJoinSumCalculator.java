@@ -1,11 +1,6 @@
 package xzy.java8.forkjoin;
 
-import org.junit.Test;
-
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
-import java.util.stream.LongStream;
 
 public class ForkJoinSumCalculator extends RecursiveTask<Long> {
 
