@@ -46,6 +46,7 @@ public class Java8StreamTest2 {
         Map<Dish.Type, List<Dish>> dishesByType2 = menu.stream()
                 .collect(Collectors.groupingBy(Dish::getType));
         System.out.println(dishesByType2);
+
     }
 
     @Test
@@ -99,4 +100,17 @@ public class Java8StreamTest2 {
         Stream.generate(Math::random).limit(5).forEach(System.out::println);
 
     }
+
+    @Test
+    public void testOther(){
+        List<String> dateList = Lists.newArrayList("20180306","20180307","20180308","20180309","20180310","20180311","20180312","20180313","20180314","20180414");
+        Map<String,List<String>> group = dateList.stream().collect(Collectors.groupingBy(new Function<String, String>() {
+            @Override
+            public String apply(String date) {
+                return String.valueOf(Integer.valueOf(date) % 4);
+            }
+        }));
+        System.out.println(group);
+    }
+
 }
