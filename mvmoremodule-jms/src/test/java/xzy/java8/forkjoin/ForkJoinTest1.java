@@ -47,6 +47,10 @@ public class ForkJoinTest1 {
         pool.shutdown(); //关闭线程池
     }
 
+
+    /****
+     * 采用fork/join对数组进行排序
+     */
     @Test
     public void test4() {
         int MAX = 10000;
