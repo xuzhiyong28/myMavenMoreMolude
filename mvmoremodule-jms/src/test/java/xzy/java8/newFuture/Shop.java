@@ -26,11 +26,25 @@ public class Shop {
         return calculatePrice(produce);
     }
 
+    /***
+     * 带折扣的返回
+     * @param produce
+     * @return
+     */
+    public String getPriceCode(String produce){
+        double price = calculatePrice(produce);
+        Discount.Code code = Discount.Code.values()[RandomUtils.nextInt(0,Discount.Code.values().length)];
+        return String.format("%s:%.2f:%s", name, price, code);
+    }
+
     private double calculatePrice(String product) {
         delay();
         return RandomUtils.nextDouble(1, 10) * product.charAt(0) + product.charAt(1);
     }
 
+    /***
+     * 延迟加载1秒钟
+     */
     public static void delay() {
         try {
             TimeUnit.SECONDS.sleep(1);

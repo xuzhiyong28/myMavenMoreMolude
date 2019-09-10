@@ -62,12 +62,10 @@ public class Test1 {
     public void test2() {
 
         //采用无限流生成100000个对象作为测试数据
-        List<Shop> testShopList = Stream.generate(new Supplier<Shop>() {
-            @Override
-            public Shop get() {
-                return new Shop(getRandomString(10));
-            }
-        }).limit(100).collect(Collectors.toList());
+        List<Shop> testShopList = Stream
+                .generate(() -> new Shop(getRandomString(10)))
+                .limit(100)
+                .collect(Collectors.toList());
 
 
 
@@ -94,7 +92,8 @@ public class Test1 {
         //3.采用CompletableFuture,用这个的好处是可以自己指定线程池的数量，不像并发流是通用的线程池
         //如果你进行的是计算密集型的操作，并且没有I/O，那么推荐使用 Stream 接口
         //如果你并行的工作单元还涉及等待I/O的操作（包括网络连接等待），那么使用CompletableFuture 灵活性更好
-        List<CompletableFuture<String>> priceFutures = testShopList.stream()
+        List<CompletableFuture<String>> priceFutures = testShopList
+                .stream()
                 .map(shop -> CompletableFuture.supplyAsync(() -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product))))
                 .collect(Collectors.toList());
 
