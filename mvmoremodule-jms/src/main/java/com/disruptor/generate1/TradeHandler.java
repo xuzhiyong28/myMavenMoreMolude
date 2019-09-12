@@ -5,6 +5,9 @@ import com.lmax.disruptor.WorkHandler;
 
 import java.util.UUID;
 
+/***
+ * 消费处理
+ */
 public class TradeHandler implements EventHandler<Trade>, WorkHandler<Trade> {
     @Override
     public void onEvent(Trade event, long sequence, boolean endOfBatch) throws Exception {
@@ -15,6 +18,6 @@ public class TradeHandler implements EventHandler<Trade>, WorkHandler<Trade> {
     public void onEvent(Trade event) throws Exception {
         //这里做具体的消费逻辑
         event.setId(UUID.randomUUID().toString());
-        System.out.println("获取到id:" + event.getId());
+        System.out.println("获取到id:" + event.getId() + ",price = " + event.getPrice());
     }
 }
