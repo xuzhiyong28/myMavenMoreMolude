@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/****
+ * 函数式编程，传入一个函数，就可以判断是否正确
+ */
 public class PredicateTest {
     private static List<Apple> appleList = Lists.newArrayList();
 

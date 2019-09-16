@@ -8,6 +8,8 @@ public class Apple {
     //价格
     private int price;
 
+    public Apple(){}
+
     public Apple(String color, int weight, int price) {
         this.color = color;
         this.weight = weight;
