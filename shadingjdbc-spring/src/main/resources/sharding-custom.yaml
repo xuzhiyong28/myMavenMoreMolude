@@ -1,49 +1,93 @@
 dataSources:
-  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+  dataSource_default: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_0
+    url: jdbc:mysql://localhost:3306/sharding_default?useUnicode=true&amp;characterEncoding=utf-8
     username: root
     password: 123456
-  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    initialSize : 0
+    maxActive : 200
+    maxIdle : 20
+    minIdle : 1
+    maxWait : 60000
+  dataSource_2017: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_1
+    url: jdbc:mysql://localhost:3306/sharding_2017?useUnicode=true&amp;characterEncoding=utf-8
     username: root
     password: 123456
-  ds: !!org.apache.commons.dbcp.BasicDataSource
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/demo_ds
-      username: root
-      password: 123456
+    initialSize : 0
+    maxActive : 200
+    maxIdle : 20
+    minIdle : 1
+    maxWait : 60000
+  dataSource_2018: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sharding_2018?useUnicode=true&amp;characterEncoding=utf-8
+    username: root
+    password: 123456
+    initialSize : 0
+    maxActive : 200
+    maxIdle : 20
+    minIdle : 1
+    maxWait : 60000
+  dataSource_2019: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sharding_2019?useUnicode=true&amp;characterEncoding=utf-8
+    username: root
+    password: 123456
+    initialSize : 0
+    maxActive : 200
+    maxIdle : 20
+    minIdle : 1
+    maxWait : 60000
+  dataSource_2020: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sharding_2020?useUnicode=true&amp;characterEncoding=utf-8
+    username: root
+    password: 123456
+    initialSize : 0
+    maxActive : 200
+    maxIdle : 20
+    minIdle : 1
+    maxWait : 60000
 
 #数据分片
 shardingRule:
   tables:
-    #t_order:
-    #  actualDataNodes: ds_${0..1}.t_order
-    #  keyGeneratorColumnName: order_id #自增列名称，省缺表示不使用自增主键生成器
-    t_order:
-      #actualDataNodes: ds_${0..1}.t_order_${1..12}
-      #按月建表,建立两年之内的表
-      actualDataNodes: ds_${0..1}.t_order_${201801..201812},ds_${0..1}.t_order_${201901..201912}
+    flow:
+      actualDataNodes: dataSource_${2017..2020}.flow_0${1..9},dataSource_${2017..2020}.flow_1${0..2}
       tableStrategy:
         standard:
-          shardingColumn: createdate
-          preciseAlgorithmClassName: com.shardingAlgorithm.XzyCustomShardingTablesAlgorithm
-  #默认数据库分片
+          shardingColumn: flowtime
+          preciseAlgorithmClassName: com.shardingAlgorithm.PreciseModuloTableShardingAlgorithm
+      databaseStrategy:
+        standard:
+          shardingColumn: flowtime
+          preciseAlgorithmClassName: com.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm
+    ips:
+      actualDataNodes: dataSource_${2017..2020}.ips_0${1..9},dataSource_${2017..2020}.ips_1${0..2}
+      tableStrategy:
+        standard:
+          shardingColumn: flowtime
+          preciseAlgorithmClassName: com.shardingAlgorithm.PreciseModuloTableShardingAlgorithm
+      databaseStrategy:
+        standard:
+          shardingColumn: flowtime
+          preciseAlgorithmClassName: com.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm
+    acca:
+      actualDataNodes: dataSource_${2017..2020}.acca_0${1..9},dataSource_${2017..2020}.acca_1${0..2}
+      tableStrategy:
+        complex:
+          shardingColumns: flowtime,dataType
+          algorithmClassName: com.shardingAlgorithm.ComplexModuloTableShardingAlgorithm
+      databaseStrategy:
+        complex:
+          shardingColumns: flowtime,dataType
+          algorithmClassName: com.shardingAlgorithm.ComplexModuloDatabaseShardingAlgorithm
+  bindingTables:
+    - flow,ips,acca
   defaultDatabaseStrategy:
-    #inline 用于行表达式分片策略
-    #inline:
-    #  shardingColumn: user_id
-    #  algorithmExpression: ds_${user_id % 2}
-    #用于单片键的标准分片
-    standard:
-      shardingColumn: order_id
-      preciseAlgorithmClassName: com.shardingAlgorithm.XzyCustomShardingDatabaseAlgorithm
-    #默认的表分片
-  #没有配置分片策略的表都走这个数据源
-  #defaultDataSourceName: ds,ds_1,ds_2
+    none:
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   props:
-      sql.show: true
+    sql.show: true

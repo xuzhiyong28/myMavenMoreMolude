@@ -51,6 +51,17 @@
             <version>3.0.0.M3</version>
         </dependency>
         <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-core</artifactId>
+            <version>3.0.0.M3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <version>4.3.6.RELEASE</version>

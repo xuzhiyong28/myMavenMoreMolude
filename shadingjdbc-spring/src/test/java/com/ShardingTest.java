@@ -59,6 +59,7 @@ public class ShardingTest {
     @Test
     public void query2(){
         jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
+        //jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20170718')");
     }
 
     @Test
