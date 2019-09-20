@@ -8,6 +8,7 @@ import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Assert;
@@ -49,6 +50,13 @@ public class CuratorTest {
         });
         cf.start();
     }
+
+
+    public void close(){
+        //关闭cf客户端
+        CloseableUtils.closeQuietly(cf);
+    }
+
 
     @Test
     public void getStat() throws Exception {
