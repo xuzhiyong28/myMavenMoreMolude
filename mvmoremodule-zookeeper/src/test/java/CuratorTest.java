@@ -239,7 +239,7 @@ public class CuratorTest {
         if(stat == null){
             cf.create().creatingParentsIfNeeded().forPath(PATH);
         }
-        TreeCache cache = new TreeCache(cf, PATH);
+        TreeCache cache = new TreeCache(cf, "/example");
         //设置监听
         TreeCacheListener treeCacheListener = new TreeCacheListener() {
             @Override
@@ -256,6 +256,11 @@ public class CuratorTest {
         TimeUnit.SECONDS.sleep(5);
         cf.delete().deletingChildrenIfNeeded().forPath(PATH);
         TimeUnit.SECONDS.sleep(5);
+        cf.create().creatingParentsIfNeeded().forPath("/example/cache2");
+        TimeUnit.SECONDS.sleep(5);
+        cf.setData().forPath("/example/cache2", "02".getBytes());
+        TimeUnit.SECONDS.sleep(5);
+        ChildData cache2 =  cache.getCurrentData("/example/cache2");
         cache.close();
         cf.close();
         System.out.println("OK!");
