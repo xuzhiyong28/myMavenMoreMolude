@@ -1,13 +1,14 @@
 package xzy.java8.newFuture;
 
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.*;
+import java.util.stream.IntStream;
 
 /***
  * https://www.jianshu.com/p/6bac52527ca4
@@ -74,7 +75,7 @@ public class Test {
     }
 
     @org.junit.Test
-    public void testHandle(){
+    public void testHandle() throws ExecutionException, InterruptedException {
         /***
          *  handle 是执行任务完成时对结果的处理。
             handle 方法和 thenApply 方法处理方式基本一样。不同的是 handle 是在任务完成后再执行，
@@ -88,6 +89,7 @@ public class Test {
         }).handle(new BiFunction<Integer, Throwable, Integer>() {
             @Override
             public Integer apply(Integer integer, Throwable throwable) {
+                System.out.println("=========handle==========");
                 int result = -1;
                 if(throwable == null){
                     result = integer * 2;
@@ -97,7 +99,43 @@ public class Test {
                 return result;
             }
         });
+        Integer result = future.get();
+        System.out.println(result);
     }
+
+    @org.junit.Test
+    public void testHandleMuit() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        List<Integer> intList = Lists.newArrayList();
+        IntStream.range(0, 10000).forEach(intList::add);
+        List<CompletableFuture<Integer>> completaList = Lists.newArrayList();
+        BiFunction<Integer, Throwable, Integer> biFunction = new BiFunction<Integer, Throwable, Integer>() {
+            @Override
+            public Integer apply(Integer integer, Throwable throwable) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return integer * 2;
+            }
+        };
+        for(int i = 0 ; i < intList.size() ; i++){
+            int ii = i;
+            completaList.add(CompletableFuture.supplyAsync(new Supplier<Integer>() {
+                @Override
+                public Integer get() {
+                    return intList.get(ii);
+                }
+            },executorService).handle(biFunction));
+        }
+
+        for(CompletableFuture<Integer> future : completaList){
+            System.out.println(future.get());
+        }
+    }
+
+
 
     /***
      * thenAccept 接收任务的处理结果，并消费处理，无返回结果

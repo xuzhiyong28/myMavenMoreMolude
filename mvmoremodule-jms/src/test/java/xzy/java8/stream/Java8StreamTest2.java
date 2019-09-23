@@ -3,12 +3,14 @@ package xzy.java8.stream;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -100,6 +102,21 @@ public class Java8StreamTest2 {
         Stream.generate(Math::random).limit(5).forEach(System.out::println);
 
     }
+
+    /***
+     * 并行流存在并发问题
+     * 总结就是paralleStream里直接去修改变量是非线程安全的，但是采用collect和reduce操作就是满足线程安全的了
+     */
+    @Test
+    public void parallelError(){
+        List<Integer> list1 = new ArrayList<>();
+        List<Integer> list2 = new ArrayList<>();
+        IntStream.range(0, 10000).forEach(list1::add);
+        IntStream.range(0, 10000).parallel().forEach(list2::add);
+        System.out.println("串行执行的大小：" + list1.size());
+        System.out.println("并行执行的大小：" + list2.size());
+    }
+
 
     @Test
     public void testOther(){
