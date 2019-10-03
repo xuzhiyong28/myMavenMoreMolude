@@ -39,9 +39,16 @@
     </properties>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/elasticsearch-test" />
+    <file type="web" url="file://$PROJECT_DIR$/hadoop-demo" />
+    <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-elasticjob" />
     <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-jms" />
+    <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-quartz" />
     <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-redis" />
     <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-shiro" />
+    <file type="web" url="file://$PROJECT_DIR$/mvmoremodule-spring" />
+    <file type="web" url="file://$PROJECT_DIR$/rabbitmq-api" />
+    <file type="web" url="file://$PROJECT_DIR$/shadingjdbc-spring" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -52,6 +59,15 @@
         <option value="$PROJECT_DIR$/mvmoremodule-redis/pom.xml" />
         <option value="$PROJECT_DIR$/mvmoremodule-util/pom.xml" />
         <option value="$PROJECT_DIR$/mvmoremodule-shiro/pom.xml" />
+        <option value="$PROJECT_DIR$/mvmoremodule-spring/pom.xml" />
+        <option value="$PROJECT_DIR$/mvmoremodule-quartz/pom.xml" />
+        <option value="$PROJECT_DIR$/shadingjdbc-spring/pom.xml" />
+        <option value="$PROJECT_DIR$/mvmoremodule-zookeeper/pom.xml" />
+        <option value="$PROJECT_DIR$/rabbitmq-api/pom.xml" />
+        <option value="$PROJECT_DIR$/mvmoremodule-elasticjob/pom.xml" />
+        <option value="$PROJECT_DIR$/hadoop-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/mvmoremodule-kafka/pom.xml" />
+        <option value="$PROJECT_DIR$/elasticsearch-test/pom.xml" />
       </list>
     </option>
   </component>

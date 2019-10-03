@@ -2,13 +2,22 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-elasticjob/com.xzy.elasticjob.iml" filepath="$PROJECT_DIR$/mvmoremodule-elasticjob/com.xzy.elasticjob.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-spring/com.xzy.spring.iml" filepath="$PROJECT_DIR$/mvmoremodule-spring/com.xzy.spring.iml" />
+      <module fileurl="file://$PROJECT_DIR$/elasticsearch-test/elasticsearch-test.iml" filepath="$PROJECT_DIR$/elasticsearch-test/elasticsearch-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hadoop-demo/hadoop-demo.iml" filepath="$PROJECT_DIR$/hadoop-demo/hadoop-demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-jms/mvmoremodule-jms.iml" filepath="$PROJECT_DIR$/mvmoremodule-jms/mvmoremodule-jms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-kafka/mvmoremodule-kafka.iml" filepath="$PROJECT_DIR$/mvmoremodule-kafka/mvmoremodule-kafka.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-manager/mvmoremodule-manager.iml" filepath="$PROJECT_DIR$/mvmoremodule-manager/mvmoremodule-manager.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-parent/mvmoremodule-parent.iml" filepath="$PROJECT_DIR$/mvmoremodule-parent/mvmoremodule-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-quartz/mvmoremodule-quartz.iml" filepath="$PROJECT_DIR$/mvmoremodule-quartz/mvmoremodule-quartz.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-redis/mvmoremodule-redis.iml" filepath="$PROJECT_DIR$/mvmoremodule-redis/mvmoremodule-redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-shiro/mvmoremodule-shiro.iml" filepath="$PROJECT_DIR$/mvmoremodule-shiro/mvmoremodule-shiro.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvmoremodule-util/mvmoremodule-util.iml" filepath="$PROJECT_DIR$/mvmoremodule-util/mvmoremodule-util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvmoremodule-zookeeper/mvmoremodule-zookeeper.iml" filepath="$PROJECT_DIR$/mvmoremodule-zookeeper/mvmoremodule-zookeeper.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/myMavenMoreMolude.iml" filepath="$PROJECT_DIR$/.idea/myMavenMoreMolude.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rabbitmq-api/rabbitmq-api.iml" filepath="$PROJECT_DIR$/rabbitmq-api/rabbitmq-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shadingjdbc-spring/shadingjdbc-spring.iml" filepath="$PROJECT_DIR$/shadingjdbc-spring/shadingjdbc-spring.iml" />
     </modules>
   </component>
 </project>
