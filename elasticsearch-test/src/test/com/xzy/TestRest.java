@@ -17,25 +17,38 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.get.GetResult;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.management.Query;
+import javax.naming.directory.SearchResult;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -309,6 +322,101 @@ public class TestRest {
             } else if (bulkItemResponse.getOpType() == DocWriteRequest.OpType.DELETE) {
                 DeleteResponse deleteResponse = (DeleteResponse) itemResponse;
             }
+        }
+    }
+
+
+    @Test
+    public void searchApi() throws IOException {
+        //查询所有数据
+        SearchRequest searchRequest = new SearchRequest();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        searchRequest.source(searchSourceBuilder);
+        searchRequest.indices("bank");
+        searchRequest.types("account");
+        //同步执行
+        SearchResponse searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //获取结果集
+        SearchHits hits = searchResponse.getHits();
+        long totalHits = hits.getTotalHits();
+        float maxScore = hits.getMaxScore();
+        SearchHit[] searchHits = hits.getHits();
+        for(SearchHit hit : searchHits){
+            String index = hit.getIndex();
+            String type = hit.getType();
+            String id = hit.getId();
+            float score = hit.getScore();
+            String sourceAsString = hit.getSourceAsString();
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            System.out.println(JSON.toJSON(sourceAsMap).toString());
+        }
+    }
+
+    @Test
+    public void searchApi2() throws IOException {
+        //使用SearchSourceBuilder查询指定字段
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        //term搜索，关键字搜索，这里要用小写，因为被分析成了小写
+        //sourceBuilder.query(QueryBuilders.termQuery("lastname", "harding"));
+        sourceBuilder.from(0);
+        sourceBuilder.size(5);
+        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        SearchRequest searchRequest2 = new SearchRequest();
+        searchRequest2.indices("bank");
+        searchRequest2.types("account");
+        searchRequest2.source(sourceBuilder);
+        SearchResponse searchResponse = highLevelClient.search(searchRequest2, RequestOptions.DEFAULT);
+        //获取结果集
+        SearchHits hits = searchResponse.getHits();
+        long totalHits = hits.getTotalHits();
+        float maxScore = hits.getMaxScore();
+        SearchHit[] searchHits = hits.getHits();
+        for(SearchHit hit : searchHits){
+            String index = hit.getIndex();
+            String type = hit.getType();
+            String id = hit.getId();
+            float score = hit.getScore();
+            String sourceAsString = hit.getSourceAsString();
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            System.out.println(JSON.toJSON(sourceAsMap).toString());
+        }
+    }
+
+    @Test
+    public void searchApi3() throws IOException {
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("lastname", "harding");
+        //Fuzziness 模糊查找
+        matchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        matchQueryBuilder.prefixLength(3);
+        matchQueryBuilder.maxExpansions(10);
+        sourceBuilder.query(matchQueryBuilder);
+        //Specifying Sorting 指定排序
+        sourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC));
+        sourceBuilder.sort(new FieldSortBuilder("_uid").order(SortOrder.ASC));
+        sourceBuilder.fetchSource(false);
+        String[] includeFields = new String[] {"account_number", "balance", "firstname"};
+        String[] excludeFields = new String[] {"age"};
+        sourceBuilder.fetchSource(includeFields, excludeFields);
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices("bank");
+        searchRequest.types("account");
+        searchRequest.source(sourceBuilder);
+        SearchResponse searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //获取结果集
+        SearchHits hits = searchResponse.getHits();
+        long totalHits = hits.getTotalHits();
+        float maxScore = hits.getMaxScore();
+        SearchHit[] searchHits = hits.getHits();
+        for(SearchHit hit : searchHits){
+            String index = hit.getIndex();
+            String type = hit.getType();
+            String id = hit.getId();
+            float score = hit.getScore();
+            String sourceAsString = hit.getSourceAsString();
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            System.out.println(JSON.toJSON(sourceAsMap).toString());
         }
     }
 
