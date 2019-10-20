@@ -46,6 +46,7 @@ public class AppTest {
                 }
             });
         }
+        kafkaProducer.close();
     }
 
     @Test
@@ -70,5 +71,6 @@ public class AppTest {
         }
         executorService.awaitTermination(10, TimeUnit.SECONDS);
         executorService.shutdown();
+        kafkaProducer.close();
     }
 }
