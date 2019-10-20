@@ -19,6 +19,9 @@ import org.springframework.util.ResourceUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +75,21 @@ public class YamlExampleShardingTest {
         JdbcTemplate jdbcTemplate = getJdbcTemple();
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
         System.out.println(list);
+    }
+
+    @Test
+    public void test2() throws IOException, SQLException {
+        DataSource dataSource = getDataSource();
+        String sql = "select * from flow where flowtime in ('20170818','20190205')";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                System.out.println("!!!");
+            }
+        } catch (final SQLException ignored) {
+        }
+
     }
 
 

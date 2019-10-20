@@ -6,20 +6,37 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="com.xzy.elasticjob" />
+        <module name="com.xzy.spring" />
+        <module name="elasticsearch-test" />
+        <module name="hadoop-demo" />
         <module name="mvmoremodule-jms" />
+        <module name="mvmoremodule-kafka" />
+        <module name="mvmoremodule-quartz" />
         <module name="mvmoremodule-redis" />
         <module name="mvmoremodule-shiro" />
         <module name="mvmoremodule-util" />
+        <module name="mvmoremodule-zookeeper" />
+        <module name="rabbitmq-api" />
+        <module name="shadingjdbc-spring" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="com.xzy.elasticjob" target="1.7" />
+      <module name="com.xzy.spring" target="1.7" />
+      <module name="elasticsearch-test" target="1.5" />
+      <module name="hadoop-demo" target="1.7" />
       <module name="mvmoremodule-jms" target="1.7" />
+      <module name="mvmoremodule-kafka" target="1.7" />
       <module name="mvmoremodule-manager" target="1.7" />
-      <module name="mvmoremodule-mybatisplus" target="1.7" />
       <module name="mvmoremodule-parent" target="1.7" />
-      <module name="mvmoremodule-redis" target="1.7" />
+      <module name="mvmoremodule-quartz" target="1.7" />
+      <module name="mvmoremodule-redis" target="1.8" />
       <module name="mvmoremodule-shiro" target="1.7" />
       <module name="mvmoremodule-util" target="1.7" />
+      <module name="mvmoremodule-zookeeper" target="1.7" />
+      <module name="rabbitmq-api" target="6" />
+      <module name="shadingjdbc-spring" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

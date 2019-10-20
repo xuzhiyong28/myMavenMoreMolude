@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="shadingjdbc-spring:war">
+    <output-path>$PROJECT_DIR$/shadingjdbc-spring/target</output-path>
+    <root id="archive" name="shadingjdbc-spring.war">
+      <element id="artifact" artifact-name="shadingjdbc-spring:war exploded" />
+    </root>
+  </artifact>
+</component>
