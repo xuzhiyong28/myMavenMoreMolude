@@ -1,11 +1,19 @@
 package com.xzy.mvmoremodule;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorSupplier;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -58,4 +66,89 @@ public class KafkaStreamTest {
         streams.start();
         TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
     }
+
+
+    /***
+     * 从kafka主题中获取访问日志，通过流的方式，10秒钟内访问超过100次的做业务逻辑处理
+     */
+    @Test
+    public void kafkaStreamProcessor() {
+        Properties prop = new Properties();
+        //执行流处理应用的ID
+        prop.put(StreamsConfig.APPLICATION_ID_CONFIG, "kstreams_ip");
+        prop.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092;192.168.199.129:9092;192.168.199.130:9092");
+        prop.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        prop.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        //选择最近的消费进行消费
+        prop.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        //设置保存处理器保存当前的频率
+        prop.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, "50");
+        //设置轮询kafka主题获取数据源的等待时间间隔
+        prop.put(StreamsConfig.POLL_MS_CONFIG, "10");
+
+        KStreamBuilder kStreamBuilder = new KStreamBuilder();
+        //拿到数据
+        KStream<String, String> access = kStreamBuilder.stream("acc-log");
+
+        //map函数将访问记录映射成key-value
+        //groupByKey + count 根据key值进行分组,统计出现次数（分组需要窗口的概念，在一段时间内的分组,这里切分成10秒钟一个窗口）
+        //filter 进行过滤，这里是过滤窗口时间内次数超过100的
+        access
+                .map(new KeyValueMapper<String, String, KeyValue<String, String>>() {
+                    @Override
+                    public KeyValue<String, String> apply(String key, String value) {
+                        return new KeyValue<>(value, value);
+                    }
+                })
+                .groupByKey()
+                .count(TimeWindows.of(10 * 1000L).advanceBy(10 * 1000L), "acc-log")
+                .toStream()
+                .filter(new Predicate<Windowed<String>, Long>() {
+                    @Override
+                    public boolean test(Windowed<String> stringWindowed, Long value) {
+                        if(null != value && value.longValue() >= 100){
+                            return true;
+                        }else {
+                            return false;
+                        }
+                    }
+                })
+                .process(new ProcessorSupplier<Windowed<String>, Long>() {
+                    @Override
+                    public Processor<Windowed<String>, Long> get() {
+                        return new BlackListProcessor();
+                    }
+                },"acc-log");
+
+        access.print();
+        KafkaStreams streams = new KafkaStreams(kStreamBuilder,prop);
+        streams.start();
+
+        try {
+            TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        streams.close();
+    }
+
+
+    /***
+     * 初始化数据
+     */
+    @Test
+    public void initTopicMessage(){
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092"); //kafka集群地址
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // key的序列化类
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // value的序列化类
+        Producer<String, String> producer = new KafkaProducer<>(properties);
+        String[] names = {"xuzhiyong","chenyixiang","gaoyongshun","liangxianhui"};
+        for(int i = 0 ; i < 10000 ; i++){
+            ProducerRecord<String,String> record = new ProducerRecord<>("acc-log", names[RandomUtils.nextInt(0,3)]);
+            producer.send(record);
+        }
+        producer.close();
+    }
+
 }
