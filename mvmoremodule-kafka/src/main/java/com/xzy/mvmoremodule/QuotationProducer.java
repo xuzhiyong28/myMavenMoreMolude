@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,6 +79,11 @@ public class QuotationProducer {
                         }
                     }
                 });
+                Future<RecordMetadata> future = kafkaProducer.send(record);
+                //返回一个future，并调用get等待发送成功返回
+                future.get();
+
+
                 if(num % 10 == 0){
                     TimeUnit.SECONDS.sleep(2);
                 }
