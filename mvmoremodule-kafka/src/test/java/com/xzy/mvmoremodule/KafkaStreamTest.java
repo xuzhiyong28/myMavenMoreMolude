@@ -13,7 +13,9 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.apache.kafka.streams.processor.TopologyBuilder;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -106,9 +108,9 @@ public class KafkaStreamTest {
                 .filter(new Predicate<Windowed<String>, Long>() {
                     @Override
                     public boolean test(Windowed<String> stringWindowed, Long value) {
-                        if(null != value && value.longValue() >= 100){
+                        if (null != value && value.longValue() >= 100) {
                             return true;
-                        }else {
+                        } else {
                             return false;
                         }
                     }
@@ -118,10 +120,10 @@ public class KafkaStreamTest {
                     public Processor<Windowed<String>, Long> get() {
                         return new BlackListProcessor();
                     }
-                },"acc-log");
+                }, "acc-log");
 
         access.print();
-        KafkaStreams streams = new KafkaStreams(kStreamBuilder,prop);
+        KafkaStreams streams = new KafkaStreams(kStreamBuilder, prop);
         streams.start();
 
         try {
@@ -137,18 +139,71 @@ public class KafkaStreamTest {
      * 初始化数据
      */
     @Test
-    public void initTopicMessage(){
+    public void initTopicMessage() {
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092"); //kafka集群地址
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // key的序列化类
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // value的序列化类
         Producer<String, String> producer = new KafkaProducer<>(properties);
-        String[] names = {"xuzhiyong","chenyixiang","gaoyongshun","liangxianhui"};
-        for(int i = 0 ; i < 10000 ; i++){
-            ProducerRecord<String,String> record = new ProducerRecord<>("acc-log", names[RandomUtils.nextInt(0,3)]);
+        String[] names = {"xuzhiyong", "chenyixiang", "gaoyongshun", "liangxianhui"};
+        for (int i = 0; i < 10000; i++) {
+            ProducerRecord<String, String> record = new ProducerRecord<>("acc-log", names[RandomUtils.nextInt(0, 3)]);
             producer.send(record);
         }
         producer.close();
     }
+
+    /***
+     * 简单流处理
+     * 程序 ----发送消息-----> topic1 ------流处理----->  topic2
+     */
+    @Test
+    public void easyStreamTest() {
+        // 定义输入的 topic
+        String from = "firstTopic";
+        // 定义输出的 topic
+        String to = "secondTopic";
+        Properties settings = new Properties();
+        //定义这个流处理的应用ID
+        settings.put(StreamsConfig.APPLICATION_ID_CONFIG, "logFilter");
+        settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        StreamsConfig config = new StreamsConfig(settings);
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.addSource("SOURCE",from)
+               .addProcessor("PROCESS", new ProcessorSupplier() {
+                   @Override
+                   public Processor get() {
+                       return new Processor<byte[], byte[]>() {
+                           private ProcessorContext processorContext;
+                           @Override
+                           public void init(ProcessorContext processorContext) {
+                               this.processorContext = processorContext;
+                           }
+
+                           @Override
+                           public void process(byte[] keyByte, byte[] valueByte) {
+                                String line = new String(valueByte) + "_xuzy";
+                                processorContext.forward(keyByte, line.getBytes());
+                           }
+
+                           @Override
+                           public void punctuate(long l) {
+
+                           }
+
+                           @Override
+                           public void close() {
+
+                           }
+                       };
+                   }
+               },"SOURCE")
+               .addSink("SINK", to , "PROCESS");
+
+        //创建kafka stream
+        KafkaStreams streams = new KafkaStreams(builder,config);
+        streams.start();
+    }
+
 
 }
