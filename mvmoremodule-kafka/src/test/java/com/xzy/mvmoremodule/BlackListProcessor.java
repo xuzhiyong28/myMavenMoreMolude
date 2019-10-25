@@ -16,6 +16,7 @@ public class BlackListProcessor implements Processor<Windowed<String>, Long> {
     @Override
     public void init(ProcessorContext processorContext) {
         this.context = processorContext;
+        this.context.schedule(1000);
     }
 
     /***
@@ -29,12 +30,11 @@ public class BlackListProcessor implements Processor<Windowed<String>, Long> {
         System.out.println("key = " + stringWindowed.key());
         System.out.println("value = " + aLong.longValue());
         System.out.println("时间窗口 = " + stringWindowed.window().start());
-
     }
 
     @Override
     public void punctuate(long timestamp) {
-
+        context.commit();
     }
 
     @Override

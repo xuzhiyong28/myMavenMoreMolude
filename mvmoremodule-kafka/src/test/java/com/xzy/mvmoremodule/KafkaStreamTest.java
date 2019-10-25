@@ -1,6 +1,7 @@
 package com.xzy.mvmoremodule;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -40,12 +41,11 @@ public class KafkaStreamTest {
         prop.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         prop.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         //设置偏移量属性为最近
-        prop.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        //prop.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         //实例化流对象
         KStreamBuilder builder = new KStreamBuilder();
         //消费的主题
         KStream<String, String> source = builder.stream("streams_wordcount_input");
-
         //执行统计单词逻辑
         KTable<String, Long> counts = source.flatMapValues(new ValueMapper<String, Iterable<String>>() {
             @Override
@@ -66,7 +66,17 @@ public class KafkaStreamTest {
         KafkaStreams streams = new KafkaStreams(builder, prop);
         //开始执行
         streams.start();
-        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+        TimeUnit.SECONDS.sleep(90);
+    }
+
+
+    /***
+     * 进行单词的统计
+     */
+    @Test
+    public void wordcountTest(){
+        String kk = "{\"startdate\":\"2019-10-10\",\"enddate\":\"2019-10-10\"}";
+        System.out.println(StringUtils.startsWith(kk,"{"));
     }
 
 
@@ -78,7 +88,7 @@ public class KafkaStreamTest {
         Properties prop = new Properties();
         //执行流处理应用的ID
         prop.put(StreamsConfig.APPLICATION_ID_CONFIG, "kstreams_ip");
-        prop.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092;192.168.199.129:9092;192.168.199.130:9092");
+        prop.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         prop.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         prop.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         //选择最近的消费进行消费
@@ -141,7 +151,7 @@ public class KafkaStreamTest {
     @Test
     public void initTopicMessage() {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092"); //kafka集群地址
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); //kafka集群地址
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // key的序列化类
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // value的序列化类
         Producer<String, String> producer = new KafkaProducer<>(properties);
