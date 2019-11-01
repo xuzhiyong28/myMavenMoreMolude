@@ -31,16 +31,14 @@ public class Main2 {
 
         workerPool.start(executor);
 
-        for(int i = 0 ; i < 8 ; i++){
+        for(int i = 0 ; i < 10000 ; i++){
             long seq = ringBuffer.next();
             ringBuffer.get(seq).setPrice(Math.random() * 9999);
             ringBuffer.publish(seq);
         }
 
-        Thread.sleep(1000);
-
+        Thread.sleep(10000);
         workerPool.halt();
-
         executor.shutdown();
     }
 
