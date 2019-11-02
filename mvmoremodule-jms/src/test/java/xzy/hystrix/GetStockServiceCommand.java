@@ -32,7 +32,12 @@ public class GetStockServiceCommand extends HystrixCommand<String> {
                 .withQueueSizeRejectionThreshold(10000);
         //命令属性配置
         HystrixCommandProperties.Setter commonSetter = HystrixCommandProperties.Setter()
-                .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD);
+                .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
+                .withFallbackEnabled(true) //默认为true 是否开启降级处理，如果是则在超时或者异常调用getFallback进行降级处理
+                .withExecutionIsolationThreadInterruptOnFutureCancel(true) //默认为false
+                .withExecutionTimeoutEnabled(true) //默认为true 是否启动执行超时机制
+                .withExecutionTimeoutInMilliseconds(1000);
+
         return HystrixCommand.Setter.withGroupKey(groupKey)
                 .andCommandKey(commandKey)
                 .andThreadPoolKey(threadPoolKey)
