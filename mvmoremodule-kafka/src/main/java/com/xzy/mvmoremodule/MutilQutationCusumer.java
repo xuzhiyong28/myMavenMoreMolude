@@ -41,7 +41,7 @@ public class MutilQutationCusumer {
      * 消费者线程
      */
     static class KafkaCusumerThread implements Runnable {
-        private static final String TOPIC = "stock-quotation"; //topic name
+        private static final String TOPIC = "beatlog"; //topic name
         private static final String BROKER_LIST = "192.168.199.128:9092,192.168.199.129:9092,192.168.199.130:9092";
         private static KafkaConsumer<String, String> kafkaConsumer;
 
@@ -65,10 +65,7 @@ public class MutilQutationCusumer {
                     //长轮训拉取消息
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(1000);
                     for (ConsumerRecord<String, String> record : records) {
-                        System.out.printf("partition = %d , offset = %d , key = %s  , value =%s",
-                                record.partition(), record.offset(), record.key(), record.value()
-                        );
-                        System.out.println();
+                        System.out.printf(" ThreadId = %s ,offset = %d, key = %s, timestamp = %d , value = %s%n", Thread.currentThread().getId(), record.offset(), record.key(), record.timestamp(), record.value());
                     }
                 }
             } catch (Exception e) {
