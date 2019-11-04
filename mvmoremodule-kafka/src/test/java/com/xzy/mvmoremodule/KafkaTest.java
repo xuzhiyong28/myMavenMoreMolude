@@ -10,6 +10,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Test;
 
+import java.sql.Time;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -21,15 +22,16 @@ public class KafkaTest {
     @Test
     public void sendMessage() throws InterruptedException {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.199.128:9092,192.168.199.129:9092,192.168.199.130:9092"); //kafka集群地址
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); //kafka集群地址
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // key的序列化类
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // value的序列化类
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
-        while(true){
-            ProducerRecord<String, String> record = new ProducerRecord<>("beatlog","{\"@timestamp\":\"2019-10-27T14:28:00.533Z\",\"@metadata\":{\"beat\":\"metricbeat\",\"type\":\"_doc\",\"version\":\"7.4.1\",\"topic\":\"beatlog\"},\"system\":{\"load\":{\"cores\":1,\"1\":2.55,\"5\":2.05,\"15\":0.98,\"norm\":{\"5\":2.05,\"15\":0.98,\"1\":2.55}}},\"ecs\":{\"version\":\"1.1.0\"},\"host\":{\"name\":\"server-1\"},\"agent\":{\"hostname\":\"server-1\",\"id\":\"1821ba9e-678c-430e-95d4-da0e43520e02\",\"version\":\"7.4.1\",\"type\":\"metricbeat\",\"ephemeral_id\":\"fd60d091-f20d-452a-a7b0-1b3e56d52d85\"},\"event\":{\"dataset\":\"system.load\",\"module\":\"system\",\"duration\":109825},\"metricset\":{\"name\":\"load\",\"period\":1000},\"service\":{\"type\":\"system\"}}\n" +
-                    "{\"@timestamp\":\"2019-10-27T14:28:00.566Z\",\"@metadata\":{\"beat\":\"metricbeat\",\"type\":\"_doc\",\"version\":\"7.4.1\",\"topic\":\"beatlog\"},\"ecs\":{\"version\":\"1.1.0\"},\"event\":{\"dataset\":\"system.socket.summary\",\"module\":\"system\",\"duration\":77320782},\"metricset\":{\"period\":1000,\"name\":\"socket_summary\"},\"service\":{\"type\":\"system\"},\"system\":{\"socket\":{\"summary\":{\"udp\":{\"all\":{\"count\":2},\"memory\":4096},\"all\":{\"count\":49,\"listening\":21},\"tcp\":{\"all\":{\"listening\":21,\"established\":23,\"close_wait\":3,\"time_wait\":0,\"orphan\":0,\"count\":47},\"memory\":94208}}}},\"host\":{\"name\":\"server-1\"},\"agent\":{\"version\":\"7.4.1\",\"type\":\"metricbeat\",\"ephemeral_id\":\"fd60d091-f20d-452a-a7b0-1b3e56d52d85\",\"hostname\":\"server-1\",\"id\":\"1821ba9e-678c-430e-95d4-da0e43520e02\"}}");
+        int i = 0;
+        while (true) {
+            ProducerRecord<String, String> record = new ProducerRecord<>("httplog", "{,\"id\" : \"" + i + "\" ,\"message\" : \"消息_" + System.currentTimeMillis() + "\" }\n");
             kafkaProducer.send(record);
-            TimeUnit.SECONDS.sleep(1);
+            i++;
+            TimeUnit.MICROSECONDS.sleep(200);
         }
     }
 
@@ -65,8 +67,8 @@ public class KafkaTest {
     @Test
     public void singleCusumerTest2() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.157.128:9092");
-        props.put("group.id", "singleCusumerTest" + System.currentTimeMillis());
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("group.id", "singleCusumerTest");
         //关闭自动提交
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "earliest");
@@ -74,7 +76,10 @@ public class KafkaTest {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Lists.newArrayList("beatlog"));
+        //consumer.subscribe(Lists.newArrayList("beatlog"));
+        //指定分区消费并从分区0的开头处开始消费数据
+        consumer.assign(Lists.newArrayList(new TopicPartition("httplog", 0)));
+        consumer.seekToBeginning(Lists.newArrayList(new TopicPartition("httplog", 0)));
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
@@ -163,8 +168,8 @@ public class KafkaTest {
                 System.out.printf("offset = %d, key = %s, timestamp = %d , value = %s%n", record.offset(), record.key(), record.timestamp(), record.value());
                 currentOffsets.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset() + 1, "no metadata"));
                 //当处理200条数据的时候就做一下提交偏移量操作
-                if(count % 200 == 0){
-                    consumer.commitAsync(currentOffsets,null);
+                if (count % 200 == 0) {
+                    consumer.commitAsync(currentOffsets, null);
                 }
             }
             currentOffsets = null;
