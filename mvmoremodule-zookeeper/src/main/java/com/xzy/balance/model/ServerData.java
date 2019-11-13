@@ -37,6 +37,12 @@ public class ServerData implements Serializable, Comparable<ServerData>{
         return "ServerData [balance=" + balance + ", host=" + host + ", port="
                 + port + "]";
     }
+
+    /***
+     * 按照负载排序
+     * @param o
+     * @return
+     */
     public int compareTo(ServerData o) {
         return this.getBalance().compareTo(o.getBalance());
     }
