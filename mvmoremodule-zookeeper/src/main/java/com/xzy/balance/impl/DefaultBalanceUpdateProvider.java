@@ -33,6 +33,7 @@ public class DefaultBalanceUpdateProvider implements BalanceUpdateProvider {
                 }
                 serverData.setBalance(serverData.getBalance() + step);
                 cf.setData().withVersion(stat.getVersion()).forPath(serverPath, SerializationUtils.serialize(serverData));
+                printBalance(serverData,step,true);
                 return false;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -55,11 +56,16 @@ public class DefaultBalanceUpdateProvider implements BalanceUpdateProvider {
                 final Integer currBalance = serverData.getBalance();
                 serverData.setBalance(currBalance > step ? currBalance - step : 0);
                 cf.setData().withVersion(stat.getVersion()).forPath(serverPath, SerializationUtils.serialize(serverData));
+                printBalance(serverData,step,false);
                 return false;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return false;
             }
         }
+    }
+
+    public void printBalance(ServerData serverData,Integer step , Boolean type){
+        System.out.println("服务器:" + serverData.getHost() + ":" + serverData.getPort() + "，负载" + (type ? "加" : "减") + step);
     }
 }

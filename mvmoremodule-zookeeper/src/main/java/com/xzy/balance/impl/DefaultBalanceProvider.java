@@ -1,5 +1,6 @@
 package com.xzy.balance.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.xzy.balance.model.ServerData;
 import org.apache.commons.lang3.SerializationUtils;
@@ -30,8 +31,8 @@ public class DefaultBalanceProvider extends AbstractBalanceProvider<ServerData> 
         this.zkServer = zkServer;
         this.curatorFramework = CuratorFrameworkFactory.builder()
                 .connectString(this.zkServer)
-                .sessionTimeoutMs(5000)
-                .connectionTimeoutMs(5000)
+                .sessionTimeoutMs(SESSION_TIME_OUT)
+                .connectionTimeoutMs(CONNECT_TIME_OUT)
                 .retryPolicy(new ExponentialBackoffRetry(1000,3))
                 .build();
         this.curatorFramework.getConnectionStateListenable().addListener(new ConnectionStateListener() {
@@ -73,8 +74,10 @@ public class DefaultBalanceProvider extends AbstractBalanceProvider<ServerData> 
         List<ServerData> serverDataList = Lists.newArrayList();
         try {
             List<String> childrenList = curatorFramework.getChildren().forPath(this.serversPath);
+            System.out.println("childrenList : " + JSON.toJSONString(childrenList));
             for(String children : childrenList){
                 ServerData serverData = SerializationUtils.deserialize(curatorFramework.getData().forPath(this.serversPath + "/" + children));
+                System.out.println("serverData:" + serverData.toString());
                 serverDataList.add(serverData);
             }
         } catch (Exception e) {
