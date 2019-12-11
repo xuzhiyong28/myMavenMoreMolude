@@ -1,5 +1,8 @@
 package com.dxc.aqs;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Increment {
     private int i;
     private PlainLock lock = new PlainLock();
@@ -41,9 +44,9 @@ public class Increment {
         System.out.println(threadNum + "个线程，循环" + loopTimes + "次结果：" + increment.getI());
     }
 
-    public static void main(String[] args){
-        //test(20, 1);
+    public static void test2() throws InterruptedException {
         final PlainLock plainLock = new PlainLock();
+        Thread.currentThread().setName("主线程");
         plainLock.lock();
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -52,9 +55,47 @@ public class Increment {
                 System.out.println("!!!!!!!!!!!!!!!!");
                 plainLock.unlock();
             }
-        },"子线程");
+        },"子线程1");
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                plainLock.lock();
+                System.out.println("!!!!!!!!!!!!!!!!");
+                plainLock.unlock();
+            }
+        },"子线程2");
         thread.start();
+        TimeUnit.SECONDS.sleep(1);
+        thread2.start();
+        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
         plainLock.unlock();
+    }
+
+
+    public static void test3() throws InterruptedException {
+        final ReentrantLock plainLock = new ReentrantLock();
+        Thread.currentThread().setName("主线程");
+        plainLock.lock();
+        Thread thread = new Thread(() -> {
+            plainLock.lock();
+            System.out.println("!!!!!!!!!!!!!!!!");
+            plainLock.unlock();
+        },"子线程1");
+        Thread thread2 = new Thread(() -> {
+            plainLock.lock();
+            System.out.println("!!!!!!!!!!!!!!!!");
+            plainLock.unlock();
+        },"子线程2");
+        thread.start();
+        TimeUnit.SECONDS.sleep(1);
+        thread2.start();
+        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+        plainLock.unlock();
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        test3();
     }
 
 }

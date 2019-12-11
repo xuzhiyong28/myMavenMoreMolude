@@ -4,9 +4,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PlainLock implements Lock{
 
+
+    public static void main(String[] args){
+        PlainLock plainLock = new PlainLock();
+        plainLock.lock();
+        System.out.println("!!!");
+        plainLock.unlock();
+
+        /*ReentrantLock reentrantLock = new ReentrantLock();
+        reentrantLock.lock();
+        System.out.println("!!!!!");
+        reentrantLock.unlock();*/
+    }
 
     @Override
     public void lock() {
@@ -59,6 +72,7 @@ public class PlainLock implements Lock{
         protected boolean isHeldExclusively() {
             return getState() == 1;
         }
+
     }
 
 
