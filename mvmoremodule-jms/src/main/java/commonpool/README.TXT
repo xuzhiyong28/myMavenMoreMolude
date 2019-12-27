@@ -1,0 +1,1 @@
+参照JedisPool写的基于common-pool-2的对象池
