@@ -1,32 +1,24 @@
-package com.dxc.blockingQueue;/**
- * Created by Administrator on 2018-06-11.
- */
+package com.dxc.blockingQueue;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author xuzhiyong
- * @createDate 2018-06-11-16:26
- * 特点:
- *  1.有界 + 数组 + 阻塞
- *  2.不需要扩容，初始化时要指定数组的长度，当满时返回false或者报错
- *  3.底层利用两个变量 takeIndex 和 putIndex 循环利用数组
- *   3.1 putIndex用来判断当前数组入队的指针，当到达最后一个时就重新设置成0，从头开始循环
- *   3.2 takeIndex用来判断当前数组出队的指针，当到达最后一个时就重新设置成0，从头开始循环
- *  4. 底层采用ReentrantLock + notEmpty(数组不为空Condition) + notFull(数组为空Condition) 来控制。
- *     所以效率低，出队和入队都用同一个锁，一次性只能有一个入队一个出队 并且会使用Thread.yield()使得其他线程让出CPU
- *  5.为什么PriorityBlockingQueue不需要notFull条件
- *     因为没有满的情况，满了会自动扩容，所以不会满
+ * @createDate 2019-12-29-21:55
+ * 1. 有界(初始化传入一个长度，如果没有就是Integer.MAX,也相当于无界了) + 单链表(只能指向下一个元素) + 阻塞
+ * 2. 没有扩容的说法
+ * 3. 底层采用 两个ReentrantLock[takeLock,putLock] + 两个Condition[notEmpty,notFull]来实现阻塞和线程安全
+ * 4. 用两把锁实现入队出队相互不阻塞，因为是FIFO，所以入队都是从尾节点开始，出队都是从从节点开始。相互不影响。
+ *
  */
-public class ArrayBlockingQueueTest {
-
+public class LinkedBlockingQueueTest {
 
     public static void main(String args[]) {
-        BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<String>(1);
-        Thread threadA = new Thread(new Customer(blockingQueue));
-        Thread threadB = new Thread(new Producer(blockingQueue));
+        BlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>(1);
+        Thread threadA = new Thread(new ArrayBlockingQueueTest.Customer(blockingQueue));
+        Thread threadB = new Thread(new ArrayBlockingQueueTest.Producer(blockingQueue));
         threadA.start();
         threadB.start();
     }
@@ -84,6 +76,4 @@ public class ArrayBlockingQueueTest {
             }
         }
     }
-
-
 }
