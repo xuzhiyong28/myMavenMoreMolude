@@ -16,7 +16,7 @@ import org.junit.Test;
 public class NettyTest {
 
     @Test
-    public void nettyServerDemoOne() throws Exception{
+    public void nettyServerDemoOne() throws Exception {
         //创建bossGroup和workerGroup
         //创建了两个线程组，bossGroup 和 workerGroup
         //bossGroup 用来处理客户端的连接请求
@@ -24,7 +24,7 @@ public class NettyTest {
         //两个都是无限循环的
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try{
+        try {
             //创建服务器端的启动对象和配置
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup) //设置两个线程组
@@ -41,11 +41,22 @@ public class NettyTest {
             System.out.println("======服务器配置成功========");
             //绑定一个端口并且同步并启动，生成了一个ChannelFuture
             ChannelFuture channelFuture = bootstrap.bind(6668).sync();
+            channelFuture.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    if (channelFuture.isSuccess()) {
+                        System.out.println("监听端口 6668 成功");
+                    } else {
+                        System.out.println("监听端口 6668 失败");
+                    }
+                }
+            });
+
             //关闭通道进行监听 -- 这里不是关闭
             channelFuture.channel().closeFuture().sync();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
@@ -57,7 +68,7 @@ public class NettyTest {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         //创建客户端启动对象 区别于服务端的ServerBootstrap
         Bootstrap bootstrap = new Bootstrap();
-        try{
+        try {
             bootstrap.group(eventLoopGroup)
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
@@ -72,11 +83,35 @@ public class NettyTest {
             ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 6668).sync();
             //关闭通道进行监听 -- 这里不是关闭
             channelFuture.channel().closeFuture().sync();
-        }catch (Exception e){
+
+
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             eventLoopGroup.shutdownGracefully();
         }
     }
+
+
+    @Test
+    public void nettyServerDemoTwo() {
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(bossGroup,workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new TestServerInitializer());
+            ChannelFuture cf = bootstrap.bind(6668).sync();
+            cf.channel().closeFuture().sync();
+
+        } catch (Exception e) {
+
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+
 
 }
