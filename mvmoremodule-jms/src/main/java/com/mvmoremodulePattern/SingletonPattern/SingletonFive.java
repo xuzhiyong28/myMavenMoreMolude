@@ -15,7 +15,7 @@ package com.mvmoremodulePattern.SingletonPattern;/**
  * 不失为一种最好的Java语言单例模式实现方式**（其缺点是与编程语言本身的特性相关，很多面向对象语言不支持IoDH）
  */
 public class SingletonFive {
-    private SingletonFive(){};
+    private SingletonFive(){}
     //创建一个内部静态类
     private static class SingletonHolder{
         private final static SingletonFive sinleton = new SingletonFive();

@@ -15,7 +15,7 @@ package com.mvmoremodulePattern.SingletonPattern;/**
  */
 public class SingletonThree {
     private static SingletonThree singletonThree = new SingletonThree();
-    private SingletonThree(){};
+    private SingletonThree(){}
 
     private static SingletonThree getInstance(){
         return singletonThree;

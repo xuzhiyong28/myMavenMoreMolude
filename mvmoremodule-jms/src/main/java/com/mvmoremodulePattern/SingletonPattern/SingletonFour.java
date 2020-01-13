@@ -8,7 +8,7 @@ package com.mvmoremodulePattern.SingletonPattern;/**
  */
 public class SingletonFour {
     private static volatile SingletonFour singletonFour;
-    private SingletonFour(){};
+    private SingletonFour(){}
     private static SingletonFour getSingleton(){
         if(singletonFour == null){  //第一次检查
             synchronized (SingletonFour.class){
