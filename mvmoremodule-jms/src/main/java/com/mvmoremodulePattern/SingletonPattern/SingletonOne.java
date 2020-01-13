@@ -12,7 +12,7 @@ package com.mvmoremodulePattern.SingletonPattern;/**
  */
 public class SingletonOne {
     private static SingletonOne singletonOne;
-    private SingletonOne(){};
+    private SingletonOne(){}
     private static SingletonOne getInstance(){
         if(singletonOne == null)
             singletonOne = new SingletonOne();
