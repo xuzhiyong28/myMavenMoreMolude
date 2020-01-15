@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -31,12 +32,23 @@ import java.util.concurrent.TimeUnit;
 public class Test {
 
     public ApplicationContext applicationContext;
+    public AnnotationConfigApplicationContext annotationConfigApplicationContext;
 
     public RedisTemplate redisTemplate;
 
     @Before
     public void initApp() {
         applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
+    }
+
+
+    @org.junit.Test
+    public void springTest(){
+        annotationConfigApplicationContext.register(SpringDemo.class);
+        annotationConfigApplicationContext.refresh();
+        SpringDemo springDemo = annotationConfigApplicationContext.getBean(SpringDemo.class);
+        System.out.println(springDemo);
     }
 
 
