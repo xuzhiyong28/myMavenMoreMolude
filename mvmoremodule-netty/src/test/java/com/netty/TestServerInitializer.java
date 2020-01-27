@@ -36,7 +36,9 @@ public class TestServerInitializer extends ChannelInitializer<SocketChannel> {
                 if (msg instanceof HttpRequest) {
                     System.out.println("msg的类型:" + msg.getClass());
                     System.out.println("客户端地址:" + cxt.channel().remoteAddress());
-
+                    System.out.println("对应的channel=" + cxt.channel() + " pipeline=" + cxt.pipeline()
+                    + "通过pipeline获取channel " + cxt.pipeline().channel());
+                    System.out.println("当前cxt的handler=" + cxt.handler());
                     HttpRequest httpRequest = (HttpRequest) msg;
                     URI uri = new URI(httpRequest.uri());
                     if("/favicon.ico".equals(uri.getPath())){
