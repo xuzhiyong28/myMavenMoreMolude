@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -59,21 +58,15 @@ public class Utils {
         if (saleItems == null) {
             throw new RuntimeException("extensions is empty");
         }
-
         //初始化4个季度
         Map<Integer, QuarterSalesItem> quarterSalesItemMap = Lists.newArrayList(1, 2, 3, 4)
                 .stream()
                 .collect(Collectors.toMap(quarter -> quarter, quarter -> new QuarterSalesItem(quarter, 0)));
+        saleItems.stream().forEach(saleItem -> {
+            QuarterSalesItem quarterSalesItem = quarterSalesItemMap.get(isInQuarter(saleItem));
+            quarterSalesItem.setTotal(quarterSalesItem.getTotal() + saleItem.getSaleNumbers());
+        });
 
-        //根据季度拆分对象
-        Map<Integer, List<SaleItem>> saleItemByQuarterMap = saleItems.stream()
-                .collect(Collectors.groupingBy(saleItem -> isInQuarter(saleItem)));
-
-        for (Map.Entry<Integer, List<SaleItem>> entry : saleItemByQuarterMap.entrySet()) {
-            //规约合并所有每个季度的值
-            double total = entry.getValue().stream().map(saleItem -> saleItem.getSaleNumbers()).reduce(0.0d, Double::sum);
-            quarterSalesItemMap.get(entry.getKey()).setTotal(total);
-        }
         return new ArrayList<>(quarterSalesItemMap.values());
     }
 
