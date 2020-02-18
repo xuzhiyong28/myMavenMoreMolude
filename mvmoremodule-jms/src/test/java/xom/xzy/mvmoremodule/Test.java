@@ -157,6 +157,8 @@ public class Test {
 
     @org.junit.Test
     public void test8() throws IOException {
-        System.out.println(RandomUtils.nextInt(0,1));
+        LinkedBlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>(10);
+        blockingQueue.add("1");
+        blockingQueue.add("2");
     }
 }
