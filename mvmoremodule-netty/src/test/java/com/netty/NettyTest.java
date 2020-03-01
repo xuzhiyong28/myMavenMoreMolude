@@ -93,6 +93,9 @@ public class NettyTest {
     }
 
 
+    /***
+     * http服务器
+     */
     @Test
     public void nettyServerDemoTwo() {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -112,6 +115,9 @@ public class NettyTest {
             workerGroup.shutdownGracefully();
         }
     }
+
+
+
 
 
 }
