@@ -56,15 +56,15 @@ public class CyclicBarrierTest {
 
 
     public static void test2() throws InterruptedException {
-        int NUMBER = 3000;
-        Map<String, String> concurrentMap = Maps.newConcurrentMap();
+        int NUMBER = 100;
+        Map<String, String> concurrentMap = Maps.newHashMap();
         CyclicBarrier cyclicBarrier = new CyclicBarrier(NUMBER);
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER);
         for(int i = 0 ; i < NUMBER ; i++){
             executorService.execute(new Thread(new Runner2(cyclicBarrier,concurrentMap)));
         }
-        executorService.awaitTermination(60 * 2, TimeUnit.SECONDS);
-        executorService.shutdown();
+        //executorService.awaitTermination(60 * 2, TimeUnit.SECONDS);
+        TimeUnit.SECONDS.sleep(10);
         System.out.println(concurrentMap.keySet().size());
     }
 
