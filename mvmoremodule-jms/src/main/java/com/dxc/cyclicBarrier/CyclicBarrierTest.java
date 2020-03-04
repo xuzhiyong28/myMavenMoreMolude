@@ -63,8 +63,7 @@ public class CyclicBarrierTest {
         for(int i = 0 ; i < NUMBER ; i++){
             executorService.execute(new Thread(new Runner2(cyclicBarrier,concurrentMap)));
         }
-        //executorService.awaitTermination(60 * 2, TimeUnit.SECONDS);
-        TimeUnit.SECONDS.sleep(10);
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
         System.out.println(concurrentMap.keySet().size());
     }
 
