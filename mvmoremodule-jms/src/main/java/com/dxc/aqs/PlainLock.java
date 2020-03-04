@@ -1,65 +1,72 @@
 package com.dxc.aqs;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class PlainLock implements Lock{
+/***
+ * 根据AQS实现一个先进先出可重入锁
+ */
+public class PlainLock {
+    private Sync sync = new Sync();
 
-
-    public static void main(String[] args){
-        PlainLock plainLock = new PlainLock();
-        plainLock.lock();
-        System.out.println("!!!");
-        plainLock.unlock();
-
-        /*ReentrantLock reentrantLock = new ReentrantLock();
-        reentrantLock.lock();
-        System.out.println("!!!!!");
-        reentrantLock.unlock();*/
-    }
-
-    @Override
     public void lock() {
         sync.acquire(1);
     }
 
-    @Override
-    public void lockInterruptibly() throws InterruptedException {
-
-    }
-
-    @Override
-    public boolean tryLock() {
-        return false;
-    }
-
-    @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-        return false;
-    }
-
-    @Override
     public void unlock() {
         sync.release(1);
     }
 
-    @Override
-    public Condition newCondition() {
-        return null;
+    public static void main(String[] args) throws InterruptedException {
+        int NUMBER = 100;
+        PlainLock lock = new PlainLock();
+        Map<String,String> myMap = Maps.newHashMap();
+        for (int i = 0; i < NUMBER; i++) {
+            new Thread(new Runner(lock,myMap),"线程" + i).start();
+        }
+        TimeUnit.SECONDS.sleep(20);
+        System.out.println(myMap.entrySet().size());
+
     }
 
 
-    private Sync sync = new Sync();
+    private static class Runner implements Runnable {
+        PlainLock lock;
+        Map<String, String> myMap;
+
+        public Runner(PlainLock plainLock, Map<String, String> myMap) {
+            this.lock = plainLock;
+            this.myMap = myMap;
+        }
+
+        @Override
+        public void run() {
+            try {
+                lock.lock();
+                System.out.println(Thread.currentThread().getName() + "..开始执行");
+                for (int i = 0; i < 1000; i++) {
+                    myMap.put(UUID.randomUUID().toString(), "1");
+                }
+            } catch (Exception e) {
+
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+
     /****
      * 继承AQS
      */
-    private static class Sync extends AbstractQueuedSynchronizer{
+    private static class Sync extends AbstractQueuedSynchronizer {
         @Override
         protected boolean tryAcquire(int arg) {
-            return compareAndSetState(0,1);
+            return compareAndSetState(0, 1);
         }
 
         @Override
@@ -72,10 +79,7 @@ public class PlainLock implements Lock{
         protected boolean isHeldExclusively() {
             return getState() == 1;
         }
-
     }
-
-
 
 
 }

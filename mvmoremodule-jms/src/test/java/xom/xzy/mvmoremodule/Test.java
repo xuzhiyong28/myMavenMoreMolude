@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author xuzhiyong
@@ -156,9 +157,31 @@ public class Test {
     }
 
     @org.junit.Test
-    public void test8() throws IOException {
-        LinkedBlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>(10);
-        blockingQueue.add("1");
-        blockingQueue.add("2");
+    public void test8() {
+        MyTestModel[] testModels = new MyTestModel[]{
+            new MyTestModel("1","1"),
+            new MyTestModel("2","2"),
+            new MyTestModel("3","3")
+        };
+        int len = testModels.length;
+        MyTestModel[] newArray = Arrays.copyOf(testModels, len + 1);
+        testModels[0].age = "999";
+        newArray[3] = new MyTestModel("4","4");
+        for(MyTestModel model : testModels){
+            System.out.println(model.toString());
+        }
+        for(MyTestModel model : newArray){
+            System.out.println(model.toString());
+        }
+    }
+
+    @org.junit.Test
+    public void test9(){
+        ReentrantLock lock = new ReentrantLock();
+        lock.lock();
+        lock.lock();
+        System.out.println("!!!");
+        lock.unlock();
+        lock.unlock();
     }
 }

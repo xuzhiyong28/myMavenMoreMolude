@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 /**
@@ -70,7 +71,10 @@ public class Test {
 
     @org.junit.Test
     public void test7(){
-        System.out.println(1 << 30);
+        ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue();
+        queue.offer(1);
+        Integer value = queue.poll();
+        Integer value2 = queue.poll();
     }
 
 
