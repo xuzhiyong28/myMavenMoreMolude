@@ -7,16 +7,13 @@ public class Main {
     public static void main(String agrs[]) throws InterruptedException {
         ThreadModel threadModel = new ThreadModel("xuzy");
         threadLocal.set(threadModel);
-        Thread threadA = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ThreadModel threadAModel = threadLocal.get();
-                if(threadAModel == null){
-                    threadLocal.set(threadModel);
-                    threadAModel = threadLocal.get();
-                }
-                threadAModel.setName("gaoys");
+        Thread threadA = new Thread(() -> {
+            ThreadModel threadAModel = threadLocal.get();
+            if(threadAModel == null){
+                threadLocal.set(threadModel);
+                threadAModel = threadLocal.get();
             }
+            threadAModel.setName("gaoys");
         });
         threadA.start();
         threadA.join();
