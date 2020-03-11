@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.Pipeline;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,4 +45,16 @@ public class SentinelRedisTest {
         String value = jedis.get("mykey");
         System.out.println(value);
     }
+
+    @Test
+    public void test03(){
+        Jedis jedis = new Jedis("localhost", 6379);
+        String kk = jedis.set("nnm","01");
+        Pipeline pipe = jedis.pipelined();
+        pipe.set("name" , "xuzy");
+        pipe.set("age" , "20");
+        pipe.sync();
+    }
+
+
 }
