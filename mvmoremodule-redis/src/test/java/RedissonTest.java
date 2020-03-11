@@ -16,7 +16,7 @@ public class RedissonTest {
     private static final String LOCK_TITLE = "redisLock_";
 
     static {
-        config.useSingleServer().setAddress("127.0.0.1:6379");
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
         redisson = (Redisson) Redisson.create(config);
     }
 
@@ -39,10 +39,9 @@ public class RedissonTest {
             thread.start();
             threadList.add(thread);
         }
-        /*for(Thread thread : threadList){
+        for(Thread thread : threadList){
             thread.join();
-        }*/
-        TimeUnit.SECONDS.sleep(10);
+        }
         System.out.println(myMap.entrySet().size());
     }
 
