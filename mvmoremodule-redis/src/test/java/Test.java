@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.mvmoremoduleRedis.service.RedisHyperLogLog;
 import com.mvmoremoduleRedis.service.RedisOtherDemo;
+import com.springTest.AppConfig;
+import com.springTest.BeanA;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
@@ -142,5 +144,12 @@ public class Test {
         }
     }
 
+
+    @org.junit.Test
+    public void testSpring(){
+        AnnotationConfigApplicationContext annotationConfigApplicationContext =
+                new AnnotationConfigApplicationContext(AppConfig.class);
+        System.out.println(annotationConfigApplicationContext.getBean(BeanA.class));
+    }
 
 }

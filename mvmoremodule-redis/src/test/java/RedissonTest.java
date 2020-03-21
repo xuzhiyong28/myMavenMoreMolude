@@ -1,11 +1,11 @@
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.springTest.BeanA;
 import org.junit.Assert;
 import org.junit.Test;
 import org.redisson.Redisson;
-import org.redisson.api.RAtomicLong;
-import org.redisson.api.RFuture;
-import org.redisson.api.RLock;
+import org.redisson.api.*;
+import org.redisson.api.listener.MessageListener;
 import org.redisson.config.Config;
 
 import java.util.List;
@@ -53,13 +53,28 @@ public class RedissonTest {
         TimeUnit.SECONDS.sleep(1);
     }
 
-
     @Test
     public void test3(){
-        String key = LOCK_TITLE + "_lock";
-        RLock mylock = redisson.getLock(key);
-        mylock.lock();
-        mylock.lock();
+        RBucket<BeanA> bucket = redisson.getBucket("myObject");
+        bucket.set(new BeanA("beanA"),10,TimeUnit.SECONDS);
+        BeanA beanA = bucket.get();
+        System.out.println(beanA);
+    }
+
+
+
+
+
+    @Test
+    public void testCountDown() throws InterruptedException {
+        RCountDownLatch latch = redisson.getCountDownLatch("anyCountDownLatch");
+        latch.trySetCount(10);
+        for(int i = 0 ; i < 10 ; i++){
+            Thread thread = new Thread(new Runner2(latch));
+            thread.start();
+        }
+        latch.await();
+        System.out.println("======子线程都已经执行结束=======");
     }
 
 
@@ -83,10 +98,27 @@ public class RedissonTest {
     }
 
 
+    @Test
+    public void testTopic(){
+        RTopic<String> topic = redisson.getTopic("anyTopic");
+        topic.addListener((channel, str) -> {
+            System.out.println(channel);
+            System.out.println(str);
+        });
+    }
+
+    @Test
+    public void testTopicPush(){
+        RTopic<String> topic = redisson.getTopic("anyTopic");
+        long clientsReceivedMessage = topic.publish("My Name is xuzhiyong");
+    }
+
+
+
+
     class Runner implements Runnable {
         private RLock rLock;
         private Map<String, String> myMap;
-
         public Runner(RLock rLock, Map<String, String> myMap) {
             this.myMap = myMap;
             this.rLock = rLock;
@@ -107,5 +139,24 @@ public class RedissonTest {
         }
     }
 
+
+    class Runner2 implements  Runnable{
+        private RCountDownLatch latch;
+
+        public Runner2(RCountDownLatch latch) {
+            this.latch = latch;
+        }
+
+        @Override
+        public void run() {
+            System.out.println("线程ID：" + Thread.currentThread().getName());
+            latch.countDown();
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
