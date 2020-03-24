@@ -11,7 +11,13 @@
                                 expression="org.springframework.stereotype.Controller"></context:exclude-filter>
     </context:component-scan>
 
-    <bean id="beanModel" class="com.spring.BeanModel" init-method="myInit" destroy-method="myDestory"></bean>
+    <bean id="MyInstantiationAwareBeanPostProcessor" class="com.spring.MyInstantiationAwareBeanPostProcessor"/>
+
+    <bean id="beanModel" class="com.spring.BeanModel" init-method="myInit" destroy-method="myDestory">
+        <property name="name" value="许志勇"/>
+        <property name="age" value="29"/>
+    </bean>
+
 
 
 
