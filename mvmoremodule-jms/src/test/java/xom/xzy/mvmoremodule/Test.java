@@ -2,6 +2,8 @@ package xom.xzy.mvmoremodule;/**
  * Created by Administrator on 2018-03-30.
  */
 
+import com.dxc.util.CallbackTask;
+import com.dxc.util.CallbackTaskScheduler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
@@ -183,5 +185,26 @@ public class Test {
         System.out.println("!!!");
         lock.unlock();
         lock.unlock();
+    }
+
+    @org.junit.Test
+    public void test10() throws InterruptedException {
+        CallbackTaskScheduler.add(new CallbackTask<String>() {
+            @Override
+            public String execute() throws Exception {
+                System.out.println("=======execute=========");
+                return null;
+            }
+
+            @Override
+            public void OnBack(String s) {
+                System.out.println("=======OnBack=========");
+            }
+
+            @Override
+            public void onException(Throwable t) {
+
+            }
+        });
     }
 }
