@@ -24,7 +24,20 @@ public class LogUtil {
             TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("log-pool-%d").build());
 
 
-    public static void debug(String content, Object[] args){
+    public static void info(String content, Object... args){
+        addQueue(LEVEL_INFO,content,args);
+    }
+
+
+    public static void error(String content, Object... args){
+        addQueue(LEVEL_ERROR,content,args);
+    }
+
+    public static void warn(String content, Object... args){
+        addQueue(LEVEL_WARN,content,args);
+    }
+
+    public static void debug(String content, Object... args){
         addQueue(LEVEL_DEBUG,content,args);
     }
 
