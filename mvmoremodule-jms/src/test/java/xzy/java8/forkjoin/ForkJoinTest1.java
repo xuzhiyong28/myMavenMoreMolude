@@ -1,18 +1,13 @@
 package xzy.java8.forkjoin;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.Future;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -63,6 +58,28 @@ public class ForkJoinTest1 {
         int[] result = pool.invoke(task);
         //打印
         Arrays.stream(result).forEach(System.out::println);
+    }
 
+    @Test
+    public void test5() throws InterruptedException {
+        Map<String, Integer> myMap = Maps.newHashMap();
+        for (int i = 0; i < 100000; i++) {
+            myMap.put(String.valueOf(i), 1);
+        }
+        ForkJoinPool pool = new ForkJoinPool();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for(int j = 0 ; j < 3 ; j++){
+            executorService.execute(() -> {
+                ForkJoinMapDoTask forkJoinMapDoTask = new ForkJoinMapDoTask(myMap);
+                Map<String, Integer> invoke = pool.invoke(forkJoinMapDoTask);
+                System.out.println(invoke.keySet().size());
+            });
+        }
+        TimeUnit.SECONDS.sleep(60);
+    }
+
+    @Test
+    public void test6(){
+        
     }
 }

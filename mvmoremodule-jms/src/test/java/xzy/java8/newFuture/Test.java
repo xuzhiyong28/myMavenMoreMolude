@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -49,6 +50,8 @@ public class Test {
             }
         });
         future.get();
+        ReentrantLock r = new ReentrantLock();
+        r.lockInterruptibly();
     }
 
     /***
@@ -281,8 +284,8 @@ public class Test {
         List<String> uuidList = Lists.newArrayList();
         for (int i = 0; i < 10; i++) {
             futureList.add(CompletableFuture.supplyAsync(() -> {
-                synchronized (uuidList){
-                    for(int j = 0 ; j < 100 ; j ++){
+                synchronized (uuidList) {
+                    for (int j = 0; j < 100; j++) {
                         uuidList.add(UUID.randomUUID().toString());
                     }
                 }
@@ -294,24 +297,64 @@ public class Test {
         result.get();
         System.out.println(uuidList.size());
     }
-    
+
     @org.junit.Test
-    public void testxx() throws InterruptedException {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20,60L, TimeUnit.SECONDS,new LinkedBlockingQueue<>());
-        for(int i = 0 ; i < 1000 ; i++){
-            threadPoolExecutor.execute(new Thread(() -> {
-                try {
-                    TimeUnit.SECONDS.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    public void testxx() {
+        byte[] o = new byte[0];
+        List<String> list = Lists.newArrayList();
+        CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f1";
+        });
+        CompletableFuture<String> f2 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+               /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f3 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f4 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
                 }
-                System.out.println(Thread.currentThread().getName()  + " 执行完成");
-            }));
-        }
-        TimeUnit.SECONDS.sleep(10);
-        threadPoolExecutor.setCorePoolSize(20);
-        System.out.println("核心线程数设置完成");
-        threadPoolExecutor.awaitTermination(10,TimeUnit.MINUTES);
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f5 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<Void> anyResult = CompletableFuture.allOf(f1, f2, f3, f4, f5);
+        long startTime = System.currentTimeMillis();
+        anyResult.join();
+        System.out.println(System.currentTimeMillis() - startTime);
     }
 
 
