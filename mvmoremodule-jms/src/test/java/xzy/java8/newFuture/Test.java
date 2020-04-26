@@ -6,8 +6,13 @@ import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.*;
-import java.util.function.*;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 /***
@@ -17,8 +22,8 @@ public class Test {
 
     /***
      *  whenComplete 和 whenCompleteAsync 的区别：
-        whenComplete：是执行当前任务的线程执行继续执行 whenComplete 的任务。
-        whenCompleteAsync：是执行把 whenCompleteAsync 这个任务继续提交给线程池来进行执行
+     whenComplete：是执行当前任务的线程执行继续执行 whenComplete 的任务。
+     whenCompleteAsync：是执行把 whenCompleteAsync 这个任务继续提交给线程池来进行执行
      */
     @org.junit.Test
     public void testWhenComplete() throws InterruptedException, ExecutionException {
@@ -45,6 +50,8 @@ public class Test {
             }
         });
         future.get();
+        ReentrantLock r = new ReentrantLock();
+        r.lockInterruptibly();
     }
 
     /***
@@ -58,8 +65,8 @@ public class Test {
         CompletableFuture<Long> future = CompletableFuture.supplyAsync(new Supplier<Long>() {
             @Override
             public Long get() {
-                long result = RandomUtils.nextLong(0,100);
-                System.out.println("result1="+result);
+                long result = RandomUtils.nextLong(0, 100);
+                System.out.println("result1=" + result);
                 return result;
             }
         }).thenApply(new Function<Long, Long>() {
@@ -78,22 +85,22 @@ public class Test {
     public void testHandle() throws ExecutionException, InterruptedException {
         /***
          *  handle 是执行任务完成时对结果的处理。
-            handle 方法和 thenApply 方法处理方式基本一样。不同的是 handle 是在任务完成后再执行，
-            还可以处理异常的任务。thenApply 只可以执行正常的任务，任务出现异常则不执行 thenApply 方法
+         handle 方法和 thenApply 方法处理方式基本一样。不同的是 handle 是在任务完成后再执行，
+         还可以处理异常的任务。thenApply 只可以执行正常的任务，任务出现异常则不执行 thenApply 方法
          */
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(new Supplier<Integer>() {
             @Override
             public Integer get() {
-                return new RandomUtils().nextInt(0,10);
+                return new RandomUtils().nextInt(0, 10);
             }
         }).handle(new BiFunction<Integer, Throwable, Integer>() {
             @Override
             public Integer apply(Integer integer, Throwable throwable) {
                 System.out.println("=========handle==========");
                 int result = -1;
-                if(throwable == null){
+                if (throwable == null) {
                     result = integer * 2;
-                }else{
+                } else {
                     System.out.println(throwable.getMessage());
                 }
                 return result;
@@ -120,21 +127,20 @@ public class Test {
                 return integer * 2;
             }
         };
-        for(int i = 0 ; i < intList.size() ; i++){
+        for (int i = 0; i < intList.size(); i++) {
             int ii = i;
             completaList.add(CompletableFuture.supplyAsync(new Supplier<Integer>() {
                 @Override
                 public Integer get() {
                     return intList.get(ii);
                 }
-            },executorService).handle(biFunction));
+            }, executorService).handle(biFunction));
         }
 
-        for(CompletableFuture<Integer> future : completaList){
+        for (CompletableFuture<Integer> future : completaList) {
             System.out.println(future.get());
         }
     }
-
 
 
     /***
@@ -182,4 +188,174 @@ public class Test {
         });
         System.out.println(result.get());
     }
+
+    @org.junit.Test
+    public void testJoin() throws ExecutionException, InterruptedException {
+        CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "f1";
+        });
+        System.out.println("f1 done");
+        CompletableFuture<String> f2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "f2";
+        });
+        System.out.println("f2 done");
+        CompletableFuture<String> f3 = f2.thenCombine(f1, (s, s2) -> {
+            System.out.println(s);
+            System.out.println(s2);
+            return s + ".." + s2;
+        });
+        long startTime = System.currentTimeMillis();
+        System.out.println(f3.join());
+        System.out.println(System.currentTimeMillis() - startTime + " ms");
+    }
+
+
+    @org.junit.Test
+    public void testJoinOr() {
+        CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "f1";
+        });
+        System.out.println("f1 done");
+        CompletableFuture<String> f2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "f2";
+        });
+        System.out.println("f2 done");
+        CompletableFuture<String> f3 = f2.applyToEither(f1, new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return f1.join() + "..." + s;
+            }
+        });
+        System.out.println(f3.join());
+    }
+
+
+    @org.junit.Test
+    public void testAcceptBoth() throws ExecutionException, InterruptedException {
+        CompletableFuture<Void> f1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+                System.out.println("=====f1=====");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        CompletableFuture<Void> f2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                System.out.println("=====f2=====");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+
+        //CompletableFuture<Void> f3 = f1.thenAcceptBoth(f2, (aVoid, aVoid2) -> System.out.println("===f3==="));
+        //f3.get();
+        CompletableFuture<Void> f4 = f2.thenAcceptBoth(f1, (aVoid, aVoid2) -> System.out.println("===f3==="));
+        f4.get();
+    }
+
+    @org.junit.Test
+    public void testAllOf() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        List<CompletableFuture<String>> futureList = Lists.newArrayList();
+        List<String> uuidList = Lists.newArrayList();
+        for (int i = 0; i < 10; i++) {
+            futureList.add(CompletableFuture.supplyAsync(() -> {
+                synchronized (uuidList) {
+                    for (int j = 0; j < 100; j++) {
+                        uuidList.add(UUID.randomUUID().toString());
+                    }
+                }
+                System.out.println("threadID:" + Thread.currentThread().getId() + "执行完成");
+                return null;
+            }, executorService));
+        }
+        CompletableFuture<Void> result = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
+        result.get();
+        System.out.println(uuidList.size());
+    }
+
+    @org.junit.Test
+    public void testxx() {
+        byte[] o = new byte[0];
+        List<String> list = Lists.newArrayList();
+        CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f1";
+        });
+        CompletableFuture<String> f2 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+               /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f3 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f4 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }
+
+            }
+            return "f2";
+        });
+        CompletableFuture<String> f5 = CompletableFuture.supplyAsync(() -> {
+            for (int i = 0; i < 100000; i++) {
+                /*synchronized (o) {
+                    list.add(UUID.randomUUID().toString());
+                }*/
+                list.add(UUID.randomUUID().toString());
+
+            }
+            return "f2";
+        });
+        CompletableFuture<Void> anyResult = CompletableFuture.allOf(f1, f2, f3, f4, f5);
+        long startTime = System.currentTimeMillis();
+        anyResult.join();
+        System.out.println(System.currentTimeMillis() - startTime);
+    }
+
+
 }
