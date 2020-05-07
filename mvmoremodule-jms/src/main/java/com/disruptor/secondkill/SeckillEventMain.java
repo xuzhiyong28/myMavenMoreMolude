@@ -14,7 +14,8 @@ public class SeckillEventMain {
                 .setDaemon(true).build());
         //连接消费事件方法,这里采用多个消费者并发
 
-        disruptor.handleEventsWith(new SeckillEventConsumer("消费者"));
+        disruptor.handleEventsWith(new SeckillEventConsumer("消费者1"),
+                new SeckillEventConsumer("消费者2"));
 
         //启动
         disruptor.start();
