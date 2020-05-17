@@ -68,11 +68,13 @@ public class ForkJoinTest1 {
         }
         ForkJoinPool pool = new ForkJoinPool();
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for(int j = 0 ; j < 3 ; j++){
+        for(int j = 0 ; j < 10 ; j++){
             executorService.execute(() -> {
                 ForkJoinMapDoTask forkJoinMapDoTask = new ForkJoinMapDoTask(myMap);
+                System.out.println("核心线程数量:" + pool.getPoolSize());
+                System.out.println("getQueuedTaskCount:" + pool.getQueuedTaskCount());
                 Map<String, Integer> invoke = pool.invoke(forkJoinMapDoTask);
-                System.out.println(invoke.keySet().size());
+                System.out.println("最后结果长度:" + invoke.keySet().size());
             });
         }
         TimeUnit.SECONDS.sleep(60);
@@ -80,6 +82,18 @@ public class ForkJoinTest1 {
 
     @Test
     public void test6(){
-        
+        Map<String, Integer> myMap = Maps.newHashMap();
+        for (int i = 0; i < 526252; i++) {
+            myMap.put(String.valueOf(i), 1);
+        }
+        ForkJoinPool pool = new ForkJoinPool();
+        ForkJoinMapDoTask forkJoinMapDoTask = new ForkJoinMapDoTask(myMap);
+        Map<String, Integer> invoke = pool.invoke(forkJoinMapDoTask);
+        System.out.println(invoke.keySet().size());
+        for(Map.Entry<String,Integer> entry : invoke.entrySet()){
+            if(entry.getValue() != 11){
+                System.out.println("不等于");
+            }
+        }
     }
 }

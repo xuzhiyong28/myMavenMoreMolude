@@ -16,8 +16,8 @@ public class ThreadPoolTest {
      */
     @Test
     public void test0() throws InterruptedException {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20, 60L, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
-        for (int i = 0; i < 200; i++) {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+        for (int i = 0; i < 50; i++) {
             threadPoolExecutor.submit(() -> {
                 try {
                     TimeUnit.SECONDS.sleep(RandomUtils.nextInt(10,20));
@@ -27,39 +27,35 @@ public class ThreadPoolTest {
                 System.out.println(Thread.currentThread().getId() + "执行完成");
             });
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    System.out.println(String.format(
-                            "活动的任务数量：%s,完成的任务数量：%s,任务队列中的任务数量：%s,核心线程数：%s",
-                            threadPoolExecutor.getActiveCount(),
-                            threadPoolExecutor.getCompletedTaskCount(),
-                            threadPoolExecutor.getQueue().size(),
-                            threadPoolExecutor.getPoolSize()
-                            ));
+        new Thread(() -> {
+            while (true) {
+                System.out.println(String.format(
+                        "活动的任务数量：%s,完成的任务数量：%s,任务队列中的任务数量：%s,核心线程数：%s",
+                        threadPoolExecutor.getActiveCount(),
+                        threadPoolExecutor.getCompletedTaskCount(),
+                        threadPoolExecutor.getQueue().size(),
+                        threadPoolExecutor.getPoolSize()
+                        ));
 
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
         //修改核心线程数
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    TimeUnit.SECONDS.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                threadPoolExecutor.setCorePoolSize(10);
+        new Thread(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            threadPoolExecutor.setCorePoolSize(5);
+            System.out.println("设置核心线程数完成，长度为5");
         }).start();
-        TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+        TimeUnit.SECONDS.sleep(100);
+        System.out.println(threadPoolExecutor.getCorePoolSize());
     }
 
 

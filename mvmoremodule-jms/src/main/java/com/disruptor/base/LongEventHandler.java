@@ -8,6 +8,6 @@ import com.lmax.disruptor.EventHandler;
 public class LongEventHandler implements EventHandler<LongEvent> {
     @Override
     public void onEvent(LongEvent longEvent, long l, boolean b) throws Exception {
-        System.out.println(longEvent.getValue());
+        System.out.println("执行任务，收到的值为：" + longEvent.getValue());
     }
 }

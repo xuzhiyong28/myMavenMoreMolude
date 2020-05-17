@@ -34,9 +34,8 @@ public class ForkJoinMapDoTask extends RecursiveTask<Map<String, Integer>> {
         } else {
             List<Map<String,Integer>> mapList = ForkJoinMapDoTask.mapChunk(myMap,2);
             ForkJoinMapDoTask leftTask = new ForkJoinMapDoTask(mapList.get(0));
-            leftTask.fork();
             ForkJoinMapDoTask rightTask = new ForkJoinMapDoTask(mapList.get(1));
-            rightTask.fork();
+            invokeAll(leftTask,rightTask);
             Map<String, Integer> lfetMap = leftTask.join();
             Map<String, Integer> rightMap = rightTask.join();
             Map<String, Integer> resultMap = Maps.newHashMap();
