@@ -36,7 +36,7 @@ public class Main {
             countDownLatch.await();*/
 
             MyInParkingDataEventTranslator eventTranslator = new MyInParkingDataEventTranslator();
-            for(int i = 0 ; i < 100000 ; i++){
+            for(int i = 0 ; i < 1 ; i++){
                 disruptor.publishEvent(eventTranslator);
             }
             //disruptor.shutdown();
