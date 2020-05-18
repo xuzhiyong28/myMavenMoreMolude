@@ -2,14 +2,16 @@ package com.dxc.threadLocal;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.alibaba.ttl.TtlRunnable;
+import org.apache.commons.lang.time.DateFormatUtils;
 
+import java.util.Date;
 import java.util.concurrent.*;
 
 public class InheritableThreadLocalTest {
     private static ThreadLocal<String> threadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<String> alibabaThreadLocal = new TransmittableThreadLocal<>();
     public static void main(String args[]) throws Exception {
-        test2_2();
+        test2_1();
     }
 
 
@@ -34,8 +36,8 @@ public class InheritableThreadLocalTest {
     public static void test2_1() throws ExecutionException, InterruptedException {
         ThreadLocal<String> inheritableThreadLocal = new InheritableThreadLocal<>();
         int TASK_COUNT = 10;
-        ExecutorService taskService = Executors.newFixedThreadPool(1000);
-        ExecutorService logService = Executors.newFixedThreadPool(1000);
+        ExecutorService taskService = Executors.newFixedThreadPool(2);
+        ExecutorService logService = Executors.newFixedThreadPool(2);
         for(int i = 0 ; i < TASK_COUNT ; i++ ){
             int TASK_ID = i;
             Future<String> future = taskService.submit(() -> {
@@ -43,6 +45,7 @@ public class InheritableThreadLocalTest {
                 logService.execute(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志A"));
                 logService.execute(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志B"));
                 logService.execute(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志C"));
+                inheritableThreadLocal.remove();
                 return null;
             });
             future.get();
@@ -65,9 +68,9 @@ public class InheritableThreadLocalTest {
             int TASK_ID = i;
             Future<String> future = taskService.submit(() -> {
                 transmittableThreadLocal.set("TASK_" + TASK_ID);
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志A")));
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志B")));
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志C")));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志A，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志B，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志C，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
                 return null;
             });
             future.get();
