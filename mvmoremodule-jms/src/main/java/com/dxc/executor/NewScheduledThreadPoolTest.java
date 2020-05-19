@@ -1,10 +1,8 @@
 package com.dxc.executor;
 
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.lang.annotation.Target;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
