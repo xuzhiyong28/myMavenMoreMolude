@@ -2,16 +2,19 @@ package com.dxc.threadLocal;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.alibaba.ttl.TtlRunnable;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class InheritableThreadLocalTest {
     private static ThreadLocal<String> threadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<String> alibabaThreadLocal = new TransmittableThreadLocal<>();
+
     public static void main(String args[]) throws Exception {
-        test2_1();
+        test2_2();
     }
 
 
@@ -20,9 +23,9 @@ public class InheritableThreadLocalTest {
      */
     public static void test1() throws InterruptedException {
         threadLocal.set("许志勇");
-        System.out.println(String.format("主线程获取到threadlocal值 = %s",threadLocal.get()));
+        System.out.println(String.format("主线程获取到threadlocal值 = %s", threadLocal.get()));
         Thread myThead = new Thread(() ->
-                System.out.println(String.format("子线程获取到threadlocal值 = %s",threadLocal.get())));
+                System.out.println(String.format("子线程获取到threadlocal值 = %s", threadLocal.get())));
         myThead.start();
         myThead.join();
     }
@@ -38,7 +41,7 @@ public class InheritableThreadLocalTest {
         int TASK_COUNT = 10;
         ExecutorService taskService = Executors.newFixedThreadPool(2);
         ExecutorService logService = Executors.newFixedThreadPool(2);
-        for(int i = 0 ; i < TASK_COUNT ; i++ ){
+        for (int i = 0; i < TASK_COUNT; i++) {
             int TASK_ID = i;
             Future<String> future = taskService.submit(() -> {
                 inheritableThreadLocal.set("TASK_" + TASK_ID);
@@ -59,18 +62,38 @@ public class InheritableThreadLocalTest {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static void test2_2() throws ExecutionException, InterruptedException{
+    public static void test2_2() throws ExecutionException, InterruptedException {
         ThreadLocal<String> transmittableThreadLocal = new TransmittableThreadLocal<>();
         int TASK_COUNT = 10;
         ExecutorService taskService = Executors.newFixedThreadPool(2);
         ExecutorService logService = Executors.newFixedThreadPool(2);
-        for(int i = 0 ; i < TASK_COUNT ; i++ ){
+        ExecutorService futureService = Executors.newFixedThreadPool(2);
+        for (int i = 0; i < TASK_COUNT; i++) {
             int TASK_ID = i;
             Future<String> future = taskService.submit(() -> {
                 transmittableThreadLocal.set("TASK_" + TASK_ID);
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志A，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志B，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
-                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志C，时间 =" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志A，时间 =" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志B，时间 =" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志C，时间 =" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))));
+                logService.execute(TtlRunnable.get(() -> {
+                    System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志D");
+                    List<CompletableFuture<Void>> futureList = Lists.newArrayList();
+                    int futureCount = 10;
+                    for (int j = 0; j < futureCount; j++) {
+                        futureList.add(CompletableFuture.runAsync(TtlRunnable.get(() -> {
+                            System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志D_D");
+                        }), futureService));
+                       /* futureList.add(CompletableFuture.runAsync(() -> {
+                            System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志D_D");
+                        }, futureService));*/
+                    }
+                    CompletableFuture<Void> resultFuture = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
+                    try {
+                        resultFuture.get();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }));
                 return null;
             });
             future.get();
@@ -100,6 +123,7 @@ public class InheritableThreadLocalTest {
 
     /**
      * 使用TransmittableThreadLocal
+     *
      * @throws InterruptedException
      */
     public static void test3_2() throws InterruptedException {
