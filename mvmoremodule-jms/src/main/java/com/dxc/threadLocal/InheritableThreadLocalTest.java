@@ -1,6 +1,7 @@
 package com.dxc.threadLocal;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.alibaba.ttl.TtlCallable;
 import com.alibaba.ttl.TtlRunnable;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -14,7 +15,7 @@ public class InheritableThreadLocalTest {
     private static ThreadLocal<String> alibabaThreadLocal = new TransmittableThreadLocal<>();
 
     public static void main(String args[]) throws Exception {
-        test2_2();
+        test2_4();
     }
 
 
@@ -83,9 +84,7 @@ public class InheritableThreadLocalTest {
                         futureList.add(CompletableFuture.runAsync(TtlRunnable.get(() -> {
                             System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志D_D");
                         }), futureService));
-                       /* futureList.add(CompletableFuture.runAsync(() -> {
-                            System.out.println(transmittableThreadLocal.get() + "_" + TASK_ID + "_日志D_D");
-                        }, futureService));*/
+                        //futureList.add(CompletableFuture.runAsync(new RunTask(TASK_ID,transmittableThreadLocal.get()),futureService));
                     }
                     CompletableFuture<Void> resultFuture = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
                     try {
@@ -101,6 +100,77 @@ public class InheritableThreadLocalTest {
         TimeUnit.SECONDS.sleep(10);
     }
 
+    public static void test2_3() throws Exception {
+        ExecutorService taskService = Executors.newFixedThreadPool(2);
+        ExecutorService logService = Executors.newFixedThreadPool(2);
+        int TASK_COUNT = 10;
+        for (int i = 0; i < TASK_COUNT; i++) {
+            /*Future<Void> future = taskService.submit(() -> {
+                Long threadId = Thread.currentThread().getId();
+                UuidHelper.addQueue(threadId + "_日志1");
+                UuidHelper.addQueue(threadId + "_日志2");
+                UuidHelper.addQueue(threadId + "_日志3");
+                UuidHelper.remove();
+                return null;
+            });
+            future.get();*/
+            Future<Void> future2 = taskService.submit(TtlCallable.get(() -> {
+                Long threadId = Thread.currentThread().getId();
+                UuidHelper.addQueue(threadId + "_日志1");
+                UuidHelper.addQueue(threadId + "_日志2");
+                UuidHelper.addQueue(threadId + "_日志3");
+                UuidHelper.remove();
+                return null;
+            }));
+            future2.get();
+
+
+        }
+        TimeUnit.SECONDS.sleep(20);
+        taskService.shutdownNow();
+    }
+
+
+    public static void test2_4() throws Exception {
+        ExecutorService taskService = Executors.newFixedThreadPool(2);
+        ExecutorService logService = Executors.newFixedThreadPool(2);
+        int TASK_COUNT = 10;
+        for (int i = 0; i < TASK_COUNT; i++) {
+            final int TASK_ID = i;
+            taskService.execute(TtlRunnable.get(() -> {
+                UuidHelper.get();
+                System.out.println(TASK_ID + "_" + UuidHelper.get());
+                Future<Void> future2 = logService.submit(TtlCallable.get(() -> {
+                    UuidHelper.addQueue("_日志1");
+                    UuidHelper.addQueue("_日志2");
+                    UuidHelper.addQueue("_日志3");
+                    FutureTask<Void> task = new FutureTask<>(new Callable<Void>() {
+                        @Override
+                        public Void call() throws Exception {
+                            UuidHelper.addQueue("_日志4");
+                            UuidHelper.addQueue("_日志5");
+                            UuidHelper.addQueue("_日志6");
+                            return null;
+                        }
+                    });
+                    task.run();
+                    task.get();
+                    UuidHelper.addQueue("_日志7");
+                    UuidHelper.addQueue("_日志8");
+                    //UuidHelper.remove();
+                    return null;
+                }));
+                try {
+                    future2.get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }));
+
+        }
+        TimeUnit.SECONDS.sleep(20);
+        taskService.shutdownNow();
+    }
 
     /***
      * 测试 InheritableThreadLocal 线程池不可传递性
@@ -136,6 +206,21 @@ public class InheritableThreadLocalTest {
         alibabaThreadLocal.set("主线程第二次赋值");
         executorService.submit(TtlRunnable.get(() -> System.out.println("----子线程获取值：" + alibabaThreadLocal.get())));
         executorService.shutdown();
+    }
+
+    static class RunTask implements Runnable {
+        Integer TASK_ID;
+        String content;
+
+        public RunTask(Integer TASK_ID, String content) {
+            this.TASK_ID = TASK_ID;
+            this.content = content;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(TASK_ID + "_" + content);
+        }
     }
 
 
