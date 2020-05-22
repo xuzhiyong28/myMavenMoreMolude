@@ -131,6 +131,10 @@ public class InheritableThreadLocalTest {
     }
 
 
+    /***
+     * 多层嵌套 线程池里面在执行线程池
+     * @throws Exception
+     */
     public static void test2_4() throws Exception {
         ExecutorService taskService = Executors.newFixedThreadPool(2);
         ExecutorService logService = Executors.newFixedThreadPool(2);

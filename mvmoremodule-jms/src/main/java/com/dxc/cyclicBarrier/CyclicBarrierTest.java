@@ -17,7 +17,7 @@ import java.util.concurrent.*;
  */
 public class CyclicBarrierTest {
     public static void main(String[] args) throws InterruptedException {
-        test2();
+        test();
     }
     public static void test() {
         CyclicBarrier cyclicBarrier = new CyclicBarrier(3); //定义三个等待
@@ -25,7 +25,16 @@ public class CyclicBarrierTest {
         executorService.execute(new Thread(new Runner(cyclicBarrier, "1.")));
         executorService.execute(new Thread(new Runner(cyclicBarrier, "2.")));
         executorService.execute(new Thread(new Runner(cyclicBarrier, "3.")));
-        executorService.shutdown();
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //CyclicBarrier 可重复使用
+        executorService.execute(new Thread(new Runner(cyclicBarrier, "1.")));
+        executorService.execute(new Thread(new Runner(cyclicBarrier, "2.")));
+        executorService.execute(new Thread(new Runner(cyclicBarrier, "3.")));
+
     }
 
 
