@@ -8,7 +8,7 @@ import java.util.concurrent.CountDownLatch;
  * @author xuzhiyong
  * @createDate 2018-06-01-13:56
  */
-public class Main {
+public class CountDownLatchTestMain {
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(2);
         Worker worker0 = new Worker("worker0", (long) (Math.random() * 2000 + 3000), countDownLatch);

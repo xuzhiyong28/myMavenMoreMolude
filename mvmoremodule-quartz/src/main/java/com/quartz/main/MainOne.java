@@ -32,7 +32,8 @@ public class MainOne {
         Scheduler scheduler = schedulerFactory.getScheduler();
         scheduler.scheduleJob(jobDetail, trigger);
         scheduler.start();
-
     }
+
+    
 
 }

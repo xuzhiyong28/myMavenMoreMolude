@@ -299,7 +299,8 @@ public class Test {
     }
 
     @org.junit.Test
-    public void testxx() {
+    public void testxx() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         byte[] o = new byte[0];
         List<String> list = Lists.newArrayList();
         CompletableFuture<String> f1 = CompletableFuture.supplyAsync(() -> {
@@ -311,7 +312,7 @@ public class Test {
 
             }
             return "f1";
-        });
+        },executorService);
         CompletableFuture<String> f2 = CompletableFuture.supplyAsync(() -> {
             for (int i = 0; i < 100000; i++) {
                /*synchronized (o) {
@@ -321,7 +322,7 @@ public class Test {
 
             }
             return "f2";
-        });
+        },executorService);
         CompletableFuture<String> f3 = CompletableFuture.supplyAsync(() -> {
             for (int i = 0; i < 100000; i++) {
                 /*synchronized (o) {
@@ -331,7 +332,7 @@ public class Test {
 
             }
             return "f2";
-        });
+        },executorService);
         CompletableFuture<String> f4 = CompletableFuture.supplyAsync(() -> {
             for (int i = 0; i < 100000; i++) {
                 synchronized (o) {
@@ -340,7 +341,7 @@ public class Test {
 
             }
             return "f2";
-        });
+        },executorService);
         CompletableFuture<String> f5 = CompletableFuture.supplyAsync(() -> {
             for (int i = 0; i < 100000; i++) {
                 /*synchronized (o) {
@@ -349,11 +350,16 @@ public class Test {
                 list.add(UUID.randomUUID().toString());
 
             }
+            try {
+                TimeUnit.SECONDS.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return "f2";
-        });
+        },executorService);
         CompletableFuture<Void> anyResult = CompletableFuture.allOf(f1, f2, f3, f4, f5);
         long startTime = System.currentTimeMillis();
-        anyResult.join();
+        anyResult.get();
         System.out.println(System.currentTimeMillis() - startTime);
     }
 
