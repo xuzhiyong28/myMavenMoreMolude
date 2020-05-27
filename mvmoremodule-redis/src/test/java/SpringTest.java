@@ -1,11 +1,10 @@
 import com.springTest.AppConfig;
 import com.springTest.BeanA;
 import org.junit.Test;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.io.ClassRelativeResourceLoader;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.*;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.IOException;
@@ -23,6 +22,19 @@ public class SpringTest {
         System.out.println(annotationConfigApplicationContext.getBean(BeanA.class));
     }
 
+    @Test
+    public void testFactory(){
+        //获取资源
+        ClassPathResource resource = new ClassPathResource("bean.xml");
+        //获取BeanFactory
+        DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+        //BeanDefinition解析器
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+        //解析资源
+        int count = reader.loadBeanDefinitions(resource);
+
+    }
+    
     /***
      * spring 资源加载器
      * @throws IOException
