@@ -3,9 +3,7 @@ package xzy.dxc;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ThreadPoolTest {
 
@@ -56,6 +54,47 @@ public class ThreadPoolTest {
         }).start();
         TimeUnit.SECONDS.sleep(100);
         System.out.println(threadPoolExecutor.getCorePoolSize());
+    }
+
+    /***
+     * submit 不会打印异常 只有在 Future.get() 才会打印异常
+     * execute 会打印异常
+     */
+    @Test
+    public void testError() throws InterruptedException, ExecutionException {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+        threadPoolExecutor.execute(() -> {
+            System.out.println("线程池源码解析-execute");
+            int i = 1 / 0;
+        });
+        threadPoolExecutor.submit(() -> {
+            System.out.println("线程池源码解析-submit");
+            int i = 1 / 0;
+        });
+        Future future = threadPoolExecutor.submit(() -> {
+            System.out.println("线程池源码解析-submit-future");
+            int i = 1 / 0;
+        });
+        future.get();
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+
+    @Test
+    public void testCommon() {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+        threadPoolExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("线程池源码解析");
+            }
+        });
+    }
+
+    @Test
+    public void testCacheThreadPool(){
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(() -> System.out.println("线程池源码解析-newCachedThreadPool"));
     }
 
 
