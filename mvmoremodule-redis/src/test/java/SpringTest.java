@@ -1,9 +1,12 @@
+import com.spring.BeanModel;
 import com.springTest.AppConfig;
 import com.springTest.BeanA;
 import org.junit.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.*;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -23,6 +26,18 @@ public class SpringTest {
     }
 
     @Test
+    public void testApplicationXml(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:bean.xml");
+        System.out.println("context 启动成功");
+        //BeanModel bean = context.getBean(BeanModel.class);
+        //System.out.println(bean);
+    }
+
+    /***
+     * 解析bean-> BeanDefinition 过程
+     * 解析一个bean其实就是构造一个BeanDefinition
+     */
+    @Test
     public void testFactory(){
         //获取资源
         ClassPathResource resource = new ClassPathResource("bean.xml");
@@ -31,7 +46,9 @@ public class SpringTest {
         //BeanDefinition解析器
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
         //解析资源
-        int count = reader.loadBeanDefinitions(resource);
+        reader.loadBeanDefinitions(resource);
+        BeanModel bean = factory.getBean(BeanModel.class);
+        System.out.println(bean);
 
     }
     
