@@ -13,7 +13,7 @@
 
     <bean id="MyInstantiationAwareBeanPostProcessor" class="com.spring.MyInstantiationAwareBeanPostProcessor"/>
 
-    <bean id="beanModel" class="com.spring.BeanModel" init-method="myInit" destroy-method="myDestory">
+    <bean id="beanModel" class="com.spring.BeanModel" init-method="myInit" destroy-method="myDestory" scope="singleton">
         <property name="name" value="许志勇"/>
         <property name="age" value="29"/>
     </bean>
