@@ -9,10 +9,7 @@ import xzy.java8.lambda.Apple;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -179,6 +176,22 @@ public class Test {
             i++;
         }
 
+    }
+
+    @org.junit.Test
+    public void iteratorTest(){
+        ArrayList list = new ArrayList();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        Iterator it = list.iterator();
+        while(it.hasNext()){
+            String str = (String) it.next();
+            System.out.println(str);
+            if(str.equals("c")){
+                it.remove();
+            }
+        }
     }
 
 
