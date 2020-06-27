@@ -3,3 +3,7 @@
     1.都是子类都有的且都相同的例如鸭子的游泳(假设鸭子都会飞行)
     2.子类都有的但是实现起来不一样的例如鸭子的外貌
     3.有些子类有有些子类没有例如鸭子的飞行
+    
+    
+com.mvmoremodulePattern.strategy.springmvc -- 
+仿springmvc获取handler的策略模式
