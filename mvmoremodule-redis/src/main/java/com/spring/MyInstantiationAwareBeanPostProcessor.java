@@ -1,7 +1,10 @@
 package com.spring;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+
+import java.beans.PropertyDescriptor;
 
 /**
  * @author xuzhiyong
@@ -36,5 +39,19 @@ public class MyInstantiationAwareBeanPostProcessor extends InstantiationAwareBea
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         System.out.println("== postProcessAfterInitialization -- 初始化后调用");
         return super.postProcessAfterInitialization(bean, beanName);
+    }
+
+    /***
+     * getBean时 当设置某个属性时调用。自动装配就是通过这个方法进行装配属性
+     * @param pvs
+     * @param pds
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
+    @Override
+    public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException {
+        return super.postProcessPropertyValues(pvs, pds, bean, beanName);
     }
 }
