@@ -13,6 +13,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import javax.sql.DataSource;
 
 public class SpringTest {
     @Test
@@ -95,6 +102,29 @@ public class SpringTest {
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-tx.xml");
         TxService txService = context.getBean(TxService.class);
         txService.queryUser();
+    }
+
+    @Test
+    public void testJavaTx(){
+        DataSource dataSource = TestUtils.getDataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        //创建物管理器
+        DataSourceTransactionManager txManager = new DataSourceTransactionManager();
+        txManager.setDataSource(dataSource);
+        //定义事物属性
+        DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+        txDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        //开启事务
+        TransactionStatus txStatus = txManager.getTransaction(txDefinition);
+        try{
+            jdbcTemplate.update("INSERT INTO `book`( `book`, `price`) VALUES (?,?)","书",12);
+            jdbcTemplate.update("INSERT INTO `user`( `name`, `age`) VALUES (?,?)", "名字1", 12);
+            int i = 1 / 0;
+            txManager.commit(txStatus);
+        }catch (Exception e){
+            txManager.rollback(txStatus);
+            e.printStackTrace();
+        }
     }
 
 }
