@@ -8,7 +8,7 @@ public class TestUtils {
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/spring?useUnicode=true&characterEncoding=utf-8");
         dataSource.setUsername("root");
-        dataSource.setPassword("chenhao1991@");
+        dataSource.setPassword("123456");
         return dataSource;
     }
 }

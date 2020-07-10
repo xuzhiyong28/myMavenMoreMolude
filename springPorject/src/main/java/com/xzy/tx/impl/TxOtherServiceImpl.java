@@ -13,7 +13,7 @@ public class TxOtherServiceImpl implements TxOtherService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateBook() {
         jdbcTemplate.update("INSERT INTO `book`( `book`, `price`) VALUES (?,?)","书",12);
     }

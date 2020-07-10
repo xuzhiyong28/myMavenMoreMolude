@@ -7,4 +7,6 @@ public interface TxService {
     public List<Map<String, Object>> queryUser();
 
     public void updateData();
+
+    public void singleUpdate();
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+
 @Component
 @Transactional
 public class TxServiceImpl implements TxService {
@@ -31,4 +32,11 @@ public class TxServiceImpl implements TxService {
         jdbcTemplate.update("INSERT INTO `user`( `name`, `age`) VALUES (?,?)", "名字1", 12);
         txOtherService.updateBook();
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void singleUpdate() {
+        jdbcTemplate.update("INSERT INTO `user`( `name`, `age`) VALUES (?,?)", "名字1", 12);
+        int i = 1 / 0;
+    }
+
 }

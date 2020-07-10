@@ -4,6 +4,7 @@ import com.xzy.aop.OrderService;
 import com.xzy.aop.UserService;
 import com.xzy.bean.BeanC;
 import com.xzy.bean.SpringCycleBean;
+import com.xzy.listener.MyApplicationEvent;
 import com.xzy.postProcessor.MyInstantiationAwareBeanPostProcessor;
 import com.xzy.tx.TxService;
 import org.junit.Test;
@@ -20,6 +21,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
 
 public class SpringTest {
     @Test
@@ -101,8 +104,16 @@ public class SpringTest {
     public void testTx(){
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-tx.xml");
         TxService txService = context.getBean(TxService.class);
-        txService.queryUser();
+        txService.updateData();
     }
+
+    @Test
+    public void testTx2(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-tx.xml");
+        TxService txService = context.getBean(TxService.class);
+        txService.singleUpdate();
+    }
+
 
     @Test
     public void testJavaTx(){
@@ -125,6 +136,27 @@ public class SpringTest {
             txManager.rollback(txStatus);
             e.printStackTrace();
         }
+    }
+
+
+    @Test
+    public void testJdbcTempleThread(){
+        DataSource dataSource = TestUtils.getDataSource();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList("select * from user");
+        List<Map<String, Object>> maps2 = jdbcTemplate.queryForList("select * from user");
+        System.out.println("!!!");
+    }
+
+
+    @Test
+    public void listenerTest(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-listener.xml");
+        //创建自定义的事件
+        MyApplicationEvent myApplicationEvent = new MyApplicationEvent("test event!");
+        //发布事件
+        context.publishEvent(myApplicationEvent);
+
     }
 
 }
