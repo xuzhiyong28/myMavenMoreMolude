@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <context:annotation-config/>
+
+    <!--<bean id="springCycleBean" class="com.xzy.bean.SpringCycleBean" init-method="initMethod">
+        <property name="phone" value="18054809167"/>
+        <property name="address" value="siyu"></property>
+    </bean>-->
+
+    <bean id="springCycleBean" class="com.xzy.bean.SpringCycleBean">
+        <constructor-arg name="phone" value="18054809167"></constructor-arg>
+        <constructor-arg name="address" value="siyu"/>
+    </bean>
+
+    <bean id="beanA" class="com.xzy.bean.BeanA">
+        <property name="age" value="10"/>
+        <property name="name" value="xuzy"/>
+    </bean>
+
+    <!--========测试循环依赖===========-->
+    <bean id="beanB" class="com.xzy.bean.BeanB">
+        <property name="param1" value="param1"/>
+        <property name="param2" value="param2"/>
+        <property name="beanC" ref="beanC"/>
+    </bean>
+    <bean id="beanC" class="com.xzy.bean.BeanC">
+        <property name="param1" value="param1"/>
+        <property name="param2" value="param2"/>
+        <property name="beanB" ref="beanB"/>
+    </bean>
+
+    <bean id="beanService" class="com.xzy.bean.BeanService"></bean>
+
+    <!--自定义后处理器-->
+    <bean id="myInstantiationAwareBeanPostProcessor" class="com.xzy.postProcessor.MyInstantiationAwareBeanPostProcessor"></bean>
+
+
+</beans>

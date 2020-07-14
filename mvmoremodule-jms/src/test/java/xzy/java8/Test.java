@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.openjdk.jol.info.GraphLayout;
 import xzy.java8.lambda.Apple;
 
 import java.io.File;
@@ -88,8 +89,8 @@ public class Test {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
-                    if(map.containsKey("xuzy")){
+                while (true) {
+                    if (map.containsKey("xuzy")) {
                         System.out.println(map.get("xuzy").getColor());
                     }
                 }
@@ -126,15 +127,15 @@ public class Test {
         List<String> data11 = changeList(FileUtils.readLines(new File("E:\\bcs文档\\开发备忘文档\\死锁排查\\DATA11.TXT")));
         List<String> data12 = changeList(FileUtils.readLines(new File("E:\\bcs文档\\开发备忘文档\\死锁排查\\DATA12.TXT")));
         //bidui(data0,data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12);
-        bidui(data8,data10);
+        bidui(data8, data10);
     }
 
     @org.junit.Test
     public void test10() throws IOException {
         List<String> data1 = changeDomainList(FileUtils.readLines(new File("E:\\bcs文档\\开发备忘文档\\死锁排查\\DATA7.TXT")));
         List<String> data2 = changeDomainList(FileUtils.readLines(new File("E:\\bcs文档\\开发备忘文档\\死锁排查\\DATA6.TXT")));
-        for(String domain : data1){
-            if(data2.contains(domain)){
+        for (String domain : data1) {
+            if (data2.contains(domain)) {
                 System.out.println("重复数据 =" + domain);
             }
         }
@@ -142,18 +143,18 @@ public class Test {
     }
 
 
-    public List<String> changeList(List<String> src){
-        List<String> dict  = Lists.newArrayList();
-        for(String line : src){
+    public List<String> changeList(List<String> src) {
+        List<String> dict = Lists.newArrayList();
+        for (String line : src) {
             String[] array = line.split(",");
             dict.add(array[0] + "_" + array[1] + "_" + array[2]);
         }
         return dict;
     }
 
-    public List<String> changeDomainList(List<String> src){
-        List<String> dict  = Lists.newArrayList();
-        for(String line : src){
+    public List<String> changeDomainList(List<String> src) {
+        List<String> dict = Lists.newArrayList();
+        for (String line : src) {
             String[] array = line.split(",");
             dict.add(array[1]);
         }
@@ -161,16 +162,16 @@ public class Test {
     }
 
 
-    public void bidui(List<String> ...srcArray){
+    public void bidui(List<String>... srcArray) {
         List<String> result = Lists.newArrayList();
         int i = 0;
-        for(List<String> src : srcArray){
+        for (List<String> src : srcArray) {
             int finalI = i;
             src.stream().forEach(s -> {
-                if(!result.contains(s)){
+                if (!result.contains(s)) {
                     result.add(s);
-                }else{
-                    System.out.println( finalI + "_存在重复数据 " + s);
+                } else {
+                    System.out.println(finalI + "_存在重复数据 " + s);
                 }
             });
             i++;
@@ -179,25 +180,38 @@ public class Test {
     }
 
     @org.junit.Test
-    public void iteratorTest(){
+    public void iteratorTest() {
         ArrayList list = new ArrayList();
         list.add("a");
         list.add("b");
         list.add("c");
         Iterator it = list.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             String str = (String) it.next();
             System.out.println(str);
-            if(str.equals("c")){
+            if (str.equals("c")) {
                 it.remove();
             }
         }
     }
 
 
+    /***
+     * JOL  查看对象的内存大小
+     */
+    @org.junit.Test
+    public void calculationObjectSize() {
+        Map<String, String> map = Maps.newHashMap();
+        for (int i = 0; i < 10000; i++) {
+            map.put(String.valueOf(i),String.valueOf(i));
+        }
+        long l = GraphLayout.parseInstance(map).totalSize();
+        System.out.println("10000个HahsMap对象大小:" + l + " byte");
 
-
-
+        //空对象的大小
+        Map<String,String> map2 = Maps.newHashMap();
+        System.out.println("空HashMap大小:" + GraphLayout.parseInstance(map2).totalSize());
+    }
 
 
 }

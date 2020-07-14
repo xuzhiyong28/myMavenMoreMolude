@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <bean id="orderServiceImpl" class="com.xzy.aop.service.OrderServiceImpl"></bean>
+    <bean id="userServiceImpl" class="com.xzy.aop.service.UserServiceImpl"></bean>
+    <bean id="myAllAdvice" class="com.xzy.aop.MyAllAdvice"></bean>
+
+    <aop:config>
+        <aop:pointcut id="pointcut" expression="execution(* com.xzy.aop.service..*.*(..))"/>
+        <aop:aspect ref="myAllAdvice">
+            <aop:before method="before" pointcut-ref="pointcut"/>
+            <aop:around method="around" pointcut-ref="pointcut"/>
+            <aop:after-returning method="afterReturn" pointcut-ref="pointcut"/>
+            <aop:after-throwing method="afterException" pointcut-ref="pointcut"/>
+            <aop:around method="around" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>
+
+
+
+
+
+</beans>
