@@ -1,5 +1,7 @@
 package otherclass;
 
+import org.junit.Test;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FakeLimitedResource {
@@ -18,4 +20,12 @@ public class FakeLimitedResource {
             inUse.set(false);
         }
     }
+
+    @Test
+    public void test() throws InterruptedException {
+        FakeLimitedResource fakeLimitedResource = new FakeLimitedResource();
+        fakeLimitedResource.use();
+    }
+
+
 }

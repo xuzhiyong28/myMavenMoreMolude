@@ -1,3 +1,4 @@
+import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -6,6 +7,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.junit.Test;
 import otherclass.FakeLimitedResource;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +21,44 @@ public class CuratorSharedReentrantLock {
     private static final int QTY = 5;
     private static final int REPETITIONS = QTY * 10;
     private static final String PATH = "/examples/locks";
+
+
+    @Test
+    public void test0(){
+        CuratorFramework cf = CuratorFrameworkFactory.newClient("localhost:2181", new ExponentialBackoffRetry(2000, 3));
+        final InterProcessMutex lock = new InterProcessMutex(cf, "/curator/locks");
+        List<Thread> threadList = Lists.newArrayList();
+        cf.start();
+        for(int i = 0 ; i < QTY ; i++){
+            Thread t = new Thread(() -> {
+                try{
+                    System.out.println("线程开始阻塞 ：" + Thread.currentThread());
+                    lock.acquire();
+                    TimeUnit.SECONDS.sleep(5);
+                    System.out.println("线程阻塞5秒后，继续执行：" + Thread.currentThread());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    try {
+                        lock.release();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.start();
+            threadList.add(t);
+        }
+        threadList.forEach(t -> {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
 
 
     @Test
