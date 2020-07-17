@@ -1,5 +1,7 @@
 package xzy.dxc;
 
+import org.junit.Test;
+
 import java.util.Random;
 import java.util.concurrent.*;
 
@@ -30,4 +32,23 @@ public class FutureTaskDemo {
             es.submit(futureTask);
         }
     }
+
+    @Test
+    public void test() throws ExecutionException, InterruptedException {
+        FutureTask<String> futureTask = new FutureTask<>(() -> {
+            System.out.println("!!!!");
+            return "success";
+        });
+
+        Thread thread = new Thread(futureTask);
+        thread.start();
+        boolean isDone = futureTask.isDone();
+        System.out.println("isDone =" + isDone);
+        long l = System.currentTimeMillis();
+        futureTask.get();
+        System.out.println("isDone =" + isDone);
+        System.out.println("耗时 =" + (System.currentTimeMillis() - l) + " ms");
+    }
+
+
 }
