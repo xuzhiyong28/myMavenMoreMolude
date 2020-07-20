@@ -6,6 +6,8 @@ import com.xzy.bean.BeanC;
 import com.xzy.bean.SpringCycleBean;
 import com.xzy.listener.MyApplicationEvent;
 import com.xzy.postProcessor.MyInstantiationAwareBeanPostProcessor;
+import com.xzy.rwDynamic.DBContextHolder;
+import com.xzy.rwDynamic.DbType;
 import com.xzy.tx.TxService;
 import org.junit.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -111,7 +113,7 @@ public class SpringTest {
     public void testTx2(){
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-tx.xml");
         TxService txService = context.getBean(TxService.class);
-        txService.singleUpdate();
+        txService.updateByThread();
     }
 
 
@@ -157,6 +159,18 @@ public class SpringTest {
         //发布事件
         context.publishEvent(myApplicationEvent);
 
+    }
+
+    /***
+     * 读写分离 动态数据库
+     */
+    @Test
+    public void testwrDynamic(){
+        //设置当前线程使用主线程
+        DBContextHolder.set(DbType.MASTER.getType());
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext-w-r-dynamic.xml");
+        JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+        jdbcTemplate.queryForList("select * from user");
     }
 
 }

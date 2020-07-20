@@ -2,10 +2,13 @@ package com.xzy.controller;
 
 import com.xzy.model.UiModel;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -34,5 +37,23 @@ public class TestController {
         System.out.println(name);
         return "result";
      }
+
+
+
+    @RequestMapping("/requestBody.action")
+    public void requestBody(@RequestBody String body, Writer writer) throws IOException {
+        writer.write(body);
+    }
+
+    @RequestMapping(value="/responseBody.action", produces="application/json")
+    @ResponseBody
+    public Map<String, Object> responseBody(){
+        Map<String, Object> retMap = new HashMap<String,Object>();
+        retMap.put("param1", "abc");
+        return retMap;
+    }
+
+
+
 
 }

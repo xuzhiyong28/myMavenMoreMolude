@@ -9,4 +9,6 @@ public interface TxService {
     public void updateData();
 
     public void singleUpdate();
+
+    public void updateByThread();
 }

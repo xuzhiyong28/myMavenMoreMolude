@@ -33,4 +33,6 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean class="com.xzy.util.SpringUtil"></bean>
+
 </beans>
