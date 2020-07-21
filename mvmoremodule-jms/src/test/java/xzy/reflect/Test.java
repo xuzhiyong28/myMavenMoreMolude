@@ -14,6 +14,26 @@ public class Test {
         for (Annotation annotation : annotations) {
             System.out.println(annotation.toString());
         }
+
+        //获取其中一个注解,包括父类继承的
+        SupperAnnotation supperAnnotation = clazz.getAnnotation(SupperAnnotation.class);
+        System.out.println(supperAnnotation);
+
+        //获取类上的注解，不包括父类注解的，下面的会返回空，因为父类上的注解没法被获取
+        SupperAnnotation declaredAnnotation = clazz.getDeclaredAnnotation(SupperAnnotation.class);
+        System.out.println(declaredAnnotation);
+
+        //获取类上的注解，不包括父类注解的
+        Annotation[] declaredAnnotations = clazz.getDeclaredAnnotations();
+        for (Annotation annotation : declaredAnnotations) {
+            System.out.println(annotation);
+        }
+
+
+        SubAnnotation[] declaredAnnotationsByType = clazz.getDeclaredAnnotationsByType(SubAnnotation.class);
+        System.out.println(declaredAnnotationsByType);
+
+
     }
 
     @SupperAnnotation

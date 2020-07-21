@@ -15,7 +15,7 @@ public class InheritableThreadLocalTest {
     private static ThreadLocal<String> alibabaThreadLocal = new TransmittableThreadLocal<>();
 
     public static void main(String args[]) throws Exception {
-        test2_4();
+        test2_0();
     }
 
 
@@ -37,14 +37,14 @@ public class InheritableThreadLocalTest {
      * 并没有重新初始化线程，InheritableThreadLocal之所以起作用是因为在Thread类中最终会调用init()方法去把InheritableThreadLocal的map复制到子线程中。
      * 由于线程池复用了已有线程，所以没有调用init()方法这个过程，也就不能将父线程中的InheritableThreadLocal值传给子线程
      */
-    public static void test2_1() throws ExecutionException, InterruptedException {
+    public static void test2_1(){
         ThreadLocal<String> inheritableThreadLocal = new InheritableThreadLocal<>();
         int TASK_COUNT = 10;
         ExecutorService taskService = Executors.newFixedThreadPool(2);
         ExecutorService logService = Executors.newFixedThreadPool(2);
         for (int i = 0; i < TASK_COUNT; i++) {
             int TASK_ID = i;
-            Future<String> future = taskService.submit(() -> {
+            taskService.submit(() -> {
                 inheritableThreadLocal.set("TASK_" + TASK_ID);
                 logService.execute(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志A"));
                 logService.execute(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志B"));
@@ -52,11 +52,31 @@ public class InheritableThreadLocalTest {
                 inheritableThreadLocal.remove();
                 return null;
             });
-            future.get();
-            TimeUnit.SECONDS.sleep(1);
         }
         taskService.shutdown();
     }
+
+    public static void test2_0(){
+        ThreadLocal<String> inheritableThreadLocal = new TransmittableThreadLocal<>();
+        int TASK_COUNT = 10;
+        ExecutorService taskService = Executors.newFixedThreadPool(2);
+        ExecutorService logService = Executors.newFixedThreadPool(2);
+        for (int i = 0; i < TASK_COUNT; i++) {
+            int TASK_ID = i;
+            taskService.submit(TtlCallable.get(() -> {
+                inheritableThreadLocal.set("TASK_" + TASK_ID);
+                logService.execute(TtlRunnable.get(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志A")));
+                logService.execute(TtlRunnable.get(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志B")));
+                logService.execute(TtlRunnable.get(() -> System.out.println(inheritableThreadLocal.get() + "_" + TASK_ID + "_日志C")));
+                inheritableThreadLocal.remove();
+                return null;
+            }));
+        }
+        taskService.shutdown();
+    }
+
+
+
 
     /***
      * 采用TransmittableThreadLocal解决
@@ -114,15 +134,14 @@ public class InheritableThreadLocalTest {
                 return null;
             });
             future.get();*/
-            Future<Void> future2 = taskService.submit(TtlCallable.get(() -> {
+            taskService.submit(TtlCallable.get(() -> {
                 Long threadId = Thread.currentThread().getId();
                 UuidHelper.addQueue(threadId + "_日志1");
                 UuidHelper.addQueue(threadId + "_日志2");
                 UuidHelper.addQueue(threadId + "_日志3");
-                UuidHelper.remove();
+                //UuidHelper.remove();
                 return null;
             }));
-            future2.get();
 
 
         }
