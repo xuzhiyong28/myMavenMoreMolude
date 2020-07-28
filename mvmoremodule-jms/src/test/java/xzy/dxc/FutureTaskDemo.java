@@ -1,8 +1,11 @@
 package xzy.dxc;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 public class FutureTaskDemo {
@@ -50,5 +53,28 @@ public class FutureTaskDemo {
         System.out.println("耗时 =" + (System.currentTimeMillis() - l) + " ms");
     }
 
+    @Test
+    public void test2(){
+        ExecutorService es = Executors.newCachedThreadPool();
+        List<Future<String>> futureList = Lists.newArrayList();
+        for(int i = 0 ; i < 10 ; i++){
+            Future<String> future = es.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    return UUID.randomUUID().toString();
+                }
+            });
+            futureList.add(future);
+        }
+        futureList.forEach(stringFuture -> {
+            try {
+                System.out.println(stringFuture.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
 }
