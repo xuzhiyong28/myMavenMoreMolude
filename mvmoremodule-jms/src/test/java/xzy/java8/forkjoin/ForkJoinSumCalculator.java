@@ -5,7 +5,7 @@ import java.util.concurrent.RecursiveTask;
 public class ForkJoinSumCalculator extends RecursiveTask<Long> {
 
     //不再将任务分解为子任务的数组大小
-    public static final long THRESHOLD = 10_000;
+    public static final long THRESHOLD = 100;
 
     private final long[] numbers;
     private final int start; //起始位置

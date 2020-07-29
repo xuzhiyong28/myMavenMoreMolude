@@ -14,10 +14,19 @@ import java.util.stream.Stream;
 public class ForkJoinTest1 {
     @Test
     public void test() {
-        long[] numbers = LongStream.rangeClosed(1, 10).toArray();
+        long[] numbers = LongStream.rangeClosed(1, 5263).toArray();
         ForkJoinTask<Long> task = new ForkJoinSumCalculator(numbers);
+        long start = System.currentTimeMillis();
         long result = new ForkJoinPool().invoke(task);
-        System.out.println(result);
+        System.out.println("结果 = " + result  + ", 耗时 = " + (System.currentTimeMillis() - start) + " ms");
+
+        start = System.currentTimeMillis();
+        long otherResult = 0;
+        for (long number : numbers) {
+            otherResult += number;
+        }
+        System.out.println("结果 = " + otherResult  + ", 耗时 = " + (System.currentTimeMillis() - start) + " ms");
+
     }
 
     @Test
