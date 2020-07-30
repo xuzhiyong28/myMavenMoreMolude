@@ -31,6 +31,8 @@ public class ShardingTest {
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS ips (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL)");
         //不做分片的表
         jdbcTemplate.update("CREATE TABLE IF NOT EXISTS websocket (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL, PRIMARY KEY (flowtime))");
+
+        jdbcTemplate.update("CREATE TABLE IF NOT EXISTS acca (flowtime VARCHAR(50) NOT NULL, value INT NOT NULL)");
     }
 
     @Test
@@ -58,7 +60,8 @@ public class ShardingTest {
 
     @Test
     public void query2(){
-        jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
+        System.out.println(maps);
         //jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20170718')");
     }
 

@@ -398,24 +398,33 @@ public class YamlExampleShardingTest {
     @Test
     public void testOrchestration2() throws Exception {
 
+        //先删除zk上相关的配置
         deleteZkDataSourceAndRule();
+        //加载DataSource信息到zk
         initDataSourceZkData();
+        //加载分库分表规则到ZK
         initRuleZkData();
 
         ZookeeperConfiguration regConfig = new ZookeeperConfiguration();
         regConfig.setServerLists("localhost:2181");
         regConfig.setNamespace("sharding-data");
         OrchestrationConfiguration orchConcifg = new OrchestrationConfiguration("xuzy",regConfig,false, OrchestrationType.SHARDING);
+        //通过OrchestrationShardingDataSourceFactory创建ShardingDataSource
         DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(orchConcifg);
+        //查询
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
+        //查询， 此时如果查询2021年的话会报错
         List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205')");
 
 
-        updateDataSourceZkData(); //zk修改datasource值，触发watch
-        updateRuleZkData(); //zk修改rule值，触发watch
+        //修改DataSource信息（新增了dataSource_2021）到ZK
+        updateDataSourceZkData();
+        //修改分库分表规则(flow新增了2021年规则)到ZK
+        updateRuleZkData();
+
         TimeUnit.SECONDS.sleep(20);
 
+        //查询， 此时如果查询2021年的话不会报错
         List<Map<String, Object>> listNew = jdbcTemplate.queryForList("select * from flow where flowtime in ('20170818','20190205','20210405')");
         System.out.println(listNew);
     }
