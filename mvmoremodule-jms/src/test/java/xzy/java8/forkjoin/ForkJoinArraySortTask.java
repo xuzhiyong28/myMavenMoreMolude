@@ -26,9 +26,8 @@ public class ForkJoinArraySortTask extends RecursiveTask<int[]> {
             int midIndex = sourceSize / 2;
             //拆分成两个子任务
             ForkJoinArraySortTask leftTask = new ForkJoinArraySortTask(Arrays.copyOf(source, midIndex));
-            leftTask.fork();
             ForkJoinArraySortTask rightTask = new ForkJoinArraySortTask(Arrays.copyOfRange(source, midIndex, sourceSize));
-            rightTask.fork();
+            invokeAll(leftTask,rightTask);
             int result1[] = leftTask.join();
             int result2[] = rightTask.join();
             int mer[] = joinInts(result1, result2);

@@ -26,7 +26,6 @@ public class ForkJoinTest1 {
             otherResult += number;
         }
         System.out.println("结果 = " + otherResult  + ", 耗时 = " + (System.currentTimeMillis() - start) + " ms");
-
     }
 
     @Test

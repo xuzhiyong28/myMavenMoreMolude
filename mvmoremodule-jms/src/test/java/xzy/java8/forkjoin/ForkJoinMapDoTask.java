@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
+/***
+ * 对一个大Map进行分割然后值加上10
+ */
 public class ForkJoinMapDoTask extends RecursiveTask<Map<String, Integer>> {
 
     private static final int TASK_COUNT = 5000; //按照5000个拆分
