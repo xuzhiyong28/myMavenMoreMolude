@@ -45,5 +45,7 @@
     <!--自定义后处理器-->
     <bean id="myInstantiationAwareBeanPostProcessor" class="com.xzy.postProcessor.MyInstantiationAwareBeanPostProcessor"></bean>
 
+    <!--自定义工厂后处理器-->
+    <bean id="myBeanFactoryPostProcessor" class="com.xzy.postProcessor.MyBeanFactoryPostProcessor"></bean>
 
 </beans>
