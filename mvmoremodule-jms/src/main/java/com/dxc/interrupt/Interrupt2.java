@@ -1,5 +1,8 @@
 package com.dxc.interrupt;
 
+/***
+ * 使用 interrupt() + InterruptedException 来中断线程
+ */
 public class Interrupt2 {
     public static void main(String[] args) {
         Thread thread = new Thread(new MyThread(), "testThread");

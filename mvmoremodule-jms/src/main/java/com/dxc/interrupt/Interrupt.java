@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
  * @author xuzhiyong
  * @createDate 2018-06-12-9:34
  * 线程调用interrupt请求中断。然后线程里面通过isInterrupted()来判断中断标志并中断
+ * 使用 interrupt() + isInterrupted()来中断线程
  */
 public class Interrupt {
     public static void main(String[] agrs) {
