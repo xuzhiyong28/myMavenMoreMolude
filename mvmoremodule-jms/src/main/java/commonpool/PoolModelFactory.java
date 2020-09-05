@@ -28,6 +28,7 @@ public class PoolModelFactory implements PooledObjectFactory<PoolModel> {
     @Override
     public void destroyObject(PooledObject<PoolModel> pooledObject) throws Exception {
         //这里销毁会从池里移除，我们这里需要做一些移除后的操作。例如redis需要关闭连接
+        PoolModel poolModel = pooledObject.getObject();
         System.out.println("====销毁对象===");
     }
 

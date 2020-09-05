@@ -54,7 +54,6 @@ public abstract class Pool<T> implements Cloneable {
      * @deprecated starting from Jedis 3.0 this method will not be exposed. Resource cleanup should be
      * done using @see {@link redis.clients.jedis.Jedis#close()}
      */
-    @Deprecated
     public void returnResourceObject(final T resource) {
         if (resource == null) {
             return;
@@ -70,7 +69,6 @@ public abstract class Pool<T> implements Cloneable {
      * @deprecated starting from Jedis 3.0 this method will not be exposed. Resource cleanup should be
      * done using @see {@link redis.clients.jedis.Jedis#close()}
      */
-    @Deprecated
     public void returnBrokenResource(final T resource) {
         if (resource != null) {
             returnBrokenResourceObject(resource);
@@ -81,7 +79,6 @@ public abstract class Pool<T> implements Cloneable {
      * @deprecated starting from Jedis 3.0 this method will not be exposed. Resource cleanup should be
      * done using @see {@link redis.clients.jedis.Jedis#close()}
      */
-    @Deprecated
     public void returnResource(final T resource) {
         if (resource != null) {
             returnResourceObject(resource);

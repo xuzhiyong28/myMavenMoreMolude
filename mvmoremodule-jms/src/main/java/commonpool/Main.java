@@ -11,5 +11,6 @@ public class Main {
         Pool<PoolModel> myObjectPool = new MyObjectPool(poolConfig, new PoolModelFactory());
         PoolModel poolModel = myObjectPool.getResource();
         System.out.println(poolModel);
+        myObjectPool.returnResource(poolModel);
     }
 }
