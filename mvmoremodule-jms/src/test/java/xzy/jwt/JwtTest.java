@@ -3,10 +3,12 @@ package xzy.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.Map;
 
 public class JwtTest {
 
@@ -40,5 +42,21 @@ public class JwtTest {
             System.out.println("校验错误");
         }
     }
+
+
+
+    @Test
+    public void test1() throws Exception {
+        String token = JWTUtil.createToken(10000L);
+        System.out.println(token);
+        Map<String, Claim> stringClaimMap = JWTUtil.verifyToken(token);
+        System.out.println(stringClaimMap);
+    }
+
+
+
+
+
+
 
 }
