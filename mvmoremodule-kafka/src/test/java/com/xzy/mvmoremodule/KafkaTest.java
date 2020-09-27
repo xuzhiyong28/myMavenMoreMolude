@@ -32,7 +32,9 @@ public class KafkaTest {
             kafkaProducer.send(record);
             i++;
             TimeUnit.MICROSECONDS.sleep(200);
+            break;
         }
+        kafkaProducer.close();
     }
 
 

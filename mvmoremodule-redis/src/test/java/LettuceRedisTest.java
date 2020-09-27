@@ -1,17 +1,21 @@
 import com.google.common.collect.Lists;
-import io.lettuce.core.LettuceFutures;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisFuture;
-import io.lettuce.core.RedisURI;
+import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.reactive.RedisReactiveCommands;
 import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.support.ConnectionPoolSupport;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -21,6 +25,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/***
+ * https://www.cnblogs.com/throwable/p/11601538.html
+ */
 public class LettuceRedisTest {
 
 
@@ -28,6 +35,7 @@ public class LettuceRedisTest {
     private StatefulRedisConnection<String, String> connection;
     private RedisCommands<String, String> syncCommands;
     private RedisAsyncCommands<String, String> asyncCommands;
+    private RedisReactiveCommands<String,String> redisReactiveCommands;
 
     @Before
     public void before() {
@@ -36,6 +44,7 @@ public class LettuceRedisTest {
         connection = redisClient.connect();
         syncCommands = connection.sync();
         asyncCommands = connection.async();
+        redisReactiveCommands = connection.reactive();
     }
 
     @After
@@ -125,6 +134,90 @@ public class LettuceRedisTest {
         sleepEnough();
         Assert.assertTrue(cf.isDone());
     }
+
+
+
+    @Test
+    public void test1(){
+        SetArgs setArgs = SetArgs.Builder.nx().ex(5);
+        String result = syncCommands.set("name" , "throwable" , setArgs);
+        System.out.println(result);
+    }
+
+
+    @Test
+    public void ping(){
+        String ping = syncCommands.ping();
+        System.out.println(ping);
+    }
+
+    @Test
+    public void test2() throws ExecutionException, InterruptedException {
+        SetArgs setArgs = SetArgs.Builder.nx().ex(5);
+        RedisFuture<String> redisFuture = asyncCommands.set("name", "throwable", setArgs);
+        redisFuture.thenAccept(value -> {
+            System.out.println("返回 : " + value);
+        });
+        redisFuture.get();
+    }
+
+    @Test
+    public void test3(){
+        redisReactiveCommands.sadd("food", "bread", "meat", "fish").block();
+        Flux<String> foodSetFlux = redisReactiveCommands.smembers("food");
+        foodSetFlux.subscribe(System.out::println);
+        redisReactiveCommands.srem("food", "bread");
+        Flux<String> foodSetFlux2 = redisReactiveCommands.smembers("food");
+        foodSetFlux2.subscribe(System.out::println);
+    }
+
+    @Test
+    public void testBatch(){
+        syncCommands.multi();
+        syncCommands.setex("name-1", 2, "throwable");
+        syncCommands.setex("name-2", 2, "doge");
+        TransactionResult exec = syncCommands.exec();
+        for(Object o : exec){
+            System.out.println(o);
+        }
+    }
+
+    /***
+     * 反应式方式ping-pong
+     */
+    @Test
+    public void pingReactive(){
+        Mono<String> pingMono = redisReactiveCommands.ping();
+        pingMono.subscribe(System.out::println);
+    }
+
+
+    /***
+     * 使用连接池的实例
+     */
+    @Test
+    public void lettuceUsePool() throws Exception {
+        RedisURI redisUri = RedisURI.builder()
+                .withHost("localhost")
+                .withPort(6379)
+                .withTimeout(Duration.of(10, ChronoUnit.SECONDS))
+                .build();
+        RedisClient redisClient = RedisClient.create(redisUri);
+        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+        poolConfig.setMaxIdle(100);
+        poolConfig.setMaxTotal(100);
+        poolConfig.setMaxWaitMillis(1000);
+        GenericObjectPool<StatefulRedisConnection<String, String>> pool = ConnectionPoolSupport.createGenericObjectPool(redisClient::connect, poolConfig);
+        StatefulRedisConnection<String, String> connection = pool.borrowObject();
+        RedisCommands<String, String> command = connection.sync();
+        SetArgs setArgs = SetArgs.Builder.nx().ex(5);
+        command.set("name", "throwable", setArgs);
+        String n = command.get("name");
+        pool.close();
+        redisClient.shutdown();
+    }
+
+
 
 
     public void randomSleep() {

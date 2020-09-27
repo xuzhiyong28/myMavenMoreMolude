@@ -20,6 +20,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Pipeline;
 
 import java.io.IOException;
@@ -152,4 +154,27 @@ public class Test {
         System.out.println(annotationConfigApplicationContext.getBean(BeanA.class));
     }
 
+
+    @org.junit.Test
+    public void jedisPoolTest(){
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxTotal(8);
+        jedisPoolConfig.setMaxIdle(4);
+        jedisPoolConfig.setMaxWaitMillis(100);
+        JedisPool jedisPool = null;
+        try{
+            jedisPool = new JedisPool(jedisPoolConfig, "localhost", 6379, 1000);
+            Jedis jedis001 = jedisPool.getResource();
+            jedis001.get("name");
+            jedis001.close();
+
+            Jedis jedis002 = jedisPool.getResource();
+            jedis002.get("name");
+            jedis002.close();
+
+        }finally {
+
+        }
+
+    }
 }
