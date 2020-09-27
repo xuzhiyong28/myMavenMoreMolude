@@ -47,6 +47,7 @@ public class GetStockServiceCommand extends HystrixCommand<String> {
 
     @Override
     protected String getFallback() {
+        System.out.println("======执行失败回调");
         return "400";
     }
 }
