@@ -26,13 +26,12 @@ public class KafkaTest {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // key的序列化类
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()); // value的序列化类
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
-        int i = 0;
-        while (true) {
-            ProducerRecord<String, String> record = new ProducerRecord<>("httplog", "{,\"id\" : \"" + i + "\" ,\"message\" : \"消息_" + System.currentTimeMillis() + "\" }\n");
+        int MAX = 20000;
+        for(int i = 0 ; i < MAX ; i++){
+            ProducerRecord<String, String> record = new ProducerRecord<>("test001", "{,\"id\" : \"" + i + "\" ,\"message\" : \"消息_" + System.currentTimeMillis() + "\" }\n");
             kafkaProducer.send(record);
-            i++;
-            TimeUnit.MICROSECONDS.sleep(200);
-            break;
+            System.out.println("send complete");
+            TimeUnit.MICROSECONDS.sleep(500);
         }
         kafkaProducer.close();
     }
@@ -44,17 +43,17 @@ public class KafkaTest {
     @Test
     public void singleCusumerTest() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "192.168.199.128:9092,192.168.199.129:9092,192.168.199.130:9092");
-        props.put("group.id", "singleCusumerTest" + System.currentTimeMillis());
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("group.id", "singleCusumerTest_0010");
         //自动提交
-        props.put("enable.auto.commit", "true");
+        props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "1000");
         props.put("auto.offset.reset", "earliest");
-        props.put("max.poll.records", 1000);
+        props.put("max.poll.records", 100);
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Lists.newArrayList("beatlog"));
+        consumer.subscribe(Lists.newArrayList("topic001"));
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
@@ -177,5 +176,16 @@ public class KafkaTest {
             currentOffsets = null;
         }
     }
+
+    @Test
+    public void otherTest(){
+        TopicPartition topicPartition = new TopicPartition("topic", 1);
+        TopicPartition topicPartition2 = new TopicPartition("topic", 1);
+        System.out.println(topicPartition.hashCode());
+        System.out.println(topicPartition2.hashCode());
+    }
+
+
+
 
 }

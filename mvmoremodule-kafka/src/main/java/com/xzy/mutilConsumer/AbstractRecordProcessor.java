@@ -3,39 +3,35 @@ package com.xzy.mutilConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author xuzhiyong
- * @createDate 2019-10-26-21:51
+/***
+ * 抽象消息处理器
  */
-public class RecordProcessor implements Runnable {
+public abstract class AbstractRecordProcessor implements Runnable{
+
+    protected MessageHandler messageHandler;
 
     //保存MsgReceiver线程发送过来的消息
     private BlockingQueue<ConsumerRecord<String, String>> queue = new LinkedBlockingQueue<>();
     //用于向consumer线程提交消费偏移的队列
     private BlockingQueue<Map<TopicPartition, OffsetAndMetadata>> commitQueue;
-    //上一次提交时间
-    private LocalDateTime lastTime = LocalDateTime.now();
     //消费了20条数据, 就进行一次提交
     private long commitLength = 20L;
-    //距离上一次提交多久, 就提交一次
-    private Duration commitTime = Duration.standardSeconds(2);
     //当前该线程消费的数据条数
     private int completeTask = 0;
     //保存上一条消费的数据
     private ConsumerRecord<String, String> lastUncommittedRecord;
 
-    public RecordProcessor(BlockingQueue<Map<TopicPartition, OffsetAndMetadata>> commitQueue) {
+    public AbstractRecordProcessor(BlockingQueue<Map<TopicPartition, OffsetAndMetadata>> commitQueue , MessageHandler messageHandler) {
         this.commitQueue = commitQueue;
+        this.messageHandler = messageHandler;
     }
+
 
     @Override
     public void run() {
@@ -52,8 +48,10 @@ public class RecordProcessor implements Runnable {
                 }
                 //提交偏移给queue中
                 commitTOQueue();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 //线程被interrupt,直接退出
+                System.out.println("记录record失败 ：" + record);
+                //加入到redis进行补偿
             }
 
         }
@@ -67,12 +65,7 @@ public class RecordProcessor implements Runnable {
         }
         //如果消费了设定的条数, 比如又消费了commitLength消息
         boolean arrivedCommitLength = this.completeTask % commitLength == 0;
-        //获取当前时间, 看是否已经到了需要提交的时间
-        LocalDateTime currentTime = LocalDateTime.now();
-        boolean arrivedTime = currentTime.isAfter(lastTime.plus(commitTime));
-
-        if (arrivedCommitLength || arrivedTime) {
-            lastTime = currentTime;
+        if (arrivedCommitLength) {
             long offset = lastUncommittedRecord.offset();
             int partition = lastUncommittedRecord.partition();
             String topic = lastUncommittedRecord.topic();
@@ -93,8 +86,9 @@ public class RecordProcessor implements Runnable {
         }
     }
 
-    private void process(ConsumerRecord<String, String> record) {
-        //具体业务逻辑
-        System.out.println(record);
-    }
+    /***
+     * 消息处理器
+     * @param record
+     */
+    protected abstract void process(ConsumerRecord<String, String> record);
 }
