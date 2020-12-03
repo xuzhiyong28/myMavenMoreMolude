@@ -22,7 +22,7 @@ public class RedissonTest {
 
     static {
         config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-        config.setLockWatchdogTimeout(10 * 1000);
+        config.setLockWatchdogTimeout(10 * 1000); //锁超时时间
         redisson = (Redisson) Redisson.create(config);
     }
 
@@ -78,6 +78,21 @@ public class RedissonTest {
     }
 
 
+    /***
+     * 看门狗
+     */
+    @Test
+    public void testLockWatchDog(){
+        String key = LOCK_TITLE + "_lock";
+        RLock mylock = redisson.getLock(key);
+        try{
+            if(mylock.tryLock()){
+                System.out.println("加锁成功");
+            }
+        }finally {
+            mylock.unlock();
+        }
+    }
 
 
     @Test

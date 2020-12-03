@@ -21,7 +21,7 @@ public class JedisSlaveSentinelTest {
         jedisPoolConfig.setMinIdle(5);
         // 哨兵信息
         Set<String> sentinels = new HashSet<>(Arrays.asList("192.168.135.131:26379","192.168.135.131:26380","192.168.135.131:26381"));
-        JedisSlaveUtils.getAlivedSlaves("mymaster", sentinels)
+        JedisSlaveUtils.getAlivedSlaves("mymaster", sentinels);
         // 创建连接池
         JedisSlaveSentinelPool pool = new JedisSlaveSentinelPool("mymaster", sentinels,jedisPoolConfig);
         // 获取客户端
