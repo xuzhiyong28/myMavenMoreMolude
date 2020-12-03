@@ -15,45 +15,46 @@ public class Test {
         CanalConnector connector = CanalConnectors.newSingleConnector(
                 new InetSocketAddress(AddressUtils.getHostIp(),11111), "example", "", "");
         int batchSize = 1000;
-        int emptyCount = 0;
         try {
+            //打开连接
             connector.connect();
+            //订阅数据库表,全部表
             connector.subscribe(".*\\..*");
+            //回滚到未进行ack的地方，下次fetch的时候，可以从最后一个没有ack的地方开始拿
             connector.rollback();
-            int totalEmptyCount = 120;
-            while (emptyCount < totalEmptyCount) {
-                Message message = connector.getWithoutAck(batchSize); // 获取指定数量的数据
+            while (true) {
+                // 获取指定数量的数据
+                Message message = connector.getWithoutAck(batchSize);
+                //获取批量的ID
                 long batchId = message.getId();
+                //获取批量的数量
                 int size = message.getEntries().size();
                 if (batchId == -1 || size == 0) {
-                    emptyCount++;
-                    System.out.println("empty count : " + emptyCount);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
                 } else {
-                    emptyCount = 0;
-                    // System.out.printf("message[batchId=%s,size=%s] \n", batchId, size);
                     printEntry(message.getEntries());
                 }
-
                 connector.ack(batchId); // 提交确认
                 // connector.rollback(batchId); // 处理失败, 回滚数据
             }
-            System.out.println("empty too many times, exit");
-        } finally {
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            //关闭连接
             connector.disconnect();
         }
     }
 
     private static void printEntry(List<Entry> entrys) {
         for (Entry entry : entrys) {
-            if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
-                    || entry.getEntryType() == EntryType.TRANSACTIONEND) {
+            if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN || entry.getEntryType() == EntryType.TRANSACTIONEND) {
                 continue;
             }
-            RowChange rowChage = null;
+            RowChange rowChage;
             try {
                 rowChage = RowChange.parseFrom(entry.getStoreValue());
             } catch (Exception e) {

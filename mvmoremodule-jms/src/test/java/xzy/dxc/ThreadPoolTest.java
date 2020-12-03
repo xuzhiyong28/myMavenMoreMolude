@@ -98,6 +98,58 @@ public class ThreadPoolTest {
     }
 
 
+    @Test
+    public void executorPolicyTest(){
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(1,
+                1,
+                1L,
+                TimeUnit.MINUTES,
+                new ArrayBlockingQueue<>(1),
+                new ThreadPoolExecutor.AbortPolicy());
+        ThreadPoolExecutor executor2 = new ThreadPoolExecutor(1,
+                1,
+                1L,
+                TimeUnit.MINUTES,
+                new ArrayBlockingQueue<>(1),
+                new RejectedExecutionHandler(){
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+
+                    }
+                });
+
+        executor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        executor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        executor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        executor.execute(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+
 
 
 

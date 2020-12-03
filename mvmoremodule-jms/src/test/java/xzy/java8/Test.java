@@ -9,8 +9,10 @@ import xzy.java8.lambda.Apple;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author xuzhiyong
@@ -176,6 +178,24 @@ public class Test {
         //空对象的大小
         Map<String,String> map2 = Maps.newHashMap();
         System.out.println("空HashMap大小:" + GraphLayout.parseInstance(map2).totalSize());
+    }
+
+    @org.junit.Test
+    public void priorityBlockingQueueTest(){
+        List<String> list = Lists.newArrayList("a","b","c");
+        Map<String,Integer> map = list.stream().collect(Collectors.toMap(new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s;
+            }
+        }, new Function<String, Integer>() {
+            @Override
+            public Integer apply(String s) {
+                return 1;
+            }
+        }));
+        System.out.println(map);
+        System.out.println(Long.valueOf("0.00"));
     }
 
 
