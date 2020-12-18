@@ -3,7 +3,9 @@ package xzy.leetCode.array;
 import com.google.common.collect.Lists;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LeetCodeArrayUtils {
 
@@ -91,8 +93,7 @@ public class LeetCodeArrayUtils {
                     while (L < R && nums[R] == nums[R - 1]) R--; // 去重
                     L++;
                     R--;
-                }
-                else if (sum < 0) L++;
+                } else if (sum < 0) L++;
                 else if (sum > 0) R--;
             }
         }
@@ -103,5 +104,19 @@ public class LeetCodeArrayUtils {
     public static int[][] mergeArray(int[][] intervals) {
         return null;
     }
+
+
+
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> hashTable = new HashMap<Integer, Integer>();
+        for (int i = 0; i < nums.length; i++) {
+            if(hashTable.containsKey(target-nums[i])){
+                return new int[]{hashTable.get(target - nums[i]), i};
+            }
+            hashTable.put(nums[i], i);
+        }
+        return new int[0];
+    }
+
 
 }

@@ -6,6 +6,8 @@ import java.util.Map;
 /***
  * LinkedHashMap 就是通过 HashMap+双向链表实现
  * 但是这个双向链表主要是为了实现数据的有序性，所以如果要做LRU需要重写
+ * LRU : 最近最久未使用策略，优先淘汰最久未使用的数据，也就是上次被访问时间距离现在最久的数据。该策略可以保证内存中的数据都是热点数据，也就是经常被访问的数据，从而保证缓存命中率。
+ * LinkedHashMap中本身就实现了一个方法removeEldestEntry用于判断是否需要移除最不常读取的数，方法默认是直接返回false，不会移除元素，所以需要【重写该方法】，即当缓存满后就移除最不常用的数。
  */
 public class LinkedHashMapLruCache<V> {
 

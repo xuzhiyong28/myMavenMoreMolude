@@ -1,9 +1,13 @@
 package xzy;
 
 public class OtherTest {
-    public static void main(String[] args) {
-        int a = 11;
-        String s = "helloWorld";
-        System.out.println(5 & 6);
+
+    private  static int flag = 1;
+    public static void main(String[] args){
+        int i = 1;
+        int y = 1;
+        flag ++;
+        int b = i + y;
     }
+
 }
