@@ -63,7 +63,7 @@ public class SpringTest {
         System.out.println(resource.getFile().getPath());
 
         ResourceLoader fileResourceLoader = new FileSystemResourceLoader();
-        Resource fileResource = fileResourceLoader.getResource("D:\\workspack\\myMavenMoreMolude\\mvmoremodule-redis\\src\\main\\resources\\test.lua");
+        Resource fileResource = fileResourceLoader.getResource("D:\\workspack\\myMavenMoreMolude\\mvmoremodule-redis\\src\\main\\resources\\lock.lua");
         System.out.println(fileResource);
 
         //这种最好用，支持通配符

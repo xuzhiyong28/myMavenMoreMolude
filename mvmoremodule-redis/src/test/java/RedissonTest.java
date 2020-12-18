@@ -146,6 +146,7 @@ public class RedissonTest {
                 for (int i = 0; i < 200; i++) {
                     myMap.put(UUID.randomUUID().toString(), "1");
                 }
+                TimeUnit.SECONDS.sleep(30);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
