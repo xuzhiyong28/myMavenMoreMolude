@@ -1,8 +1,10 @@
 package xzy.leetCode.array;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Set;
 
 public class LeetCodeArrayTest {
 
@@ -58,4 +60,14 @@ public class LeetCodeArrayTest {
         Arrays.stream(ints).forEach(System.out::println);
     }
 
+
+    /***
+     * 删除排序数组重的重复项
+     */
+    @Test
+    public void test4() {
+        int[] nums = {0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
+        LeetCodeArrayUtils.removeDuplicates(nums);
+        Arrays.stream(nums).forEach(System.out::println);
+    }
 }

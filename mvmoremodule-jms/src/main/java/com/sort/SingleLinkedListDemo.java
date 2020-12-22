@@ -163,7 +163,7 @@ class SingleLinkedList {
         head.next = reverseHead.next;
     }
 
-    //方式2：
+    //方式1：入一个链表的头节点，从尾到头反过来返回每个节点的值
     //可以利用栈这个数据结构，将各个节点压入到栈中，然后利用栈的先进后出的特点，就实现了逆序打印的效果
     public void reversePrint() {
         if (head.next == null) {
@@ -182,6 +182,9 @@ class SingleLinkedList {
             System.out.println(stack.pop()); //stack的特点是先进后出
         }
     }
+
+
+
 
 
     //查找单链表中的倒数第k个结点 【新浪面试题】

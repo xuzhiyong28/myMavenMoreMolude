@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
 
 import java.util.Collection;
