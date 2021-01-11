@@ -1,6 +1,10 @@
 package xzy.leetCode.linkedList;
 
 import org.junit.Test;
+import xzy.leetCode.array.LeetCodeArrayUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /***
  * 链表题 技巧 : https://leetcode-cn.com/circle/article/Ej98dm/
@@ -240,7 +244,7 @@ public class LinkedTest {
      * 反转链表
      */
     @Test
-    public void test6(){
+    public void test6() {
         ListNode l1 = new ListNode(1);
         ListNode l2 = new ListNode(2);
         ListNode l3 = new ListNode(3);
@@ -270,7 +274,7 @@ public class LinkedTest {
         ListNode pre = null;
         ListNode cur = head;
         ListNode tmp;
-        while (cur != null){
+        while (cur != null) {
             //记录当前节点的下一个节点
             tmp = cur.next;
             cur.next = pre;
@@ -289,7 +293,7 @@ public class LinkedTest {
      * 输出： true
      */
     @Test
-    public void test7(){
+    public void test7() {
         ListNode l1 = new ListNode(1);
         ListNode l2 = new ListNode(2);
         ListNode l3 = new ListNode(3);
@@ -313,15 +317,15 @@ public class LinkedTest {
      * @return
      */
     public boolean isPalindrome(ListNode head) {
-        if(head == null) return true;
+        if (head == null) return true;
         ListNode midNode = findMidNode(head);
         ListNode secondHalfHead = reverseLinked(midNode.next);
         ListNode curr1 = head;
         ListNode curr2 = secondHalfHead;
         boolean palindrome = true;
         //开始比较两个链表
-        while(palindrome && curr2 != null){
-            if(curr1.value != curr2.value) palindrome = false;
+        while (palindrome && curr2 != null) {
+            if (curr1.value != curr2.value) palindrome = false;
             curr1 = curr1.next;
             curr2 = curr2.next;
         }
@@ -333,10 +337,10 @@ public class LinkedTest {
      * @param head
      * @return
      */
-    public ListNode findMidNode(ListNode head){
+    public ListNode findMidNode(ListNode head) {
         ListNode fast = head;
         ListNode slow = head;
-        while (fast.next != null && fast.next.next != null){
+        while (fast.next != null && fast.next.next != null) {
             fast = fast.next.next;
             slow = slow.next;
         }
@@ -348,10 +352,10 @@ public class LinkedTest {
      * @param head
      * @return
      */
-    public ListNode reverseLinked(ListNode head){
+    public ListNode reverseLinked(ListNode head) {
         ListNode cur = head;
         ListNode pre = null;
-        while (cur != null){
+        while (cur != null) {
             ListNode tmp = cur.next;
             cur.next = pre;
             pre = cur;
@@ -369,7 +373,7 @@ public class LinkedTest {
      * 输出: 3->1->2->10->5->5->8
      */
     @Test
-    public void test8(){
+    public void test8() {
         ListNode l1 = new ListNode(5);
         ListNode l2 = new ListNode(1);
         ListNode l3 = new ListNode(3);
@@ -383,7 +387,7 @@ public class LinkedTest {
         l4.next = l5;
         l5.next = l6;
         l6.next = l7;
-        System.out.println(partition(l1,5));
+        System.out.println(partition(l1, 5));
     }
 
     /***
@@ -402,12 +406,12 @@ public class LinkedTest {
         ListNode right = rightHead;
         //因为有断开操作，需要记录下一个遍历的节点
         ListNode next;
-        while (head != null){
+        while (head != null) {
             next = head.next;
-            if(head.value < x){
+            if (head.value < x) {
                 left.next = head;
                 left = left.next;
-            }else{
+            } else {
                 right.next = head;
                 right = right.next;
             }
@@ -427,7 +431,7 @@ public class LinkedTest {
      *  输出：[1, 2, 3]
      */
     @Test
-    public void test9(){
+    public void test9() {
         ListNode l1 = new ListNode(1);
         ListNode l2 = new ListNode(2);
         ListNode l3 = new ListNode(2);
@@ -446,8 +450,8 @@ public class LinkedTest {
     public ListNode removeDuplicateNodes(ListNode head) {
         int[] bits = new int[20000 / 32 + 1];
         ListNode cur = head;
-        while (cur != null && cur.next != null){
-            bits[cur.value /32] |= 1 << (cur.value % 32);
+        while (cur != null && cur.next != null) {
+            bits[cur.value / 32] |= 1 << (cur.value % 32);
             if ((bits[cur.next.value / 32] & (1 << (cur.next.value % 32))) != 0)
                 cur.next = cur.next.next;
             else
@@ -455,5 +459,83 @@ public class LinkedTest {
         }
         return head;
     }
+
+
+    /***
+     * https://leetcode-cn.com/problems/add-two-numbers/solution/liang-shu-xiang-jia-by-leetcode-solution/
+     * 两数相加，给定两个链表，它们每位数字都是按照逆序的方式存储的，并且每个节点只能存储一位数字
+     * 例如 链表1：2->4->3  链表2：5->6->4
+     * 相加 342 + 465 = 807
+     * 最后我们要输出链表的值是 7 -> 0 -> 8
+     */
+    @Test
+    public void test10() {
+        //构建链表
+        ListNode l1 = LeetCodeArrayUtils.initListNode(new int[]{2, 4, 3});
+        ListNode l2 = LeetCodeArrayUtils.initListNode(new int[]{5, 6, 4});
+        LeetCodeArrayUtils.printNodeList(addTwoNumbers(l1, l2));
+    }
+
+
+    /***
+     * 思路就是从头遍历两个链表，然后相加，如果遇到进位的话就存着，给下一个数累加
+     * @param l1 2->4->3->9
+     * @param l2 5->6->4->4
+     * @return
+     */
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int carry = 0; //进位数，例如 4 + 8 = 12 进位2
+        ListNode head = null, tail = null;
+        while (l1 != null || l2 != null) {
+            int n1 = l1 != null ? l1.value : 0;
+            int n2 = l2 != null ? l2.value : 0;
+            int sum = n1 + n2 + carry;
+            if (head == null) {
+                //初始化结果数组
+                head = tail = new ListNode(sum % 10);
+            } else {
+                tail.next = new ListNode(sum % 10);
+                tail = tail.next;
+            }
+            carry = sum / 10;
+            if (l1 != null) {
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                l2 = l2.next;
+            }
+        }
+        if (carry > 0) {
+            tail.next = new ListNode(carry);
+        }
+        return head;
+    }
+
+
+    /***
+     * 无重复字符的最长字串
+     * 例如 pwwkew  无重复的最长字串是wke
+     */
+    @Test
+    public void test11() {
+        System.out.println(lengthOfLongestSubstring("pwwkewabc"));
+    }
+
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length(), ans = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int end = 0, start = 0; end < n; end++) {
+            char tempChar = s.charAt(end);
+            if(map.containsKey(tempChar)){
+                start = Math.max(map.get(tempChar),start);
+            }
+            ans = Math.max(ans, end - start + 1);
+            //定义一个 map 数据结构存储 (k, v)，其中 key 值为字符，value 值为字符位置 +1，加 1 表示从字符位置后一个才开始不重复
+            map.put(s.charAt(end) , end + 1);
+        }
+
+        return ans;
+    }
+
 
 }

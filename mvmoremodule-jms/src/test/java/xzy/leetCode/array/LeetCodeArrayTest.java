@@ -2,6 +2,7 @@ package xzy.leetCode.array;
 
 import com.google.common.collect.Sets;
 import org.junit.Test;
+import xzy.leetCode.linkedList.ListNode;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -70,4 +71,24 @@ public class LeetCodeArrayTest {
         LeetCodeArrayUtils.removeDuplicates(nums);
         Arrays.stream(nums).forEach(System.out::println);
     }
+
+
+    /***
+     * 合并两个有序链表
+     * 1 -> 2 -> 4 -> 5
+     * 1 -> 3 -> 7 -> 8
+     */
+    @Test
+    public void test5(){
+        ListNode l1 =LeetCodeArrayUtils.initListNode(new int[]{1,1,2,4,5});
+        ListNode l2 =LeetCodeArrayUtils.initListNode(new int[]{1,2,2,8});
+        ListNode listNode = LeetCodeArrayUtils.mergeTwoLists(l1, l2);
+        System.out.println();
+    }
+
+
+
+
+
+
 }

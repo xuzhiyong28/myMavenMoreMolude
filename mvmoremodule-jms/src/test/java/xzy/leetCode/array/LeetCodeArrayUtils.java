@@ -1,6 +1,7 @@
 package xzy.leetCode.array;
 
 import com.google.common.collect.Lists;
+import xzy.leetCode.linkedList.ListNode;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -131,6 +132,71 @@ public class LeetCodeArrayUtils {
             }
         }
         return i + 1;
+    }
+
+    /***
+     * 合并两个有序链表
+     * 1 -> 1 -> 2 -> 4 -> 5
+     * 1 -> 2 -> 2 -> 8
+     * @return
+     */
+    public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null && l2 == null) return null;
+        if(l1 == null) return l2;
+        if(l2 == null) return l1;
+        ListNode newHead = new ListNode(0);
+        ListNode currentNode = newHead;
+        while (l1 != null && l2 != null){
+            if(l1.value <= l2.value){
+                currentNode.next = new ListNode(l1.value);
+                currentNode = currentNode.next;
+                l1 = l1.next;
+            }
+            else if(l1.value > l2.value){
+                currentNode.next = new ListNode(l2.value);
+                currentNode = currentNode.next;
+                l2 = l2.next;
+            }
+        }
+
+        if(l1 == null && l2 != null){
+            while (l2 != null){
+                currentNode.next = new ListNode(l2.value);
+                currentNode = currentNode.next;
+                l2 = l2.next;
+            }
+        }
+
+        if(l2 == null && l1 != null){
+            while (l1 != null){
+                currentNode.next = new ListNode(l1.value);
+                currentNode = currentNode.next;
+                l1 = l1.next;
+            }
+        }
+        currentNode = newHead.next;
+        newHead.next = null;
+        return currentNode;
+    }
+
+
+    public static ListNode initListNode(int[] intArrays){
+        int length = intArrays.length;
+        ListNode head = new ListNode(intArrays[0]);
+        ListNode current = head;
+        for(int i = 1 ; i < length ; i++){
+            ListNode listNode = new ListNode(intArrays[i]);
+            current.next = listNode;
+            current = current.next;
+        }
+        return head;
+    }
+
+    public static void printNodeList(ListNode listNode){
+        while (listNode != null){
+            System.out.println(listNode.value);
+            listNode = listNode.next;
+        }
     }
 
 }

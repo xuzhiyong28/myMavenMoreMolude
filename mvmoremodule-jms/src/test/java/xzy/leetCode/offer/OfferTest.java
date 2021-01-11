@@ -287,6 +287,37 @@ public class OfferTest {
     }
 
 
+    @Test
+    public void test6(){
+        System.out.println(fib(10));
+    }
+
+
+    /***
+     * 斐波那契优化 ： https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/solution/di-gui-he-fei-di-gui-liang-chong-fang-shi-du-ji-ba/
+     * @param n
+     * @return
+     * 通过定义个map来存储已经计算过的值，减少重复计算
+     */
+    public static int fib(int n){
+        return fib(n,new HashMap());
+    }
+    public static int fib(int n, Map<Integer, Integer> map){
+        if(n < 2)
+            return n;
+        if(map.containsKey(n)){
+            return map.get(n);
+        }
+        int first = fib(n - 1, map) ;
+        map.put(n -1 , first);
+        int second = fib(n - 2, map);
+        map.put(n - 2, second);
+        int res = (first + second);
+        map.put(n, res);
+        return res;
+    }
+
+
 
 
 

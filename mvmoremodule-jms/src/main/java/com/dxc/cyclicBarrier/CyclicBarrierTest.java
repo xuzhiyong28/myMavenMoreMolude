@@ -3,7 +3,6 @@ package com.dxc.cyclicBarrier;/**
  */
 
 import com.google.common.collect.Maps;
-import edu.emory.mathcs.backport.java.util.concurrent.Executor;
 
 import java.util.Map;
 import java.util.Random;
@@ -16,11 +15,13 @@ import java.util.concurrent.*;
  * 调用三次await后放开栅栏
  */
 public class CyclicBarrierTest {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         test();
     }
     public static void test() {
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(3); //定义三个等待
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(3, ()->{
+            System.out.println("全部开始前先做执行这个函数");
+        }); //定义三个等待
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         executorService.execute(new Thread(new Runner(cyclicBarrier, "1.")));
         executorService.execute(new Thread(new Runner(cyclicBarrier, "2.")));

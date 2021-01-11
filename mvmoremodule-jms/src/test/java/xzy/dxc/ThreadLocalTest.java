@@ -1,9 +1,11 @@
 package xzy.dxc;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 public class ThreadLocalTest {
     private static final AtomicInteger nextId = new AtomicInteger(0);
+    private static final ThreadLocal<String> threadTest = new ThreadLocal<>();
     private static final ThreadLocal<Integer> threadId = new ThreadLocal<Integer>(){
         @Override
         protected Integer initialValue() {
@@ -31,4 +33,25 @@ public class ThreadLocalTest {
         threadId.get();
         threadId.set(3);
     }
+
+
+    @Test
+    public void test3(){
+        for(;;){
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            new Thread(()->{
+                threadTest.set("32454reterwtwerterwtewrtwert" + RandomUtils.nextBytes(10));
+                //threadTest.remove();
+            }).start();
+        }
+
+    }
+
+
+
+
 }
