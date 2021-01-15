@@ -3,8 +3,7 @@ package xzy.leetCode.linkedList;
 import org.junit.Test;
 import xzy.leetCode.array.LeetCodeArrayUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /***
  * 链表题 技巧 : https://leetcode-cn.com/circle/article/Ej98dm/
@@ -515,27 +514,137 @@ public class LinkedTest {
     /***
      * 无重复字符的最长字串
      * 例如 pwwkew  无重复的最长字串是wke
+     * p    w   w   k   e   w
+     * 0    1   2   3   4   5
      */
     @Test
     public void test11() {
-        System.out.println(lengthOfLongestSubstring("pwwkewabc"));
+        System.out.println(lengthOfLongestSubstring("pwwkew"));
     }
 
+    /***
+     * 滑动窗口方式
+     * @param s
+     * @return
+     */
     public int lengthOfLongestSubstring(String s) {
-        int n = s.length(), ans = 0;
-        Map<Character, Integer> map = new HashMap<>();
-        for (int end = 0, start = 0; end < n; end++) {
-            char tempChar = s.charAt(end);
-            if(map.containsKey(tempChar)){
-                start = Math.max(map.get(tempChar),start);
+        Set<Character> occ = new HashSet<>();
+        int n = s.length();
+        // 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动
+        int rk = -1 , ans = 0;
+        for (int i = 0 ; i < n ; i++){
+            if(i != 0){
+                occ.remove(s.charAt(i - 1));
             }
-            ans = Math.max(ans, end - start + 1);
-            //定义一个 map 数据结构存储 (k, v)，其中 key 值为字符，value 值为字符位置 +1，加 1 表示从字符位置后一个才开始不重复
-            map.put(s.charAt(end) , end + 1);
+            while (rk + 1 < n && !occ.contains(s.charAt(rk + 1))){
+                // 不断地移动右指针
+                occ.add(s.charAt(rk + 1));
+                ++rk;
+            }
+            // 第 i 到 rk 个字符是一个极长的无重复字符子串
+            ans = Math.max(ans, rk - i + 1);
         }
-
         return ans;
     }
 
+
+    /***
+     * 删除链表的倒数第N个节点
+     */
+    @Test
+    public void test12(){
+        ListNode listNode = LeetCodeArrayUtils.initListNode(new int[]{1, 2, 3, 4, 5});
+        //ListNode resultListNode = removeNthFromEnd_01(listNode, 2);
+        ListNode resultListNode = removeNthFromEnd_02(listNode, 2);
+        System.out.println(resultListNode);
+    }
+
+    /***
+     * 删除链表的倒数第N个节点 通过栈的方式
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd_01(ListNode head, int n) {
+        ListNode temp = head;
+        Stack<ListNode> stack = new Stack<>();
+        while (temp != null){
+            stack.push(temp);
+            temp = temp.next;
+        }
+        for(int i = 0 ; i < n ; i++){
+            stack.pop();
+        }
+        ListNode cur = stack.peek();
+        cur.next = cur.next.next;
+        return head;
+    }
+
+    /***
+     * 删除链表的倒数第N个节点 - 快慢指针
+     * @param head 0 ----- 1 - 2 - 3 - 4 -5 - null
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd_02(ListNode head, int n){
+        ListNode temp = new ListNode(0,head);
+        ListNode first = head;
+        ListNode second = temp;
+        for(int i = 0 ; i < n ; i++){
+            first = first.next;
+        }
+        while (first != null){
+            first = first.next;
+            second = second.next;
+        }
+        second.next = second.next.next;
+        return temp.next;
+    }
+
+    /***
+     * 最长回文字串
+     */
+    @Test
+    public void test13(){
+        System.out.println(longestPalindrome("babad"));
+    }
+
+    /***
+     * 最长回文字串 -- 中心扩散法
+     * @param s
+     * @return
+     */
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() < 1) {
+            return "";
+        }
+        int start = 0, end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expandAroundCenter(s, i, i);
+            int len2 = expandAroundCenter(s, i, i + 1);
+            int len = Math.max(len1, len2);
+            if (len > end - start) {
+                start = i - (len - 1) / 2;
+                end = i + len / 2;
+            }
+        }
+        return s.substring(start, end + 1);
+
+    }
+
+    /***
+     * 判断是不是回文串
+     * @param s
+     * @param left
+     * @param right
+     * @return
+     */
+    public int expandAroundCenter(String s, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)){
+            -- left;
+            ++ right;
+        }
+        return right - left - 1;
+    }
 
 }

@@ -449,6 +449,14 @@ public class Test {
     }
 
     @org.junit.Test
+    public void testAllOfAndDoSome() throws ExecutionException, InterruptedException {
+
+
+
+    }
+
+
+    @org.junit.Test
     public void testxx() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         byte[] o = new byte[0];
