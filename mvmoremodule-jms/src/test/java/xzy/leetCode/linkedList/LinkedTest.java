@@ -122,6 +122,13 @@ public class LinkedTest {
      * @param head
      * @return
      * https://leetcode-cn.com/problems/linked-list-cycle-lcci/solution/rang-ni-zhong-wen-shu-xue-tui-li-kuai-man-zhi-zhen/
+     * //如果链表有环，请找到环的入口点
+     * //fast一次走两步，slow一次走一步。所以，相遇的时候，fast所走的路程是slow所走的路程的两倍
+     * //设起始位置到环入口点的距离为X，入口点到第一次相遇的位置的距离为L，C代表环的长度。
+     * //slow和fast第一次相遇时，slow：X+L；   fast：X+L+NC (N指代圈次)。
+     * // 由上推出：  2(X+L) = X+L+NC  ->  X = NC - L;和圈数(环数)无关  -> X = C - L;
+     * // 由上可得：当slow和fast第一次相遇时，把slow放到链表头部，与fast一起走，直到再次相遇，
+     * // 那么这个相遇点就是环的入口点。
      */
     public ListNode detectCycle(ListNode head) {
         ListNode fast = head;
@@ -603,14 +610,17 @@ public class LinkedTest {
 
     /***
      * 最长回文字串
+     * 例子 babad 结果  bab
      */
     @Test
     public void test13(){
         System.out.println(longestPalindrome("babad"));
+
     }
 
     /***
      * 最长回文字串 -- 中心扩散法
+     * 思路就是从指定一个下标，然后从两边开始扩散查询
      * @param s
      * @return
      */

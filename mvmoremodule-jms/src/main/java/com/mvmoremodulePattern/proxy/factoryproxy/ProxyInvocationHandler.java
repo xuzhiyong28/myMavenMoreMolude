@@ -3,10 +3,10 @@ package com.mvmoremodulePattern.proxy.factoryproxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-public class Proxy<T> implements InvocationHandler {
+public class ProxyInvocationHandler<T> implements InvocationHandler {
     private T object;
 
-    public Proxy(T object){
+    public ProxyInvocationHandler(T object){
         this.object = object;
     }
 

@@ -6,7 +6,7 @@ import com.mvmoremodulePattern.proxy.staticproxy.SaleManThingCompany;
 public class Main {
     public static void main(String[] args){
         ManCompany manCompany = new SaleManThingCompany();
-        Proxy<ManCompany> proxy = new Proxy<>(manCompany);
+        ProxyInvocationHandler<ManCompany> proxy = new ProxyInvocationHandler<>(manCompany);
         ProxyFactory<ManCompany> proxyFactory = new ProxyFactory<>(ManCompany.class);
         ManCompany obj = proxyFactory.newInstance(proxy);
         obj.saleManThing();
