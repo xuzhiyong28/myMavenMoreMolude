@@ -1,11 +1,14 @@
 package xzy.leetCode.array;
 
 import com.google.common.collect.Sets;
+import org.junit.Assert;
 import org.junit.Test;
 import xzy.leetCode.linkedList.ListNode;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 public class LeetCodeArrayTest {
 
@@ -79,16 +82,141 @@ public class LeetCodeArrayTest {
      * 1 -> 3 -> 7 -> 8
      */
     @Test
-    public void test5(){
-        ListNode l1 =LeetCodeArrayUtils.initListNode(new int[]{1,1,2,4,5});
-        ListNode l2 =LeetCodeArrayUtils.initListNode(new int[]{1,2,2,8});
+    public void test5() {
+        ListNode l1 = LeetCodeArrayUtils.initListNode(new int[]{1, 1, 2, 4, 5});
+        ListNode l2 = LeetCodeArrayUtils.initListNode(new int[]{1, 2, 2, 8});
         ListNode listNode = LeetCodeArrayUtils.mergeTwoLists(l1, l2);
         System.out.println();
     }
 
 
+    /***
+     * 逆波兰表达式求值
+     * 输入: ["2", "1", "+", "3", "*"]
+     * 输出: 9
+     * 解释: 该算式转化为常见的中缀算术表达式为：((2 + 1) * 3) = 9
+     */
+    @Test
+    public void test6() {
+        System.out.println(evalRPN(new String[]{"2", "1", "+", "3", "*"}));
+    }
+
+    public static int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<Integer>(); //定义一个栈
+        Integer op1, op2;
+        for (int i = 0; i < tokens.length; i++) {
+            if (!"+-*/".contains(tokens[i])) {
+                stack.push(Integer.valueOf(tokens[i]));
+            } else {
+                op2 = stack.pop();
+                op1 = stack.pop();
+                switch (tokens[i]) {
+                    case "+":
+                        stack.push(op1 + op2);
+                        break;
+                    case "-":
+                        stack.push(op1 - op2);
+                        break;
+                    case "*":
+                        stack.push(op1 * op2);
+                        break;
+                    case "/":
+                        stack.push(op1 / op2);
+                        break;
+                }
+            }
+        }
+        return stack.peek();
+    }
+
+    /***
+     * 数组特点 : 前面有序 后面有序。找到一个其中一个值
+     */
+    @Test
+    public void zrSort() {
+        int[] nums = {4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
+        Assert.assertEquals(sortAndGet(nums, 4, 0, nums.length), 0);
+        Assert.assertEquals(sortAndGet(nums, 5, 0, nums.length), 1);
+        Assert.assertEquals(sortAndGet(nums, 6, 0, nums.length), 2);
+        Assert.assertEquals(sortAndGet(nums, 7, 0, nums.length), 3);
+        Assert.assertEquals(sortAndGet(nums, 8, 0, nums.length), 4);
+        Assert.assertEquals(sortAndGet(nums, 9, 0, nums.length), 5);
+        Assert.assertEquals(sortAndGet(nums, 0, 0, nums.length), 6);
+        Assert.assertEquals(sortAndGet(nums, 1, 0, nums.length), 7);
+        Assert.assertEquals(sortAndGet(nums, 2, 0, nums.length), 8);
+        Assert.assertEquals(sortAndGet(nums, 3, 0, nums.length), 9);
+    }
+
+    public int sortAndGet(int[] nums, int targeVal, int left, int right) {
+        int mid = (left + right) / 2;
+        int midValue = nums[mid];
+        int leftVal = nums[left];
+        int result = 0;
+        if (left <= right) {
+            if (midValue == targeVal) {
+                result = mid;
+                return result;
+            } else if (targeVal > midValue) {
+                //找右数组
+                result = sortAndGet(nums, targeVal, mid + 1, right);
+            } else if (targeVal < midValue && targeVal < leftVal) {
+                //找右数组
+                result = sortAndGet(nums, targeVal, mid + 1, right);
+            } else if (targeVal < midValue && targeVal >= leftVal) {
+                //找左边
+                result = sortAndGet(nums, targeVal, left, mid - 1);
+            }
+        }
+        return result;
+    }
+
+    /***
+     * 青蛙跳
+     */
+    @Test
+    public void testWays(){
+        System.out.println(numWays(1));
+        System.out.println(numWays(2));
+        System.out.println(numWays(3));
+        System.out.println(numWays(4));
+        System.out.println(numWays(5));
+    }
+
+    public int numWays(int n){
+        int a = 1 , b = 1 , sum;
+        for(int i = 0 ; i < n ; i++){
+            sum = a + b;
+            a = b;
+            b = sum;
+        }
+        return a;
+    }
+
+    /***
+     * 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。
+     * 例如，数组 [3,4,5,1,2] 为 [1,2,3,4,5] 的一个旋转，该数组的最小值为1
+     */
+    @Test
+    public void minArrayTest(){
+        int[] nums = {3,1,1,2};
+        System.out.println(minArray(nums));
+    }
 
 
-
-
+    public int minArray(int[] numbers) {
+        int low = 0;
+        int high = numbers.length - 1;
+        while (low < high){
+            int mid = (low + high ) / 2;
+            if(numbers[mid] < numbers[high]){
+                //找左边
+                high = mid;
+            }else if(numbers[mid] > numbers[high]){
+                low = mid + 1;
+            }else{
+                high = high - 1;
+            }
+        }
+        return numbers[low];
+    }
 }

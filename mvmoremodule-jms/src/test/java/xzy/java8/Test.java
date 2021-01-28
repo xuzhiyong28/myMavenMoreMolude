@@ -109,7 +109,6 @@ public class Test {
     }
 
 
-
     public List<String> changeList(List<String> src) {
         List<String> dict = Lists.newArrayList();
         for (String line : src) {
@@ -170,20 +169,20 @@ public class Test {
     public void calculationObjectSize() {
         Map<String, String> map = Maps.newHashMap();
         for (int i = 0; i < 10000; i++) {
-            map.put(String.valueOf(i),String.valueOf(i));
+            map.put(String.valueOf(i), String.valueOf(i));
         }
         long l = GraphLayout.parseInstance(map).totalSize();
         System.out.println("10000个HahsMap对象大小:" + l + " byte");
 
         //空对象的大小
-        Map<String,String> map2 = Maps.newHashMap();
+        Map<String, String> map2 = Maps.newHashMap();
         System.out.println("空HashMap大小:" + GraphLayout.parseInstance(map2).totalSize());
     }
 
     @org.junit.Test
-    public void priorityBlockingQueueTest(){
-        List<String> list = Lists.newArrayList("a","b","c");
-        Map<String,Integer> map = list.stream().collect(Collectors.toMap(new Function<String, String>() {
+    public void priorityBlockingQueueTest() {
+        List<String> list = Lists.newArrayList("a", "b", "c");
+        Map<String, Integer> map = list.stream().collect(Collectors.toMap(new Function<String, String>() {
             @Override
             public String apply(String s) {
                 return s;
@@ -196,6 +195,44 @@ public class Test {
         }));
         System.out.println(map);
         System.out.println(Long.valueOf("0.00"));
+    }
+
+    /***
+     * 滴滴面试 字符串匹配
+     */
+    @org.junit.Test
+    public void ddzfcpp() {
+        String pattern = "abba";
+        String str = "北京 杭州 北京 北京";
+        System.out.println(wordPattern(pattern,str));
+    }
+
+
+    /***
+     * 模式匹配
+     * @param pattern
+     * @param str
+     * @return
+     */
+    public static boolean wordPattern(String pattern, String str) {
+        LinkedList k = null;
+        Map<Character, String> map = new HashMap<>();
+        char[] ptArr = pattern.toCharArray();
+        String[] strArr = str.split(" ");
+        if (ptArr.length != strArr.length) {
+            return false;
+        }
+        for(int i = 0 ; i < ptArr.length ; i++){
+            if(!map.containsKey(ptArr[i])){
+                map.put(ptArr[i],strArr[i]);
+            }else{
+                String word = map.get(ptArr[i]);
+                if(!word.equals(strArr[i])){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 
