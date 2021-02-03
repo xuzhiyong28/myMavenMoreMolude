@@ -2,36 +2,48 @@ package xzy.leetCode.sort;
 
 /***
  * 归并排序
- * https://zhuanlan.zhihu.com/p/124356219
+ * https://www.cnblogs.com/chengxiao/p/6194356.html
  */
 public class MergeSort {
 
     public static void main(String[] args) {
-        int[] arr = { 49, 38, 65, 97, 23, 22, 76, 1, 5, 8, 2, 0, -1, 22 };
-        int len = arr.length;
-        int[] result = new int[len];
-        merge_sort_recursive(arr, result, 0, len - 1);
-        System.out.println(result);
+        int[] nums = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+        int[] temps = new int[nums.length];
+        sort(nums, 0, nums.length - 1, temps);
+        System.out.println(temps);
     }
 
+    private static void sort(int[] nums, int left, int right, int[] temps) {
+        if (left < right) {
+            int mid = (left + right) / 2;
+            sort(nums, left, mid, temps); //左边归并排序，使得左子序列有序
+            sort(nums, mid + 1, right, temps); //右边归并排序，使得右子序列有序
+            merge(nums, left, mid, right, temps); //将两个有序子数组合并操作
+        }
+    }
 
-    public static void merge_sort_recursive(int[] arr, int[] result, int start, int end) {
-        if (start >= end)
-            return;
-        int len = end - start, mid = (len >> 1) + start;
-        int start1 = start, end1 = mid;
-        int start2 = mid + 1, end2 = end;
-        merge_sort_recursive(arr, result, start1, end1);
-        merge_sort_recursive(arr, result, start2, end2);
-        int k = start;
-        while (start1 <= end1 && start2 <= end2)
-            result[k++] = arr[start1] < arr[start2] ? arr[start1++] : arr[start2++];
-        while (start1 <= end1)
-            result[k++] = arr[start1++];
-        while (start2 <= end2)
-            result[k++] = arr[start2++];
-        for (k = start; k <= end; k++)
-            arr[k] = result[k];
+    private static void merge(int[] nums, int left, int mid, int right, int[] temps) {
+        int i = left;
+        int j = mid + 1;
+        int t = 0;
+        while (i <= mid && j <= right) {
+            if (nums[i] <= nums[j]) {
+                temps[t++] = nums[i++];
+            } else {
+                temps[t++] = nums[j++];
+            }
+        }
+        while (i <= mid) {//将左边剩余元素填充进temp中
+            temps[t++] = nums[i++];
+        }
+        while (j <= right) {//将右序列剩余元素填充进temp中
+            temps[t++] = nums[j++];
+        }
+        t = 0;
+        //将temp中的元素全部拷贝到原数组中
+        while (left <= right) {
+            nums[left++] = temps[t++];
+        }
     }
 
 }

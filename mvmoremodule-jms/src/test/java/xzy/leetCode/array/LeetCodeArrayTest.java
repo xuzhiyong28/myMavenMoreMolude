@@ -219,4 +219,47 @@ public class LeetCodeArrayTest {
         }
         return numbers[low];
     }
+
+    @Test
+    public void reverseTest(){
+        System.out.println(reverse(123));
+    }
+
+    public int reverse(int x){
+        int result = 0;
+        while (x != 0){
+            int temp = x % 10; //获取余数
+            result = result * 10 + temp;
+            x = x / 10;
+        }
+        return result;
+    }
+
+
+    /***
+     * 1    3   5   7
+     * 0    1   2   3
+     */
+    @Test
+    public void searchInsertTest(){
+        int[] nums = {1,3,5,7};
+        System.out.println(searchInsert(nums,5));
+    }
+
+    public int searchInsert(int[] nums, int target) {
+        int n = nums.length;
+        int left = 0, right = n - 1, ans = n;
+        while (left <= right) {
+            int mid = ((right - left) >> 1) + left;
+            if (target <= nums[mid]) {
+                ans = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return ans;
+    }
+
+
 }
