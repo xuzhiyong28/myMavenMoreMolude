@@ -317,6 +317,21 @@ public class OfferTest {
         return res;
     }
 
+    /**
+     * 假设把某股票的价格按照时间先后顺序存储在数组中，请问买卖该股票一次可能获得的最大利润是多少
+     */
+    @Test
+    public void test7(){
+        int[] arr = {7,1,5,3,6,4};
+        int min = arr[0]; //当前价格之前的最低价
+        int maxDiff = 0; //到当前为止的最大差价
+        for (int i = 1 ; i < arr.length ; i++){
+            min = Math.min(min,arr[i - 1]);
+            maxDiff = Math.max(arr[i] - min, maxDiff);
+        }
+        System.out.println(maxDiff);
+    }
+
 
 
 

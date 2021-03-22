@@ -1,6 +1,7 @@
 package xzy.designPattern.proxy;
 
 import org.junit.Test;
+import xzy.designPattern.proxy.cglibProxy.SubjectCGlibMethodInterceptor;
 import xzy.designPattern.proxy.jdkProxy.SubjectInvocation;
 import xzy.designPattern.proxy.jdkProxyFactory.InvocationFactory;
 import xzy.designPattern.proxy.jdkProxyFactory.ProxyFactory;
@@ -23,4 +24,12 @@ public class ProxyTest {
         SubjectInterface proxyObject = proxyFactory.newInstance();
         proxyObject.doSomething("1", 1);
     }
+
+    @Test
+    public void test2() {
+        SubjectCGlibMethodInterceptor subjectCGlibMethodInterceptor = new SubjectCGlibMethodInterceptor();
+        SubjectImpl subject = (SubjectImpl) subjectCGlibMethodInterceptor.getInstance(new SubjectImpl());
+        subject.doSomething("1", 1);
+    }
+
 }
