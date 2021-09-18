@@ -17,6 +17,7 @@ public class DelayedQueueDemo {
         queue.put(item2);
         queue.put(item3);
         System.out.println("begin time:" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        //TimeUnit.SECONDS.sleep(20);  // 延迟的时间是从put的时候开始算的
         for (int i = 0; i < 3; i++) {
             Task take = queue.take();
             System.out.format("name:{%s}, time:{%s}\n", take.name, LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
