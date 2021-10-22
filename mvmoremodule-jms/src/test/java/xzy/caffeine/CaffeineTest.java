@@ -1,6 +1,7 @@
 package xzy.caffeine;
 
 import com.github.benmanes.caffeine.cache.*;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -17,7 +18,6 @@ import java.util.function.Function;
 
 /**
  * https://segmentfault.com/a/1190000038665523 caffeine详解
- * https://www.cnblogs.com/crazymakercircle/p/14385641.html
  **/
 public class CaffeineTest {
     final String KEY1 = "name";
@@ -33,6 +33,12 @@ public class CaffeineTest {
                 .expireAfterWrite(1, TimeUnit.MINUTES) //写入后一分钟后过期
                 //.expireAfterAccess(1, TimeUnit.MINUTES) // 访问后一分钟后过期
                 .maximumSize(100)
+                .removalListener(new RemovalListener<String, String>() { //缓存移除监听器，当有移除的key时会执行
+                    @Override
+                    public void onRemoval(@Nullable String key, @Nullable String value, @NonNull RemovalCause removalCause) {
+                        System.out.printf("Key %s was removed (%s)%n", key, removalCause);
+                    }
+                })
                 .build();
 
         // 手动填入值
@@ -61,6 +67,9 @@ public class CaffeineTest {
         return "value_by_db";
     }
 
+    /****
+     * 自动填充策略 使用LoadingCache + CacheLoader 当不存在的时候则调用getByDB填充
+     */
     @Test
     public void test2() {
         // 初始化缓存，设置了1分钟的写过期，100的缓存最大个数
@@ -101,6 +110,27 @@ public class CaffeineTest {
         });
         System.out.println(future.get());
     }
+
+    /***
+     * 异步自动填充
+     */
+    @Test
+    public void test33() throws ExecutionException, InterruptedException {
+        AsyncLoadingCache<String, String> asyncLoadCache = Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.MINUTES)   //写入一分钟后过期
+                .maximumSize(100)
+                .executor(Executors.newSingleThreadExecutor())
+                .buildAsync(new CacheLoader<String, String>() {
+                    @Nullable
+                    @Override
+                    public String load(@NonNull String key) throws Exception {
+                        return getByDB(key);
+                    }
+                });
+        CompletableFuture<String> future = asyncLoadCache.get(KEY1);
+        System.out.println(future.get());
+    }
+
 
     /***
      * caffeine淘汰策略之基于时间
@@ -179,8 +209,26 @@ public class CaffeineTest {
         Thread.sleep(1000);
         // 打印缓存个数，结果为1
         System.out.println(cache.estimatedSize());
-
     }
+
+
+    @Test
+    public void CaffeineStatsTest(){
+        Cache<String, String> cache = Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.MINUTES) //写入后一分钟后过期
+                .maximumSize(100)
+                .recordStats() // 统计
+                .build();
+
+        cache.put(KEY1,VALUE1);
+        cache.put(KEY2,VALUE2);
+        CacheStats stats = cache.stats();
+        System.out.println("命中与请求的比率 : " + stats.hitRate());
+        System.out.println("命中缓存的总数 : " + stats.hitCount());
+        System.out.println("缓存逐出的数量 : " + stats.evictionCount());
+        System.out.println("加载新值所花费的平均时间 : " + stats.averageLoadPenalty());
+    }
+
 
 
 }
