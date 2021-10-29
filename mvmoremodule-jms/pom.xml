@@ -248,6 +248,11 @@
             <version>2.9.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>4.9.1</version>
+        </dependency>
 
     </dependencies>
 
