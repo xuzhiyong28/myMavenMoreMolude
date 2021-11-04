@@ -1,12 +1,10 @@
 package xzy.rocketmq;
 
+import cn.hutool.core.util.RandomUtil;
 import com.google.common.collect.Sets;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.*;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
-import org.apache.rocketmq.client.producer.MessageQueueSelector;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.*;
 import org.apache.rocketmq.common.CountDownLatch2;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
@@ -21,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class RocketMqTest {
     /***
@@ -139,7 +137,7 @@ public class RocketMqTest {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
                 Set<Integer> queueids = Sets.newHashSet();
-                for(MessageExt msg : msgs) {
+                for (MessageExt msg : msgs) {
                     queueids.add(msg.getQueueId());
                 }
                 System.out.println("当前线程 :" + Thread.currentThread().getName() + ", msgsSize :" + msgs.size() + ", queueids : " + queueids);
@@ -234,9 +232,9 @@ public class RocketMqTest {
     }
 
     @Test
-    public void scheduledMessageConsumerTest() throws Exception{
+    public void scheduledMessageConsumerTest() throws Exception {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("scheduledMessageConsumer_01");
-        consumer.subscribe("TestTopic_delay","*");
+        consumer.subscribe("TestTopic_delay", "*");
         consumer.registerMessageListener(new MessageListenerConcurrently() {
 
             @Override
@@ -255,7 +253,7 @@ public class RocketMqTest {
      * 批量发送消息
      */
     @Test
-    public void producerBatchTest() throws Exception{
+    public void producerBatchTest() throws Exception {
         DefaultMQProducer producer = new DefaultMQProducer("producerBatch01");
         producer.setNamesrvAddr("127.0.0.1:9876");
         producer.start();
@@ -326,5 +324,55 @@ public class RocketMqTest {
         orderList.add(orderDemo);
 
         return orderList;
+    }
+
+    @Test
+    public void transactionProducerTest() throws Exception {
+        TransactionMQProducer producer = new TransactionMQProducer("order_trans_group");
+        producer.setNamesrvAddr("192.168.50.234:9876");
+        producer.setSendMsgTimeout(Integer.MAX_VALUE);
+        producer.setExecutorService(new ThreadPoolExecutor(5, 10, 60,
+                TimeUnit.SECONDS, new ArrayBlockingQueue<>(50)));
+        producer.setTransactionListener(new TransactionListener() {
+            /***
+             * 如果消息发送成功，就会调用到这里的executeLocalTransaction方法
+             * executeLocalTransaction 用来执行本地事务
+             * @param msg
+             * @param arg
+             * @return
+             */
+            @Override
+            public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
+                System.out.println("=======开始执行本地事务========");
+                LocalTransactionState state;
+                try {
+                    String body = new String(msg.getBody());
+                    System.out.println("arg = " + arg);
+                    // 获取body值，做业务逻辑(这里做订单插入操作)，如果成功，则设置为提交状态
+                    state = LocalTransactionState.COMMIT_MESSAGE;
+
+                } catch (Exception e) {
+                    // 事务执行失败，发送rollback
+                    state = LocalTransactionState.ROLLBACK_MESSAGE;
+                }
+                return state;
+            }
+            /***
+             * 事务回查 ， 用于事务状态查询
+             * @param msg
+             * @return
+             */
+            @Override
+            public LocalTransactionState checkLocalTransaction(MessageExt msg) {
+                System.out.println("=======开始回查本地事务状态========");
+                // 这里去判断订单是否存在，如果存在表示本地事务是已执行成功的，则返回成功，否则返回失败
+                return LocalTransactionState.COMMIT_MESSAGE;
+            }
+        });
+        producer.start();
+        int index = RandomUtil.randomInt(1, 1000); //随机订单ID
+        Message message = new Message("transaction_topic", ("订单_" + index).getBytes());
+        producer.sendMessageInTransaction(message, index);
+        TimeUnit.SECONDS.sleep(100);
     }
 }
