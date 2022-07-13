@@ -78,7 +78,7 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-            <version>5.2.0</version>
+            <version>5.6.0</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
